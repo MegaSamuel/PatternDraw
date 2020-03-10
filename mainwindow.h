@@ -1,6 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <bitmap.h>
+#include <QDir>
+#include <QFile>
 #include <QMainWindow>
 
 namespace Ui {
@@ -22,9 +25,16 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+    void  BitMapCreate(QFile *file);
+    void  BitMapFill(QFile *file);
+
+    QDir *m_pDir;
+
+    BitMap m_bitmap;
+
     int  m_nCount;
-    int  m_nRow;
-    int  m_nColumn;
+    unsigned  m_uRow;
+    unsigned  m_uColumn;
 };
 
 #endif // MAINWINDOW_H

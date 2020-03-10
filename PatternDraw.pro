@@ -31,7 +31,8 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h \
-		dialog.h
+		dialog.h \
+    bitmap.h
 
 FORMS += \
         mainwindow.ui
