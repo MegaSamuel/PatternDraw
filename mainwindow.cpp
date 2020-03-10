@@ -40,7 +40,7 @@ void MainWindow::BitMapFill(QFile *file)
 
     QDataStream dstrm(file);
     dstrm.setVersion(QDataStream::Qt_5_5);
-    dstrm.writeRawData((char*)&m_bitmap,sizeof(m_bitmap));
+    dstrm.writeRawData((char*)&m_bitmap,sizeof(BitMap));
 
     int i, j;
 
@@ -52,7 +52,9 @@ void MainWindow::BitMapFill(QFile *file)
             color.rgbGreen = 0x7F;
             color.rgbBlue = 0x7F;
 
-//            dstrm.writeRawData((char*)&color,sizeof(color));
+            qDebug() << "h" << i << "w" << j;
+
+            dstrm.writeRawData((char*)&color,sizeof(color));
         }
     }
 
@@ -139,6 +141,8 @@ void MainWindow::ButtonHandler()
         BitMapCreate( &file );
 
         file.close();
+
+        qDebug() << "success";
     }
 }
 
