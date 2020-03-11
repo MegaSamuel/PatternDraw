@@ -32,6 +32,8 @@ private:
 
     BitMap m_bitmap;
 
+    TCell  m_tCell;
+
     int  m_nCount;
     unsigned  m_uRow;
     unsigned  m_uColumn;

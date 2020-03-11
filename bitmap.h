@@ -3,6 +3,13 @@
 
 #include "windows.h"
 
+// структура ячейки
+typedef struct t_cell
+{
+    unsigned h; // высота ячейки
+    unsigned w; // ширина ячейки
+}TCell;
+
 #pragma pack(push, 1)
 
 struct BitMap

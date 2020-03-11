@@ -14,6 +14,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_uRow = 1;
     m_uColumn = 1;
 
+    // размер ячейки в пикселях
+    m_tCell.h = 10;
+    m_tCell.w = 6;
+
     m_pDir = new QDir(QDir::currentPath()+"/field");
 
     // заголовок формы
@@ -37,6 +41,8 @@ void MainWindow::BitMapFill(QFile *file)
 {
     RGBQUAD color;
     color.rgbReserved = 0;
+    int div_i_end, div_i_begin = 0;
+    int div_j_end, div_j_begin = 0;
 
     QDataStream dstrm(file);
     dstrm.setVersion(QDataStream::Qt_5_5);
@@ -44,15 +50,39 @@ void MainWindow::BitMapFill(QFile *file)
 
     int i, j;
 
+    // проход по высоте (по строкам)
     for(i = 0; i < m_bitmap.bih.biHeight; i++)
     {
+        // признак первого пикселя ячейки по высоте
+        div_i_begin = i % static_cast<int>(m_tCell.h);
+        // признак последнего пикселя ячейки по высоте
+        div_i_end = (i+1) % static_cast<int>(m_tCell.h);
+
+        // проход по ширине (по столбцам)
         for(j = 0; j < m_bitmap.bih.biWidth; j++)
         {
-            color.rgbRed = 0x7F;
-            color.rgbGreen = 0x7F;
-            color.rgbBlue = 0x7F;
+            // признак первого пикселя ячейки по ширине
+            div_j_begin = j % static_cast<int>(m_tCell.w);
+            // признак последнего пикселя ячейки по ширине
+            div_j_end = (j+1) % static_cast<int>(m_tCell.w);
 
-            qDebug() << "h" << i << "w" << j;
+            if( ( 0 == i ) || ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
+                ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
+            {
+                // черный
+                color.rgbRed = 0x0;
+                color.rgbGreen = 0x0;
+                color.rgbBlue = 0x0;
+            }
+            else
+            {
+                // белый
+                color.rgbRed = 0xFF;
+                color.rgbGreen = 0xFF;
+                color.rgbBlue = 0xFF;
+            }
+
+//            qDebug() << "h" << i << "w" << j << "xxx" << j+1 << div_j_begin << div_j_end;
 
             dstrm.writeRawData((char*)&color,sizeof(color));
         }
@@ -70,9 +100,9 @@ void MainWindow::BitMapCreate(QFile *file)
 
     memset( &color, 0, sizeof(color) );
 
-    // размер картинки
-    unsigned Width = m_uColumn;
-    unsigned Height = m_uRow;
+    // размер картинки в пикселях
+    unsigned Width = m_uColumn * m_tCell.w;
+    unsigned Height = m_uRow * m_tCell.h;
 
     // очищаем file header
     memset (&m_bitmap.bfh, 0, sizeof(m_bitmap.bfh));
@@ -123,18 +153,22 @@ void MainWindow::ButtonHandler()
 //                          dir,tr("(*.bmp)") );
 
     QFile file;
+    QString filename;
 
-    file.setFileName( "test-bmp.bmp" );
+    // формируем имя файла
+    filename = QString( "pattern-r%1-c%2.bmp" ).arg(m_uRow).arg(m_uColumn);
+
+    file.setFileName( filename );
 
     if( !file.open(QIODevice::WriteOnly) )
     {
-        qDebug() << "cannot open file";
+        qDebug() << "cannot open file" << filename;
 
         return;
     }
     else
     {
-        qDebug() << "write to file";
+        qDebug() << "write to file" << filename;
 
         file.resize(0);
 
