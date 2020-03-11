@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle("PatternDraw");
 
     // иконка формы
-    this->setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
+    this->setWindowIcon( QIcon( ":/PatternDraw.png" ) );
 
     // прячем избыточные кнопки заголовка формы
     this->setWindowFlag(Qt::WindowMinMaxButtonsHint,false);
