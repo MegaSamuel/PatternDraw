@@ -16,6 +16,7 @@ struct BitMap
 {
     BITMAPFILEHEADER bfh;
     BITMAPINFOHEADER bih;
+    char auColorTable[1024];
 };
 
 #pragma pack(pop)

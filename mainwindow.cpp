@@ -40,13 +40,15 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::BitMapFill(QFile *file)
 {
     RGBQUAD color;
-    color.rgbReserved = 0;
     int div_i_end, div_i_begin = 0;
     int div_j_end, div_j_begin = 0;
-
+    int row = 1, column = 1;
     QDataStream dstrm(file);
+
     dstrm.setVersion(QDataStream::Qt_5_5);
-    dstrm.writeRawData((char*)&m_bitmap,sizeof(BitMap));
+
+    // пишем заголовок картинки в файл
+    dstrm.writeRawData( reinterpret_cast<char*>(&m_bitmap), sizeof(BitMap) );
 
     int i, j;
 
@@ -58,6 +60,12 @@ void MainWindow::BitMapFill(QFile *file)
         // признак последнего пикселя ячейки по высоте
         div_i_end = (i+1) % static_cast<int>(m_tCell.h);
 
+        // номер текущей строки
+        if( 0 == i )
+            row = 1;
+        else if( 0 == div_i_begin )
+            row += 1;
+
         // проход по ширине (по столбцам)
         for(j = 0; j < m_bitmap.bih.biWidth; j++)
         {
@@ -66,6 +74,12 @@ void MainWindow::BitMapFill(QFile *file)
             // признак последнего пикселя ячейки по ширине
             div_j_end = (j+1) % static_cast<int>(m_tCell.w);
 
+            // номер текущего столбца
+            if( 0 == j )
+                column = 1;
+            else if( 0 == div_j_begin )
+                column += 1;
+
             if( ( 0 == i ) || ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
                 ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
             {
@@ -73,6 +87,7 @@ void MainWindow::BitMapFill(QFile *file)
                 color.rgbRed = 0x0;
                 color.rgbGreen = 0x0;
                 color.rgbBlue = 0x0;
+                color.rgbReserved = 0x0;
             }
             else
             {
@@ -80,11 +95,14 @@ void MainWindow::BitMapFill(QFile *file)
                 color.rgbRed = 0xFF;
                 color.rgbGreen = 0xFF;
                 color.rgbBlue = 0xFF;
+                color.rgbReserved = 0x0;
             }
 
 //            qDebug() << "h" << i << "w" << j << "xxx" << j+1 << div_j_begin << div_j_end;
+//            qDebug() << "h" << i << "w" << j << "xxx" << row << column;
 
-            dstrm.writeRawData((char*)&color,sizeof(color));
+            // пишем пиксель в файл
+            dstrm.writeRawData( reinterpret_cast<char*>(&color), sizeof(color) );
         }
     }
 
@@ -98,10 +116,12 @@ void MainWindow::BitMapCreate(QFile *file)
 {
     RGBQUAD color;
 
-    memset( &color, 0, sizeof(color) );
+//    memset( &color, 0, sizeof(color) );
 
     // размер картинки в пикселях
+    // каждая вторая колонка смещена вниз на половину ячейки
     unsigned Width = m_uColumn * m_tCell.w;
+//    unsigned Height = m_uRow * m_tCell.h + m_tCell.h/2;
     unsigned Height = m_uRow * m_tCell.h;
 
     // очищаем file header
@@ -109,7 +129,7 @@ void MainWindow::BitMapCreate(QFile *file)
 
     // заполняем file header
     m_bitmap.bfh.bfType = 0x4D42;
-    m_bitmap.bfh.bfOffBits = sizeof(m_bitmap.bfh) + sizeof(m_bitmap.bih);
+    m_bitmap.bfh.bfOffBits = sizeof(m_bitmap.bfh) + sizeof(m_bitmap.bih) + sizeof(m_bitmap.auColorTable);
     m_bitmap.bfh.bfSize = m_bitmap.bfh.bfOffBits + sizeof(color) * Width * Height;
     m_bitmap.bfh.bfReserved1 = 0;
     m_bitmap.bfh.bfReserved2 = 0;
@@ -129,6 +149,9 @@ void MainWindow::BitMapCreate(QFile *file)
     m_bitmap.bih.biYPelsPerMeter = 0;
     m_bitmap.bih.biClrUsed = 0;
     m_bitmap.bih.biClrImportant = 0;
+
+    // очищаем color table
+    memset (&m_bitmap.auColorTable, 0, sizeof(m_bitmap.auColorTable));
 
     // формируем саму картинку
     BitMapFill( file );
@@ -156,7 +179,7 @@ void MainWindow::ButtonHandler()
     QString filename;
 
     // формируем имя файла
-    filename = QString( "pattern-r%1-c%2.bmp" ).arg(m_uRow).arg(m_uColumn);
+    filename = QString( "pattern%1x%2.bmp" ).arg(m_uRow).arg(m_uColumn);
 
     file.setFileName( filename );
 
