@@ -15,8 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_uColumn = 1;
 
     // размер ячейки в пикселях
-    m_tCell.h = 10;
-    m_tCell.w = 6;
+    m_tCell.h = 20;
+    m_tCell.w = 10;
 
     m_pDir = new QDir(QDir::currentPath()+"/field");
 
