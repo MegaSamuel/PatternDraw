@@ -110,10 +110,10 @@ void MainWindow::BitMapFill(QFile *file)
                     if( ( 0 == i ) || ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
                         ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
                     {
-                        // черный
-                        color.rgbRed = 0x0;
-                        color.rgbGreen = 0x0;
-                        color.rgbBlue = 0x0;
+                        // серый
+                        color.rgbRed = 0x7f;
+                        color.rgbGreen = 0x7f;
+                        color.rgbBlue = 0x7f;
                         color.rgbReserved = 0x0;
                     }
                 }
@@ -127,10 +127,10 @@ void MainWindow::BitMapFill(QFile *file)
                     if( ( 0 == i ) || ( 0 == div_i_odd_begin ) || ( 0 == div_i_odd_end ) ||
                         ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
                     {
-                        // черный
-                        color.rgbRed = 0x0;
-                        color.rgbGreen = 0x0;
-                        color.rgbBlue = 0x0;
+                        // серый
+                        color.rgbRed = 0x7f;
+                        color.rgbGreen = 0x7f;
+                        color.rgbBlue = 0x7f;
                         color.rgbReserved = 0x0;
                     }
                 }
