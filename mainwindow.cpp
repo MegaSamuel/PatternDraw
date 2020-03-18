@@ -10,15 +10,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // дефолтные значения переменных
-    m_nCount = 0;
     m_uRow = 1;
     m_uColumn = 1;
 
     // размер ячейки в пикселях
     m_tCell.h = 20;
     m_tCell.w = 10;
-
-    m_pDir = new QDir(QDir::currentPath()+"/field");
 
     // заголовок формы
     this->setWindowTitle("PatternDraw");
@@ -32,6 +29,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // ловим нажатие кнопки
     connect( ui->pushButton, SIGNAL(pressed()), this, SLOT(ButtonHandler()) );
+
+    // вызов руководства пользователя
+    connect( ui->actionman, SIGNAL(triggered()), SLOT(ManHandler()) );
 
     // вызов справки о программе
     connect( ui->actioninfo, SIGNAL(triggered()), SLOT(InfoHandler()) );
@@ -197,48 +197,60 @@ void MainWindow::BitMapCreate(QFile *file)
 
 void MainWindow::ButtonHandler()
 {
-    // инкремент счетчика нажатий
-    m_nCount += 1;
+    // собственно файл
+    QFile file;
 
     // берем значения с формы
     m_uRow = static_cast<unsigned>(ui->spinRow->value());
     m_uColumn = static_cast<unsigned>(ui->spinColumn->value());
 
-    // лог
-//    qDebug() << "count" << m_nCount << "row" << m_uRow << "column" << m_uColumn;
+    // формируем имя файла по умолчанию
+    QString deffilename = QString( "/pattern%1x%2.bmp" ).arg(m_uRow).arg(m_uColumn);
 
-    QString dir(m_pDir->path());
+    // каталог где мы находимся
+    QDir *pDir = new QDir( QDir::currentPath() + deffilename );
 
-//    QString fileName =
-//            QFileDialog::getSaveFileName(0, tr("Сохранить поле"),
-//                          dir,tr("(*.bmp)") );
+    // строка с именем каталога где мы находимся
+    QString dir( pDir->path() );
 
-    QFile file;
-    QString filename;
+    // формиреум путь и имя файла через диалог
+    QString filename = QFileDialog::getSaveFileName( this, "Сохранить файл", dir, "Изображение (*.bmp)" );
 
-    // формируем имя файла
-    filename = QString( "pattern%1x%2.bmp" ).arg(m_uRow).arg(m_uColumn);
+//    this->setCursor(Qt::WaitCursor);
 
-    file.setFileName( filename );
+    QApplication::processEvents();
 
-    if( !file.open(QIODevice::WriteOnly) )
+    if( filename != "" )
     {
-        qDebug() << "cannot open file" << filename;
+        file.setFileName( filename );
 
-        return;
+        if( !file.open(QIODevice::WriteOnly) )
+        {
+            qDebug() << "cannot open file" << filename;
+
+            return;
+        }
+        else
+        {
+            //        qDebug() << "write to file" << filename;
+
+            file.resize(0);
+
+            BitMapCreate( &file );
+
+            file.close();
+
+            //        qDebug() << "success";
+        }
     }
     else
     {
-//        qDebug() << "write to file" << filename;
+        // долбоящер не ввел имя файла
 
-        file.resize(0);
-
-        BitMapCreate( &file );
-
-        file.close();
-
-//        qDebug() << "success";
+        qDebug() << "no filename";
     }
+
+//    this->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::InfoHandler()
@@ -251,6 +263,18 @@ void MainWindow::InfoHandler()
     pInfo->setFixedSize( 320, 280 );
 
     pInfo->exec();
+}
+
+void MainWindow::ManHandler()
+{
+    Man *pMan = new Man;
+
+    pMan->setWindowTitle( "Руководство" );
+    pMan->setWindowIcon( QIcon( ":/PatternDraw.png" ) );
+    pMan->setWindowFlags( Qt::WindowSystemMenuHint );
+    pMan->setFixedSize( 320, 280 );
+
+    pMan->exec();
 }
 
 MainWindow::~MainWindow()

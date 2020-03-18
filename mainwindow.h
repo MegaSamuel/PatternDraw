@@ -21,6 +21,7 @@ public:
 private slots:
     void  ButtonHandler();
     void  InfoHandler();
+    void  ManHandler();
 
 private:
     Ui::MainWindow *ui;
@@ -28,13 +29,10 @@ private:
     void  BitMapCreate(QFile *file);
     void  BitMapFill(QFile *file);
 
-    QDir *m_pDir;
-
     BitMap m_bitmap;
 
     TCell  m_tCell;
 
-    int  m_nCount;
     unsigned  m_uRow;
     unsigned  m_uColumn;
 };

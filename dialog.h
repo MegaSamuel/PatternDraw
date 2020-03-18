@@ -13,5 +13,13 @@ public:
     ~Info();
 };
 
+class Man:public QDialog
+{
+    Q_OBJECT
+public:
+    Man();
+    ~Man();
+};
+
 #endif // DIALOG
 

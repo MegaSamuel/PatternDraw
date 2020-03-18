@@ -82,7 +82,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Понеслось!</string>
+     <string>Сохранить...</string>
     </property>
    </widget>
   </widget>
@@ -99,6 +99,7 @@
     <property name="title">
      <string>?</string>
     </property>
+    <addaction name="actionman"/>
     <addaction name="actioninfo"/>
    </widget>
    <addaction name="menu"/>
@@ -111,6 +112,11 @@
   <action name="actioninfo">
    <property name="text">
     <string>О программе...</string>
+   </property>
+  </action>
+  <action name="actionman">
+   <property name="text">
+    <string>Руководство</string>
    </property>
   </action>
  </widget>
