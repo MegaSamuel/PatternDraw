@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle("PatternDraw");
 
     // иконка формы
-    this->setWindowIcon( QIcon( ":/PatternDraw.png" ) );
+    this->setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
 
     // прячем избыточные кнопки заголовка формы
     this->setWindowFlag(Qt::WindowMinMaxButtonsHint,false);
@@ -258,7 +258,7 @@ void MainWindow::InfoHandler()
     Info *pInfo = new Info;
 
     pInfo->setWindowTitle( "О программе" );
-    pInfo->setWindowIcon( QIcon( ":/PatternDraw.png" ) );
+    pInfo->setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
     pInfo->setWindowFlags( Qt::WindowSystemMenuHint );
     pInfo->setFixedSize( 320, 280 );
 
@@ -270,7 +270,7 @@ void MainWindow::ManHandler()
     Man *pMan = new Man;
 
     pMan->setWindowTitle( "Руководство" );
-    pMan->setWindowIcon( QIcon( ":/PatternDraw.png" ) );
+    pMan->setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
     pMan->setWindowFlags( Qt::WindowSystemMenuHint );
     pMan->setFixedSize( 320, 280 );
 
