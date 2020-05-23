@@ -17,37 +17,40 @@
    <widget class="QLabel" name="labelRow">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>40</y>
-      <width>125</width>
+      <x>30</x>
+      <y>90</y>
+      <width>130</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
-     <string>Количество строк</string>
+     <string>Количество строк:</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelColumn">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>90</y>
-      <width>125</width>
+      <x>30</x>
+      <y>130</y>
+      <width>130</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
-     <string>Количество столбцов</string>
+     <string>Количество столбцов:</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinRow">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>40</y>
-      <width>50</width>
+      <x>200</x>
+      <y>90</y>
+      <width>60</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество строк&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="minimum">
      <number>1</number>
@@ -59,11 +62,14 @@
    <widget class="QSpinBox" name="spinColumn">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>90</y>
-      <width>50</width>
+      <x>200</x>
+      <y>130</y>
+      <width>60</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество столбцов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="minimum">
      <number>1</number>
@@ -75,8 +81,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>140</y>
+      <x>30</x>
+      <y>170</y>
       <width>125</width>
       <height>25</height>
      </rect>
@@ -85,6 +91,78 @@
      <string>Сохранить...</string>
     </property>
    </widget>
+   <widget class="QLabel" name="labeItem">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>10</y>
+      <width>130</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Элемент:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelString">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>50</y>
+      <width>130</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Строка:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxItem">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>10</y>
+      <width>120</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид элемента&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>Прямоугольник</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Квадрат</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="comboBoxGrid">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>50</y>
+      <width>120</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид строки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>Обычная</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Смещенная</string>
+     </property>
+    </item>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -92,7 +170,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

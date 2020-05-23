@@ -16,12 +16,12 @@ int main(int argc, char *argv[])
 
     // задаем фиксированный размер окна
     w.setFixedSize( 320, 240 );
-
+/*
     // определяем шрифт
     QFont newFont( "Tahoma", 8, QFont::Thin, false );
     // применяем ко всему приложению
     QApplication::setFont(newFont);
-
+*/
     w.show();
 
     return a.exec();
