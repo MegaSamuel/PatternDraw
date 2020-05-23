@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_uGridType = keGridTypeNormal;
     m_uItemType = keItemTypeRectan;
 
+    ui->comboBoxItem->setCurrentIndex( static_cast<int>(m_uItemType) );
+    ui->comboBoxGrid->setCurrentIndex( static_cast<int>(m_uGridType) );
+
     setCellSize();
 
     // заголовок формы
@@ -217,7 +220,6 @@ void  MainWindow::fileFillNormal( QFile  *file )
 {
     RGBQUAD      color;
     QDataStream  dstrm( file );
-
     int  div_i_end, div_i_begin;
     int  div_j_end, div_j_begin;
 
@@ -396,7 +398,8 @@ void  MainWindow::fileCreate( QFile  *file )
     if( keGridTypeShift == m_uGridType )
     {
         uWidth = m_uColumn * m_tCell.w;
-        uHeight = m_uRow * m_tCell.h + m_tCell.h/2;
+        //uHeight = static_cast<unsigned>( m_uRow / 2.0 * m_tCell.h + m_tCell.h / 2.0 );
+        uHeight = m_uRow * m_tCell.h + m_tCell.h / 2;
     }
     else
     {
@@ -554,21 +557,21 @@ void  MainWindow::setCellSize()
 
     if( keItemTypeRectan == m_uItemType )
     {
-        qDebug() << "rectangle";
+        //qDebug() << "rectangle";
 
         m_tCell.h = 20;
         m_tCell.w = 10;
     }
     else if( keItemTypeSquare == m_uItemType )
     {
-        qDebug() << "square";
+        //qDebug() << "square";
 
         m_tCell.h = 10;
         m_tCell.w = 10;
     }
     else
     {
-        qDebug() << "item not specified!";
+        //qDebug() << "item not specified!";
 
         m_tCell.h = 1;
         m_tCell.w = 1;
