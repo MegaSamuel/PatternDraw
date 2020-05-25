@@ -23,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setCellSize();
 
+    // ставим стиль
+    QApplication::setStyle(QStyleFactory::create("fusion"));
+
     // заголовок формы
     setWindowTitle("PatternDraw");
 
