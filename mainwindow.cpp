@@ -15,10 +15,12 @@ MainWindow::MainWindow(QWidget *parent) :
     m_uRow = 1;
     m_uColumn = 1;
 
-    m_uGridType = keGridTypeNormal;
     m_uItemType = keItemTypeRectan;
+    m_uItemSize = keItemSizeNormal;
+    m_uGridType = keGridTypeNormal;
 
     ui->comboBoxItem->setCurrentIndex( static_cast<int>(m_uItemType) );
+    ui->comboBoxSize->setCurrentIndex( static_cast<int>(m_uItemSize) );
     ui->comboBoxGrid->setCurrentIndex( static_cast<int>(m_uGridType) );
 
     setCellSize();
@@ -48,6 +50,9 @@ MainWindow::MainWindow(QWidget *parent) :
     // комбобокс с типом элемента
     connect( ui->comboBoxItem, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeItem(int)) );
 
+    // комбобокс с размером элемента
+    connect( ui->comboBoxSize, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeSize(int)) );
+
     // комбобокс с типом строки
     connect( ui->comboBoxGrid, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeGrid(int)) );
 }
@@ -71,14 +76,14 @@ void  MainWindow::BitMapFill( QFile  *file )
     dstrm.setVersion(QDataStream::Qt_5_5);
 
     // пишем заголовок картинки в файл
-    dstrm.writeRawData( reinterpret_cast<char*>(&m_bitmap), sizeof(BitMap) );
+    dstrm.writeRawData( reinterpret_cast<char*>(&m_tBitMap), sizeof(TBitMap) );
 
     int i, j;
 
     // картинка заполняется слева направо снизу вверх.
 
     // проход по высоте (по строкам)
-    for(i = 0; i < m_bitmap.bih.biHeight; i++)
+    for(i = 0; i < m_tBitMap.bih.biHeight; i++)
     {
         // четные столбцы
         // признак первого пикселя ячейки по высоте
@@ -105,7 +110,7 @@ void  MainWindow::BitMapFill( QFile  *file )
             row_odd += 1;
 
         // проход по ширине (по столбцам)
-        for(j = 0; j < m_bitmap.bih.biWidth; j++)
+        for(j = 0; j < m_tBitMap.bih.biWidth; j++)
         {
             // признак первого пикселя ячейки по ширине
             div_j_begin = j % static_cast<int>(m_tCell.w);
@@ -185,33 +190,33 @@ void  MainWindow::BitMapCreate( QFile  *file )
 //    unsigned Height = m_uRow * m_tCell.h;
 
     // очищаем file header
-    memset (&m_bitmap.bfh, 0, sizeof(m_bitmap.bfh));
+    memset (&m_tBitMap.bfh, 0, sizeof(m_tBitMap.bfh));
 
     // заполняем file header
-    m_bitmap.bfh.bfType = 0x4D42;
-    m_bitmap.bfh.bfOffBits = sizeof(m_bitmap.bfh) + sizeof(m_bitmap.bih) + sizeof(m_bitmap.auColorTable);
-    m_bitmap.bfh.bfSize = m_bitmap.bfh.bfOffBits + sizeof(color) * Width * Height;
-    m_bitmap.bfh.bfReserved1 = 0;
-    m_bitmap.bfh.bfReserved2 = 0;
+    m_tBitMap.bfh.bfType = 0x4D42;
+    m_tBitMap.bfh.bfOffBits = sizeof(m_tBitMap.bfh) + sizeof(m_tBitMap.bih) + sizeof(m_tBitMap.auColorTable);
+    m_tBitMap.bfh.bfSize = m_tBitMap.bfh.bfOffBits + sizeof(color) * Width * Height;
+    m_tBitMap.bfh.bfReserved1 = 0;
+    m_tBitMap.bfh.bfReserved2 = 0;
 
     // очищаем info header
-    memset (&m_bitmap.bih, 0, sizeof(m_bitmap.bih));
+    memset (&m_tBitMap.bih, 0, sizeof(m_tBitMap.bih));
 
     // заполняем info header
-    m_bitmap.bih.biSize = sizeof(m_bitmap.bih);
-    m_bitmap.bih.biWidth = static_cast<LONG>(Width);
-    m_bitmap.bih.biHeight = static_cast<LONG>(Height);
-    m_bitmap.bih.biPlanes = 1;
-    m_bitmap.bih.biBitCount = 32;
-    m_bitmap.bih.biCompression = 0;
-    m_bitmap.bih.biSizeImage = 0;
-    m_bitmap.bih.biXPelsPerMeter = 0;
-    m_bitmap.bih.biYPelsPerMeter = 0;
-    m_bitmap.bih.biClrUsed = 0;
-    m_bitmap.bih.biClrImportant = 0;
+    m_tBitMap.bih.biSize = sizeof(m_tBitMap.bih);
+    m_tBitMap.bih.biWidth = static_cast<LONG>(Width);
+    m_tBitMap.bih.biHeight = static_cast<LONG>(Height);
+    m_tBitMap.bih.biPlanes = 1;
+    m_tBitMap.bih.biBitCount = 32;
+    m_tBitMap.bih.biCompression = 0;
+    m_tBitMap.bih.biSizeImage = 0;
+    m_tBitMap.bih.biXPelsPerMeter = 0;
+    m_tBitMap.bih.biYPelsPerMeter = 0;
+    m_tBitMap.bih.biClrUsed = 0;
+    m_tBitMap.bih.biClrImportant = 0;
 
     // очищаем color table
-    memset (&m_bitmap.auColorTable, 0, sizeof(m_bitmap.auColorTable));
+    memset (&m_tBitMap.auColorTable, 0, sizeof(m_tBitMap.auColorTable));
 
     // формируем саму картинку
     BitMapFill( file );
@@ -230,12 +235,12 @@ void  MainWindow::fileFillNormal( QFile  *file )
     dstrm.setVersion(QDataStream::Qt_5_5);
 
     // пишем заголовок картинки в файл
-    dstrm.writeRawData( reinterpret_cast<char*>(&m_bitmap), sizeof(BitMap) );
+    dstrm.writeRawData( reinterpret_cast<char*>(&m_tBitMap), sizeof(TBitMap) );
 
     // картинка заполняется слева направо снизу вверх.
 
     // проход по высоте (по строкам)
-    for( int i = 0; i < m_bitmap.bih.biHeight; i++ )
+    for( int i = 0; i < m_tBitMap.bih.biHeight; i++ )
     {
         // признак первого пикселя ячейки по высоте
         div_i_begin = i % static_cast<int>(m_tCell.h);
@@ -243,7 +248,7 @@ void  MainWindow::fileFillNormal( QFile  *file )
         div_i_end = (i+1) % static_cast<int>(m_tCell.h);
 
         // проход по ширине (по столбцам)
-        for( int j = 0; j < m_bitmap.bih.biWidth; j++ )
+        for( int j = 0; j < m_tBitMap.bih.biWidth; j++ )
         {
             // признак первого пикселя ячейки по ширине
             div_j_begin = j % static_cast<int>(m_tCell.w);
@@ -290,14 +295,14 @@ void  MainWindow::fileFillShift( QFile  *file )
     dstrm.setVersion(QDataStream::Qt_5_5);
 
     // пишем заголовок картинки в файл
-    dstrm.writeRawData( reinterpret_cast<char*>(&m_bitmap), sizeof(BitMap) );
+    dstrm.writeRawData( reinterpret_cast<char*>(&m_tBitMap), sizeof(TBitMap) );
 
     int i, j;
 
     // картинка заполняется слева направо снизу вверх.
 
     // проход по высоте (по строкам)
-    for(i = 0; i < m_bitmap.bih.biHeight; i++)
+    for(i = 0; i < m_tBitMap.bih.biHeight; i++)
     {
         // четные столбцы
         // признак первого пикселя ячейки по высоте
@@ -324,7 +329,7 @@ void  MainWindow::fileFillShift( QFile  *file )
             row_odd += 1;
 
         // проход по ширине (по столбцам)
-        for(j = 0; j < m_bitmap.bih.biWidth; j++)
+        for(j = 0; j < m_tBitMap.bih.biWidth; j++)
         {
             // признак первого пикселя ячейки по ширине
             div_j_begin = j % static_cast<int>(m_tCell.w);
@@ -411,33 +416,33 @@ void  MainWindow::fileCreate( QFile  *file )
     }
 
     // очищаем file header
-    memset (&m_bitmap.bfh, 0, sizeof(m_bitmap.bfh));
+    memset (&m_tBitMap.bfh, 0, sizeof(m_tBitMap.bfh));
 
     // заполняем file header
-    m_bitmap.bfh.bfType = 0x4D42;
-    m_bitmap.bfh.bfOffBits = sizeof(m_bitmap.bfh) + sizeof(m_bitmap.bih) + sizeof(m_bitmap.auColorTable);
-    m_bitmap.bfh.bfSize = m_bitmap.bfh.bfOffBits + sizeof(color) * uWidth * uHeight;
-    m_bitmap.bfh.bfReserved1 = 0;
-    m_bitmap.bfh.bfReserved2 = 0;
+    m_tBitMap.bfh.bfType = 0x4D42;
+    m_tBitMap.bfh.bfOffBits = sizeof(m_tBitMap.bfh) + sizeof(m_tBitMap.bih) + sizeof(m_tBitMap.auColorTable);
+    m_tBitMap.bfh.bfSize = m_tBitMap.bfh.bfOffBits + sizeof(color) * uWidth * uHeight;
+    m_tBitMap.bfh.bfReserved1 = 0;
+    m_tBitMap.bfh.bfReserved2 = 0;
 
     // очищаем info header
-    memset (&m_bitmap.bih, 0, sizeof(m_bitmap.bih));
+    memset (&m_tBitMap.bih, 0, sizeof(m_tBitMap.bih));
 
     // заполняем info header
-    m_bitmap.bih.biSize = sizeof(m_bitmap.bih);
-    m_bitmap.bih.biWidth = static_cast<LONG>(uWidth);
-    m_bitmap.bih.biHeight = static_cast<LONG>(uHeight);
-    m_bitmap.bih.biPlanes = 1;
-    m_bitmap.bih.biBitCount = 32;
-    m_bitmap.bih.biCompression = 0;
-    m_bitmap.bih.biSizeImage = 0;
-    m_bitmap.bih.biXPelsPerMeter = 0;
-    m_bitmap.bih.biYPelsPerMeter = 0;
-    m_bitmap.bih.biClrUsed = 0;
-    m_bitmap.bih.biClrImportant = 0;
+    m_tBitMap.bih.biSize = sizeof(m_tBitMap.bih);
+    m_tBitMap.bih.biWidth = static_cast<LONG>(uWidth);
+    m_tBitMap.bih.biHeight = static_cast<LONG>(uHeight);
+    m_tBitMap.bih.biPlanes = 1;
+    m_tBitMap.bih.biBitCount = 32;
+    m_tBitMap.bih.biCompression = 0;
+    m_tBitMap.bih.biSizeImage = 0;
+    m_tBitMap.bih.biXPelsPerMeter = 0;
+    m_tBitMap.bih.biYPelsPerMeter = 0;
+    m_tBitMap.bih.biClrUsed = 0;
+    m_tBitMap.bih.biClrImportant = 0;
 
     // очищаем color table
-    memset (&m_bitmap.auColorTable, 0, sizeof(m_bitmap.auColorTable));
+    memset (&m_tBitMap.auColorTable, 0, sizeof(m_tBitMap.auColorTable));
 
     // формируем саму картинку
     if( keGridTypeShift == m_uGridType )
@@ -544,6 +549,18 @@ void  MainWindow::onChangeItem( int  index )
     setCellSize();
 }
 
+void  MainWindow::onChangeSize( int  index )
+{
+    if( 0 == index )
+        m_uItemSize = keItemSizeSmall;
+    else if( 1 == index )
+        m_uItemSize = keItemSizeNormal;
+    else if( 2 == index )
+        m_uItemSize = keItemSizeHuge;
+
+    setCellSize();
+}
+
 void  MainWindow::onChangeGrid( int  index )
 {
     if( 0 == index )
@@ -556,28 +573,35 @@ void  MainWindow::onChangeGrid( int  index )
 
 void  MainWindow::setCellSize()
 {
-    // размер ячейки в пикселях
+    // базовый размер ячейки в пикселях
 
     if( keItemTypeRectan == m_uItemType )
     {
-        //qDebug() << "rectangle";
-
-        m_tCell.h = 20;
-        m_tCell.w = 10;
+        m_tCell.h = 32;
+        m_tCell.w = 16;
     }
     else if( keItemTypeSquare == m_uItemType )
     {
-        //qDebug() << "square";
-
-        m_tCell.h = 10;
-        m_tCell.w = 10;
+        m_tCell.h = 16;
+        m_tCell.w = 16;
     }
     else
     {
-        //qDebug() << "item not specified!";
+        m_tCell.h = 2;
+        m_tCell.w = 2;
+    }
 
-        m_tCell.h = 1;
-        m_tCell.w = 1;
+    // корректируем размер размер ячейки
+
+    if( keItemSizeSmall == m_uItemSize )
+    {
+        m_tCell.h /= 2;
+        m_tCell.w /= 2;
+    }
+    else if( keItemSizeHuge == m_uItemSize )
+    {
+        m_tCell.h *= 2;
+        m_tCell.w *= 2;
     }
 }
 

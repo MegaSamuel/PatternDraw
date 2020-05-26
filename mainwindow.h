@@ -30,11 +30,19 @@ public:
         keItemTypeSquare = 1,
     };
 
+    enum EItemSize
+    {
+        keItemSizeSmall  = 0,
+        keItemSizeNormal = 1,
+        keItemSizeHuge   = 2,
+    };
+
 private Q_SLOTS:
     void       onButtonHandler();
     void       onInfoHandler();
     void       onManHandler();
     void       onChangeItem( int  index );
+    void       onChangeSize( int  index );
     void       onChangeGrid( int  index );
 
 private:
@@ -50,10 +58,11 @@ private:
 
     void       setCellSize();
 
-    unsigned   m_uGridType;
     unsigned   m_uItemType;
+    unsigned   m_uItemSize;
+    unsigned   m_uGridType;
 
-    BitMap     m_bitmap;
+    TBitMap    m_tBitMap;
 
     TCell      m_tCell;
 
