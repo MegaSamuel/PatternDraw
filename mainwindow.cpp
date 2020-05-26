@@ -289,7 +289,7 @@ void  MainWindow::fileFillShift( QFile  *file )
     int div_i_end, div_i_begin = 0;
     int div_i_odd_end, div_i_odd_begin = 0;
     int div_j_end, div_j_begin = 0;
-    int row = 1, row_odd = 1, column = 1;
+    int row, row_odd, column;
     QDataStream dstrm(file);
 
     dstrm.setVersion(QDataStream::Qt_5_5);
@@ -297,39 +297,262 @@ void  MainWindow::fileFillShift( QFile  *file )
     // пишем заголовок картинки в файл
     dstrm.writeRawData( reinterpret_cast<char*>(&m_tBitMap), sizeof(TBitMap) );
 
-    int i, j;
-
     // картинка заполняется слева направо снизу вверх.
 
-    // проход по высоте (по строкам)
-    for(i = 0; i < m_tBitMap.bih.biHeight; i++)
-    {
-        // четные столбцы
-        // признак первого пикселя ячейки по высоте
-        div_i_begin = i % static_cast<int>(m_tCell.h);
-        // признак последнего пикселя ячейки по высоте
-        div_i_end = (i+1) % static_cast<int>(m_tCell.h);
+    // сброс счетчиков
+    row = 0;
+    row_odd = 0;
 
+    if( m_uRow%2 )
+    {
+        // нечетное количество строк
+
+        // проход по высоте (по строкам)
+        for( int i = 0; i < m_tBitMap.bih.biHeight; i++ )
+        {
+            // нечетные столбцы
+            // признак первого пикселя ячейки по высоте
+            div_i_odd_begin = i % static_cast<int>(m_tCell.h);
+            // признак последнего пикселя ячейки по высоте
+            div_i_odd_end = (i+1) % static_cast<int>(m_tCell.h);
+
+            // четные столбцы
+            // признак первого пикселя ячейки по высоте
+            div_i_begin = (i + static_cast<int>(m_tCell.h/2)) % static_cast<int>(m_tCell.h);
+            // признак последнего пикселя ячейки по высоте
+            div_i_end = (i+1 + static_cast<int>(m_tCell.h/2)) % static_cast<int>(m_tCell.h);
+
+            // номер текущей строки (для нечетных столбцов)
+            if( row_odd <= static_cast<int>(m_uRow) )
+            {
+                if( 0 == div_i_odd_begin )
+                    row_odd += 1;
+            }
+            else
+            {
+                row_odd = 0;
+            }
+
+            // номер текущей строки (для четных столбцов)
+            if( ( 1 != m_uRow ) && ( row <= static_cast<int>((m_uRow-1)/2) ) )
+            {
+                if( 0 == div_i_begin )
+                    row += 1;
+            }
+            else
+            {
+                row = 0;
+            }
+
+            // сброс счетчика
+            column = 1;
+
+            // проход по ширине (по столбцам)
+            for( int j = 0; j < m_tBitMap.bih.biWidth; j++ )
+            {
+                // признак первого пикселя ячейки по ширине
+                div_j_begin = j % static_cast<int>(m_tCell.w);
+                // признак последнего пикселя ячейки по ширине
+                div_j_end = (j+1) % static_cast<int>(m_tCell.w);
+
+                // номер текущего столбца
+                if( 0 == j )
+                    column = 1;
+                else if( 0 == div_j_begin )
+                    column += 1;
+
+                // белый
+                color.rgbRed = 0xFF;
+                color.rgbGreen = 0xFF;
+                color.rgbBlue = 0xFF;
+                color.rgbReserved = 0x0;
+
+                // рисуем нечетные столбцы
+                if( row_odd )
+                {
+                    if( (column)%2 )
+                    {
+                        if( ( 0 == div_i_odd_begin ) || ( 0 == div_i_odd_end ) ||
+                            ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
+                        {
+                            // серый
+                            color.rgbRed = 0xff;
+                            color.rgbGreen = 0x0;
+                            color.rgbBlue = 0x0;
+                            color.rgbReserved = 0x0;
+                        }
+                    }
+                }
+
+                // рисуем четные столбцы
+                if( row )
+                {
+                    if( (column-1)%2 )
+                    {
+                        if( ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
+                            ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
+                        {
+                            // серый
+                            color.rgbRed = 0x0;
+                            color.rgbGreen = 0xff;
+                            color.rgbBlue = 0x0;
+                            color.rgbReserved = 0x0;
+                        }
+                    }
+                }
+
+                // пишем пиксель в файл
+                dstrm.writeRawData( reinterpret_cast<char*>(&color), sizeof(color) );
+            }
+        }
+    }
+    else
+    {
+        // четное количество строк
+
+        // проход по высоте (по строкам)
+        for( int i = 0; i < m_tBitMap.bih.biHeight; i++ )
+        {
+            // нечетные столбцы
+            // признак первого пикселя ячейки по высоте
+            div_i_odd_begin = (i + static_cast<int>(m_tCell.h/2)) % static_cast<int>(m_tCell.h);
+            // признак последнего пикселя ячейки по высоте
+            div_i_odd_end = (i+1 + static_cast<int>(m_tCell.h/2)) % static_cast<int>(m_tCell.h);
+
+            // четные столбцы
+            // признак первого пикселя ячейки по высоте
+            div_i_begin = i % static_cast<int>(m_tCell.h);
+            // признак последнего пикселя ячейки по высоте
+            div_i_end = (i+1) % static_cast<int>(m_tCell.h);
+
+            // номер текущей строки (для нечетных столбцов)
+            if( row_odd <= static_cast<int>(m_uRow) )
+            {
+                if( 0 == div_i_odd_begin )
+                    row_odd += 1;
+            }
+            else
+            {
+                row_odd = 0;
+            }
+
+            // номер текущей строки (для четных столбцов)
+            if( row <= static_cast<int>(m_uRow/2) )
+            {
+                if( 0 == div_i_begin )
+                    row += 1;
+            }
+            else
+            {
+                row = 0;
+            }
+
+            // сброс счетчика
+            column = 1;
+
+            // проход по ширине (по столбцам)
+            for( int j = 0; j < m_tBitMap.bih.biWidth; j++ )
+            {
+                // признак первого пикселя ячейки по ширине
+                div_j_begin = j % static_cast<int>(m_tCell.w);
+                // признак последнего пикселя ячейки по ширине
+                div_j_end = (j+1) % static_cast<int>(m_tCell.w);
+
+                // номер текущего столбца
+                if( 0 == j )
+                    column = 1;
+                else if( 0 == div_j_begin )
+                    column += 1;
+
+                // белый
+                color.rgbRed = 0xFF;
+                color.rgbGreen = 0xFF;
+                color.rgbBlue = 0xFF;
+                color.rgbReserved = 0x0;
+
+                // рисуем нечетные столбцы
+                if( row_odd )
+                {
+                    if( (column)%2 )
+                    {
+                        if( ( 0 == div_i_odd_begin ) || ( 0 == div_i_odd_end ) ||
+                            ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
+                        {
+                            // серый
+                            color.rgbRed = 0xff;
+                            color.rgbGreen = 0x0;
+                            color.rgbBlue = 0x0;
+                            color.rgbReserved = 0x0;
+                        }
+                    }
+                }
+
+                // рисуем четные столбцы
+                if( row )
+                {
+                    if( (column-1)%2 )
+                    {
+                        if( ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
+                            ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
+                        {
+                            // серый
+                            color.rgbRed = 0x0;
+                            color.rgbGreen = 0xff;
+                            color.rgbBlue = 0x0;
+                            color.rgbReserved = 0x0;
+                        }
+                    }
+                }
+
+                // пишем пиксель в файл
+                dstrm.writeRawData( reinterpret_cast<char*>(&color), sizeof(color) );
+            }
+        }
+    }
+
+    /*
+    // проход по высоте (по строкам)
+    for( int i = 0; i < m_tBitMap.bih.biHeight; i++ )
+    {
         // нечетные столбцы
         // признак первого пикселя ячейки по высоте
-        div_i_odd_begin = (i + static_cast<int>(m_tCell.h/2)) % static_cast<int>(m_tCell.h);
+        div_i_odd_begin = i % static_cast<int>(m_tCell.h);
         // признак последнего пикселя ячейки по высоте
-        div_i_odd_end = (i+1 + static_cast<int>(m_tCell.h/2)) % static_cast<int>(m_tCell.h);
+        div_i_odd_end = (i+1) % static_cast<int>(m_tCell.h);
 
-        // номер текущей строки (для четных столбцов)
-        if( 0 == i )
-            row = 1;
-        else if( 0 == div_i_begin )
-            row += 1;
+        // четные столбцы
+        // признак первого пикселя ячейки по высоте
+        div_i_begin = (i + static_cast<int>(m_tCell.h/2)) % static_cast<int>(m_tCell.h);
+        // признак последнего пикселя ячейки по высоте
+        div_i_end = (i+1 + static_cast<int>(m_tCell.h/2)) % static_cast<int>(m_tCell.h);
 
         // номер текущей строки (для нечетных столбцов)
-        if( 0 == i )
-            row_odd = 1;
-        else if( 0 == div_i_odd_begin )
-            row_odd += 1;
+        if( ( 1 == m_uRow ) || ( row_odd < static_cast<int>(m_uRow) ) )
+        {
+            if( 0 == div_i_odd_begin )
+                row_odd += 1;
+        }
+        else
+        {
+            row_odd = 0;
+        }
+
+        // номер текущей строки (для четных столбцов)
+        if( ( 1 < m_uRow ) && ( row < static_cast<int>(m_uRow) ) )
+        {
+            if( 0 == div_i_begin )
+                row += 1;
+        }
+        else
+        {
+            row = 0;
+        }
+
+        // сброс счетчика
+        column = 1;
 
         // проход по ширине (по столбцам)
-        for(j = 0; j < m_tBitMap.bih.biWidth; j++)
+        for( int j = 0; j < m_tBitMap.bih.biWidth; j++ )
         {
             // признак первого пикселя ячейки по ширине
             div_j_begin = j % static_cast<int>(m_tCell.w);
@@ -348,25 +571,8 @@ void  MainWindow::fileFillShift( QFile  *file )
             color.rgbBlue = 0xFF;
             color.rgbReserved = 0x0;
 
-            // рисуем четные столбцы
-            if( row <= static_cast<int>(m_uRow) )
-            {
-                if( (column-1)%2 )
-                {
-                    if( ( 0 == i ) || ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
-                        ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
-                    {
-                        // серый
-                        color.rgbRed = 0x7f;
-                        color.rgbGreen = 0x7f;
-                        color.rgbBlue = 0x7f;
-                        color.rgbReserved = 0x0;
-                    }
-                }
-            }
-
             // рисуем нечетные столбцы
-            if( 1 != row_odd )
+            if( row_odd )
             {
                 if( (column)%2 )
                 {
@@ -374,21 +580,36 @@ void  MainWindow::fileFillShift( QFile  *file )
                         ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
                     {
                         // серый
-                        color.rgbRed = 0x7f;
-                        color.rgbGreen = 0x7f;
-                        color.rgbBlue = 0x7f;
+                        color.rgbRed = 0xff;
+                        color.rgbGreen = 0x0;
+                        color.rgbBlue = 0x0;
                         color.rgbReserved = 0x0;
                     }
                 }
             }
 
-//            qDebug() << "h" << i << "w" << j << "xxx" << j+1 << div_j_begin << div_j_end;
-//            qDebug() << "h" << i << "w" << j << "xxx" << row << column;
+            // рисуем четные столбцы
+            if( row )
+            {
+                if( (column-1)%2 )
+                {
+                    if( ( 0 == i ) || ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
+                        ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
+                    {
+                        // серый
+                        color.rgbRed = 0x0;
+                        color.rgbGreen = 0xff;
+                        color.rgbBlue = 0x0;
+                        color.rgbReserved = 0x0;
+                    }
+                }
+            }
 
             // пишем пиксель в файл
             dstrm.writeRawData( reinterpret_cast<char*>(&color), sizeof(color) );
         }
     }
+    */
 
     if( dstrm.status() != QDataStream::Ok )
     {
@@ -406,8 +627,8 @@ void  MainWindow::fileCreate( QFile  *file )
     if( keGridTypeShift == m_uGridType )
     {
         uWidth = m_uColumn * m_tCell.w;
-        //uHeight = static_cast<unsigned>( m_uRow / 2.0 * m_tCell.h + m_tCell.h / 2.0 );
-        uHeight = m_uRow * m_tCell.h + m_tCell.h / 2;
+        uHeight = static_cast<unsigned>( m_uRow / 2.0 * m_tCell.h + m_tCell.h / 2.0 );
+        //uHeight = m_uRow * m_tCell.h + m_tCell.h / 2;
     }
     else
     {
