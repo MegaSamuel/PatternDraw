@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_uItemType = keItemTypeRectan;
     m_uItemSize = keItemSizeNormal;
-    m_uGridType = keGridTypeNormal;
+    m_uGridType = keGridTypeShift;
 
     ui->comboBoxItem->setCurrentIndex( static_cast<int>(m_uItemType) );
     ui->comboBoxSize->setCurrentIndex( static_cast<int>(m_uItemSize) );
