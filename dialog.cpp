@@ -8,6 +8,7 @@ Info::Info()
     QVBoxLayout *pvblInfo = new QVBoxLayout;
     pvblInfo->setSpacing(10);
     pvblInfo->setMargin(5);
+    pvblInfo->setAlignment(Qt::AlignHCenter);
 
     QPlainTextEdit *ptInfo = new QPlainTextEdit;
     ptInfo->setReadOnly(true);
@@ -26,8 +27,9 @@ Info::Info()
     ptInfo->appendPlainText("2020 г.");
 
     QPushButton *quitButton = new QPushButton("OK");
+    //quitButton->setFixedWidth(80);
 
-    connect(quitButton, SIGNAL(clicked()),SLOT(accept()));
+    connect( quitButton, SIGNAL(clicked()), SLOT(accept()));
 
     pvblInfo->addWidget(ptInfo);
     pvblInfo->addWidget(quitButton);
@@ -47,6 +49,7 @@ Man::Man()
     QVBoxLayout *pvblInfo = new QVBoxLayout;
     pvblInfo->setSpacing(10);
     pvblInfo->setMargin(5);
+    pvblInfo->setAlignment(Qt::AlignHCenter);
 
     QPlainTextEdit *ptInfo = new QPlainTextEdit;
     ptInfo->setReadOnly(true);
@@ -62,8 +65,9 @@ Man::Man()
     ptInfo->appendPlainText("");
 
     QPushButton *quitButton = new QPushButton("OK");
+    //quitButton->setFixedWidth(80);
 
-    connect(quitButton, SIGNAL(clicked()),SLOT(accept()));
+    connect(quitButton, SIGNAL(clicked()), SLOT(accept()));
 
     pvblInfo->addWidget(ptInfo);
     pvblInfo->addWidget(quitButton);
