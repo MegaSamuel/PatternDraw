@@ -15,7 +15,7 @@ Info::Info()
     ptInfo->setPalette(pal);
     ptInfo->setAutoFillBackground(true);
 
-    ptInfo->appendPlainText("Программа PatternDraw, версия 0.1");
+    ptInfo->appendPlainText("Программа PatternDraw, версия 0.1.1");
     ptInfo->appendPlainText("");
     ptInfo->appendPlainText("Разработчик Медведев С.А.");
     ptInfo->appendPlainText("");
@@ -32,7 +32,7 @@ Info::Info()
     pvblInfo->addWidget(ptInfo);
     pvblInfo->addWidget(quitButton);
 
-    this->setLayout(pvblInfo);
+    setLayout(pvblInfo);
 }
 
 Info::~Info()
@@ -68,7 +68,7 @@ Man::Man()
     pvblInfo->addWidget(ptInfo);
     pvblInfo->addWidget(quitButton);
 
-    this->setLayout(pvblInfo);
+    setLayout(pvblInfo);
 }
 
 Man::~Man()
