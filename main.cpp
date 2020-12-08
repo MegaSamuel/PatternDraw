@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     MainWindow w;
 
     // задаем фиксированный размер окна
-    w.setFixedSize( 320, 240 );
+//    w.setFixedSize( 320, 240 );
 
     // распологаем форму по центру основного экрана
     QScreen *screen = QGuiApplication::primaryScreen();

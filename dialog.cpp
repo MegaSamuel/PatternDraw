@@ -15,7 +15,7 @@ Info::Info()
     ptInfo->setPalette(pal);
     ptInfo->setAutoFillBackground(true);
 
-    ptInfo->appendPlainText("Программа PatternDraw, версия 0.1.1");
+    ptInfo->appendPlainText("Программа PatternDraw, версия 0.1.2");
     ptInfo->appendPlainText("");
     ptInfo->appendPlainText("Разработчик Медведев С.А.");
     ptInfo->appendPlainText("");

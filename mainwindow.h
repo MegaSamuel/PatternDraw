@@ -38,7 +38,8 @@ public:
     };
 
 private Q_SLOTS:
-    void       onButtonHandler();
+    void       onBtnSave();
+    void       onBtnPreview();
     void       onInfoHandler();
     void       onManHandler();
     void       onChangeItem( int  index );
@@ -48,13 +49,17 @@ private Q_SLOTS:
 private:
     Ui::MainWindow *ui;
 
-    void       BitMapCreate( QFile  *file ); //obsolete
-    void       BitMapFill( QFile  *file );   //obsolete
+//    void       BitMapCreate( QFile  *file ); //obsolete
+//    void       BitMapFill( QFile  *file );   //obsolete
 
     void       fileCreate( QFile  *file );
 
     void       fileFillNormal( QFile  *file );
     void       fileFillShift( QFile  *file );
+
+    bool       imageCreate();
+    bool       imageFillNormal();
+    bool       imageFillShift();
 
     void       setCellSize();
 
@@ -68,6 +73,11 @@ private:
 
     unsigned   m_uRow;
     unsigned   m_uColumn;
+
+    QPixmap    *m_pPixmap;
+    QByteArray *m_pImage;
+
+    bool       m_bImageReady;
 };
 
 #endif // MAINWINDOW_H
