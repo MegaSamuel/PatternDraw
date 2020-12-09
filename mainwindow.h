@@ -40,6 +40,8 @@ public:
 private Q_SLOTS:
     void       onBtnSave();
     void       onBtnPreview();
+    void       onBtnChangeBackColor();
+    void       onBtnChangeGridColor();
     void       onInfoHandler();
     void       onManHandler();
     void       onChangeItem( int  index );
@@ -49,28 +51,37 @@ private Q_SLOTS:
 private:
     Ui::MainWindow *ui;
 
-    bool       imageCreate();
+    bool           imageCreate();
 
-    bool       imageFillNormal();
-    bool       imageFillShift();
+    bool           imageFillNormal();
+    bool           imageFillShift();
 
-    void       setCellSize();
+    void           setCellSize();
+    void           getBackColor( RGBQUAD  *a_pColor );
+    void           getGridColor( RGBQUAD  *a_pColor );
 
-    unsigned   m_uItemType;
-    unsigned   m_uItemSize;
-    unsigned   m_uGridType;
+    void           setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor );
 
-    TBitMap    m_tBitMap;
+    unsigned       m_uItemType;
+    unsigned       m_uItemSize;
+    unsigned       m_uGridType;
 
-    TCell      m_tCell;
+    TBitMap        m_tBitMap;
 
-    unsigned   m_uRow;
-    unsigned   m_uColumn;
+    TCell          m_tCell;
 
-    QPixmap    *m_pPixmap;
-    QByteArray *m_pImage;
+    unsigned       m_uRow;
+    unsigned       m_uColumn;
 
-    bool       m_bImageReady;
+    QPixmap       *m_pPixmap;
+    QByteArray    *m_pImage;
+
+    bool           m_bImageReady;
+
+    QColor         m_tBackColor;
+    QColor         m_tGridColor;
+
+    QColorDialog   m_tColorDialog;
 };
 
 #endif // MAINWINDOW_H

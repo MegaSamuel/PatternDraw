@@ -26,6 +26,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->comboBoxSize->setCurrentIndex( static_cast<int>(m_uItemSize) );
     ui->comboBoxGrid->setCurrentIndex( static_cast<int>(m_uGridType) );
 
+    // цвет фона
+    m_tBackColor = Qt::white;
+    setLabelBackColor( ui->labelBackColor, &m_tBackColor );
+
+    // цвет сетки
+    m_tGridColor = Qt::gray;
+    setLabelBackColor( ui->labelGridColor, &m_tGridColor );
+
     // картинка для превью
     m_pPixmap = new QPixmap;
 
@@ -46,15 +54,17 @@ MainWindow::MainWindow(QWidget *parent) :
     // иконка формы
     setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
 
-    // прячем избыточные кнопки заголовка формы
-    setWindowFlag(Qt::WindowMinMaxButtonsHint,false);
-    setWindowFlag(Qt::WindowSystemMenuHint,false);
-
     // ловим нажатие кнопки Сохранить
     connect( ui->btnSave, &QPushButton::clicked, this, &MainWindow::onBtnSave );
 
     // ловим нажатие кнопки Предпросмотр
     connect( ui->btnPreview, &QPushButton::clicked, this, &MainWindow::onBtnPreview );
+
+    // ловим нажатие кнопки Изменить цвет фона
+    connect( ui->btnBackColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeBackColor ) ;
+
+    // ловим нажатие кнопки Изменить цвет сетки
+    connect( ui->btnGridColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeGridColor ) ;
 
     // вызов руководства пользователя
     connect( ui->actionman, &QAction::triggered, this, &MainWindow::onManHandler );
@@ -82,6 +92,31 @@ MainWindow::~MainWindow()
 
 //------------------------------------------------------------------------------
 
+void  MainWindow::getBackColor( RGBQUAD  *a_pColor )
+{
+    a_pColor->rgbRed = static_cast<BYTE>(m_tBackColor.red());
+    a_pColor->rgbGreen = static_cast<BYTE>(m_tBackColor.green());
+    a_pColor->rgbBlue = static_cast<BYTE>(m_tBackColor.blue());
+    a_pColor->rgbReserved = 0x0;
+}
+
+void  MainWindow::getGridColor( RGBQUAD  *a_pColor )
+{
+    a_pColor->rgbRed = static_cast<BYTE>(m_tGridColor.red());
+    a_pColor->rgbGreen = static_cast<BYTE>(m_tGridColor.green());
+    a_pColor->rgbBlue = static_cast<BYTE>(m_tGridColor.blue());
+    a_pColor->rgbReserved = 0x0;
+}
+
+void  MainWindow::setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor )
+{
+    QString style = "QLabel {background-color: rgb(%1, %2, %3);}";
+
+    a_pLabel->setStyleSheet( style.arg(a_pColor->red()).arg(a_pColor->green()).arg(a_pColor->blue()) );
+}
+
+//------------------------------------------------------------------------------
+
 bool  MainWindow::imageFillShift()
 {
     bool  result = false;
@@ -92,8 +127,6 @@ bool  MainWindow::imageFillShift()
     int div_i_odd_end = 0, div_i_odd_begin = 0;
     int div_j_end = 0, div_j_begin = 0;
     int row = 0, row_odd = 0, column = 0;
-
-    //qDebug() << "size before" << m_pImage->size() ;
 
     // подгоняем массив под размер изображения
     m_pImage->resize( static_cast<int>(m_tBitMap.bfh.bfSize) );
@@ -207,11 +240,8 @@ bool  MainWindow::imageFillShift()
             else if( 0 == div_j_begin )
                 column += 1;
 
-            // белый
-            color.rgbRed = 0xFF;
-            color.rgbGreen = 0xFF;
-            color.rgbBlue = 0xFF;
-            color.rgbReserved = 0x0;
+            // цвет фона
+            getBackColor( &color );
 
             // рисуем нечетные столбцы
             if( row_odd )
@@ -221,11 +251,8 @@ bool  MainWindow::imageFillShift()
                     if( ( 0 == div_i_odd_begin ) || ( 0 == div_i_odd_end ) ||
                         ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
                     {
-                        // серый
-                        color.rgbRed = 0x7f;
-                        color.rgbGreen = 0x7f;
-                        color.rgbBlue = 0x7f;
-                        color.rgbReserved = 0x0;
+                        // цвет сетки
+                        getGridColor( &color );
                     }
                 }
             }
@@ -238,11 +265,8 @@ bool  MainWindow::imageFillShift()
                     if( ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
                         ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
                     {
-                        // серый
-                        color.rgbRed = 0x7f;
-                        color.rgbGreen = 0x7f;
-                        color.rgbBlue = 0x7f;
-                        color.rgbReserved = 0x0;
+                        // цвет сетки
+                        getGridColor( &color );
                     }
                 }
             }
@@ -259,8 +283,6 @@ bool  MainWindow::imageFillShift()
     else
     {
         result = true;
-
-        //qDebug() << "size after" << m_pImage->size();
     }
 
     return result;
@@ -274,8 +296,6 @@ bool  MainWindow::imageFillNormal()
     QDataStream  stream( m_pImage, QIODevice::WriteOnly );
     int  div_i_end = 0, div_i_begin = 0;
     int  div_j_end = 0, div_j_begin = 0;
-
-    //qDebug() << "size before" << m_pImage->size() ;
 
     // подгоняем массив под размер изображения
     m_pImage->resize( static_cast<int>(m_tBitMap.bfh.bfSize) );
@@ -306,21 +326,15 @@ bool  MainWindow::imageFillNormal()
             // признак последнего пикселя ячейки по ширине
             div_j_end = (j+1) % static_cast<int>(m_tCell.w);
 
-            // белый
-            color.rgbRed = 0xFF;
-            color.rgbGreen = 0xFF;
-            color.rgbBlue = 0xFF;
-            color.rgbReserved = 0x0;
+            // цвет фона
+            getBackColor( &color );
 
             // рисуем столбцы
             if( ( 0 == i ) || ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
                 ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
             {
-                // серый
-                color.rgbRed = 0x7f;
-                color.rgbGreen = 0x7f;
-                color.rgbBlue = 0x7f;
-                color.rgbReserved = 0x0;
+                // цвет сетки
+                getGridColor( &color );
             }
 
             // пишем пиксель
@@ -335,8 +349,6 @@ bool  MainWindow::imageFillNormal()
     else
     {
         result = true;
-
-        //qDebug() << "size after" << m_pImage->size();
     }
 
     return result;
@@ -353,7 +365,6 @@ bool  MainWindow::imageCreate()
     {
         uWidth = m_uColumn * m_tCell.w;
         uHeight = static_cast<unsigned>( m_uRow / 2.0 * m_tCell.h + m_tCell.h / 2.0 );
-        //uHeight = m_uRow * m_tCell.h + m_tCell.h / 2;
     }
     else
     {
@@ -494,6 +505,40 @@ void  MainWindow::onBtnPreview()
     else
     {
        qDebug() << "there is no image!";
+    }
+}
+
+void  MainWindow::onBtnChangeBackColor()
+{
+    QColor color;
+
+    //!bug почему-то не работает
+    m_tColorDialog.setCurrentColor( m_tBackColor );
+
+    color = m_tColorDialog.getColor();
+
+    if( color.isValid() )
+    {
+        m_tBackColor = color;
+
+        setLabelBackColor( ui->labelBackColor, &m_tBackColor );
+    }
+}
+
+void  MainWindow::onBtnChangeGridColor()
+{
+    QColor color;
+
+    //!bug почему-то не работает
+    m_tColorDialog.setCurrentColor( m_tGridColor );
+
+    color = m_tColorDialog.getColor();
+
+    if( color.isValid() )
+    {
+        m_tGridColor = color;
+
+        setLabelBackColor( ui->labelGridColor, &m_tGridColor );
     }
 }
 
