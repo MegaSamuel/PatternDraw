@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_zPrgTitle.clear();
     m_bPrgTitleChanged = false;
 
-    m_zPrgName = "Pattern draw";
+    m_zPrgName = "PatternDraw";
 
     // дефолтные значения переменных
     m_uRow = 10;
@@ -86,6 +86,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // комбобокс с типом строки
     connect( ui->comboBoxGrid, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeGrid );
+
+    // центральный элемент
+    setCentralWidget( ui->centralWidget );
 
     // центруем лайбл с превью
     ui->lblPicture->setAlignment( Qt::AlignCenter );
@@ -605,24 +608,35 @@ void  MainWindow::onBtnChangeGridColor()
 
 void  MainWindow::onInfoHandler()
 {
+    QString  zTitle;
     Info *pInfo = new Info;
 
-    pInfo->setWindowTitle( "О программе" );
+    zTitle = "О программе " + m_zPrgName;
+
+    pInfo->setWindowTitle( zTitle );
     pInfo->setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
     pInfo->setWindowFlags( Qt::WindowSystemMenuHint );
-    pInfo->setFixedSize( 320, 280 );
+    //pInfo->setWindowFlag(Qt::WindowSystemMenuHint,false);
+
+    pInfo->setMinimumWidth(400);
+    pInfo->setMinimumHeight(280);
 
     pInfo->exec();
 }
 
 void  MainWindow::onManHandler()
 {
+    QString  zTitle;
     Man *pMan = new Man;
 
-    pMan->setWindowTitle( "Руководство" );
+    zTitle = "Руководство " + m_zPrgName;
+
+    pMan->setWindowTitle( zTitle );
     pMan->setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
     pMan->setWindowFlags( Qt::WindowSystemMenuHint );
-    pMan->setFixedSize( 320, 280 );
+
+    pMan->setMinimumWidth(400);
+    pMan->setMinimumHeight(280);
 
     pMan->exec();
 }

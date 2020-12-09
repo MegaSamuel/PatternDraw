@@ -368,14 +368,14 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menuNote">
     <property name="title">
-     <string>?</string>
+     <string>Справка</string>
     </property>
     <addaction name="actionman"/>
     <addaction name="actioninfo"/>
    </widget>
-   <addaction name="menu"/>
+   <addaction name="menuNote"/>
   </widget>
   <action name="action">
    <property name="text">

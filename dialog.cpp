@@ -3,18 +3,12 @@
 
 Info::Info()
 {
-    QPalette pal;
-
-    QVBoxLayout *pvblInfo = new QVBoxLayout;
-    pvblInfo->setSpacing(10);
-    pvblInfo->setMargin(5);
-    pvblInfo->setAlignment(Qt::AlignHCenter);
+    QVBoxLayout *vlayout = new QVBoxLayout;
 
     QPlainTextEdit *ptInfo = new QPlainTextEdit;
     ptInfo->setReadOnly(true);
-    pal.setColor(ptInfo->backgroundRole(), Qt::gray);
-    ptInfo->setPalette(pal);
-    ptInfo->setAutoFillBackground(true);
+    ptInfo->setFrameStyle(QFrame::NoFrame);
+    ptInfo->setStyleSheet("background-color: transparent");
 
     ptInfo->appendPlainText("Программа PatternDraw, версия 0.1.2");
     ptInfo->appendPlainText("");
@@ -26,15 +20,20 @@ Info::Info()
     ptInfo->appendPlainText("");
     ptInfo->appendPlainText("2020 г.");
 
-    QPushButton *quitButton = new QPushButton("OK");
-    //quitButton->setFixedWidth(80);
+    QPushButton *quitButton = new QPushButton("Закрыть");
 
     connect( quitButton, SIGNAL(clicked()), SLOT(accept()));
+    //connect( quitButton, &QPushButton::clicked, &QDialog::accept );
 
-    pvblInfo->addWidget(ptInfo);
-    pvblInfo->addWidget(quitButton);
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    QSpacerItem *item = new QSpacerItem( 1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed );
+    hlayout->addSpacerItem(item);
+    hlayout->addWidget(quitButton);
 
-    setLayout(pvblInfo);
+    vlayout->addWidget(ptInfo);
+    vlayout->addLayout(hlayout);
+
+    setLayout(vlayout);
 }
 
 Info::~Info()
@@ -44,18 +43,12 @@ Info::~Info()
 
 Man::Man()
 {
-    QPalette pal;
-
-    QVBoxLayout *pvblInfo = new QVBoxLayout;
-    pvblInfo->setSpacing(10);
-    pvblInfo->setMargin(5);
-    pvblInfo->setAlignment(Qt::AlignHCenter);
+    QVBoxLayout *vlayout = new QVBoxLayout;
 
     QPlainTextEdit *ptInfo = new QPlainTextEdit;
     ptInfo->setReadOnly(true);
-    pal.setColor(ptInfo->backgroundRole(), Qt::gray);
-    ptInfo->setPalette(pal);
-    ptInfo->setAutoFillBackground(true);
+    ptInfo->setFrameStyle(QFrame::NoFrame);
+    ptInfo->setStyleSheet("background-color: transparent");
 
     ptInfo->appendPlainText("Руководство пользователя программы PatternDraw.");
     ptInfo->appendPlainText("");
@@ -64,15 +57,19 @@ Man::Man()
     ptInfo->appendPlainText("Для создания сетки необходимо ввести количество строк и количество столбцов и нажать кнопку \"Сохранить...\". В открывшемся диалоговом окне выбрать место и имя файла для сохранения, нажать кнопку \"Сохранить\". В результате этих действий будет создан файл содержащий сетку схемы.");
     ptInfo->appendPlainText("");
 
-    QPushButton *quitButton = new QPushButton("OK");
-    //quitButton->setFixedWidth(80);
+    QPushButton *quitButton = new QPushButton("Закрыть");
 
     connect(quitButton, SIGNAL(clicked()), SLOT(accept()));
 
-    pvblInfo->addWidget(ptInfo);
-    pvblInfo->addWidget(quitButton);
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    QSpacerItem *item = new QSpacerItem( 1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed );
+    hlayout->addSpacerItem(item);
+    hlayout->addWidget(quitButton);
 
-    setLayout(pvblInfo);
+    vlayout->addWidget(ptInfo);
+    vlayout->addLayout(hlayout);
+
+    setLayout(vlayout);
 }
 
 Man::~Man()
