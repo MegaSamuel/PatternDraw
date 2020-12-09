@@ -27,15 +27,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->comboBoxGrid->setCurrentIndex( static_cast<int>(m_uGridType) );
 
     // цвет фона
-    m_tBackColor.setRed(0xFF);
-    m_tBackColor.setGreen(0xFF);
-    m_tBackColor.setBlue(0xFF);
+    m_tBackColor = Qt::white;
     setLabelBackColor( ui->labelBackColor, &m_tBackColor );
 
     // цвет сетки
-    m_tGridColor.setRed(0x7F);
-    m_tGridColor.setGreen(0x7F);
-    m_tGridColor.setBlue(0x7F);
+    m_tGridColor = Qt::gray;
     setLabelBackColor( ui->labelGridColor, &m_tGridColor );
 
     // картинка для превью
@@ -57,10 +53,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // иконка формы
     setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
-
-    // прячем избыточные кнопки заголовка формы
-    //setWindowFlag(Qt::WindowMinMaxButtonsHint,false);
-    //setWindowFlag(Qt::WindowSystemMenuHint,false);
 
     // ловим нажатие кнопки Сохранить
     connect( ui->btnSave, &QPushButton::clicked, this, &MainWindow::onBtnSave );
@@ -520,7 +512,8 @@ void  MainWindow::onBtnChangeBackColor()
 {
     QColor color;
 
-    //m_tColorDialog.setCurrentColor( m_tBackColor );
+    //!bug почему-то не работает
+    m_tColorDialog.setCurrentColor( m_tBackColor );
 
     color = m_tColorDialog.getColor();
 
@@ -536,7 +529,8 @@ void  MainWindow::onBtnChangeGridColor()
 {
     QColor color;
 
-    //m_tColorDialog.setCurrentColor( m_tGridColor );
+    //!bug почему-то не работает
+    m_tColorDialog.setCurrentColor( m_tGridColor );
 
     color = m_tColorDialog.getColor();
 
