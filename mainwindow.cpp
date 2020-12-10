@@ -498,7 +498,7 @@ void  MainWindow::onBtnSave()
     QString dir( pDir->path() );
 
     // формиреум путь и имя файла через диалог
-    QString filename = QFileDialog::getSaveFileName( this, "Сохранить файл", dir, "Изображение (*.bmp)" );
+    QString filename = QFileDialog::getSaveFileName( this, "Сохранить файл", dir, "Изображение в формате PNG (*.PNG);;Изображение в формате BMP (*.BMP)" );
 
     QApplication::processEvents();
 
@@ -514,6 +514,7 @@ void  MainWindow::onBtnSave()
         }
         else
         {
+#if 0
             file.resize(m_pImage->size());
 
             QDataStream  stream( &file );
@@ -539,6 +540,20 @@ void  MainWindow::onBtnSave()
             }
 
             file.close();
+#else
+            if( m_pPixmap->save(&file) )
+            {
+                if( m_bPrgTitleChanged )
+                {
+                    setPrgTitleChanged( false );
+                }
+                m_bPrgTitleChanged = false;
+            }
+            else
+            {
+                qDebug() << "Ошибка записи в файл";
+            }
+#endif
         }
     }
     else
