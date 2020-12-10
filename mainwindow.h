@@ -51,6 +51,16 @@ private Q_SLOTS:
 private:
     Ui::MainWindow *ui;
 
+    bool           askSaveIfChanged();
+
+    QString        m_zPrgName;
+    QString        m_zPrgTitle;
+    bool           m_bPrgTitleChanged;
+
+    void           setPrgTitleText( const QString&  text = "" );
+
+    void           setPrgTitleChanged( bool  changed );
+
     bool           imageCreate();
 
     bool           imageFillNormal();
@@ -82,6 +92,9 @@ private:
     QColor         m_tGridColor;
 
     QColorDialog   m_tColorDialog;
+
+    void           closeEvent( QCloseEvent *event );
+    void           resizeEvent( QResizeEvent *event );
 };
 
 #endif // MAINWINDOW_H

@@ -11,6 +11,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    m_zPrgName.clear();
+    m_zPrgTitle.clear();
+    m_bPrgTitleChanged = false;
+
+    m_zPrgName = "PatternDraw";
+
     // дефолтные значения переменных
     m_uRow = 10;
     m_uColumn = 10;
@@ -49,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QApplication::setStyle(QStyleFactory::create("fusion"));
 
     // заголовок формы
-    setWindowTitle("PatternDraw");
+    setPrgTitleText();
 
     // иконка формы
     setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
@@ -81,8 +87,11 @@ MainWindow::MainWindow(QWidget *parent) :
     // комбобокс с типом строки
     connect( ui->comboBoxGrid, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeGrid );
 
+    // центральный элемент
+    setCentralWidget( ui->centralWidget );
+
+    // центруем лайбл с превью
     ui->lblPicture->setAlignment( Qt::AlignCenter );
-    //ui->lblPicture->setFrameStyle( QFrame::Panel );
 }
 
 MainWindow::~MainWindow()
@@ -117,6 +126,43 @@ void  MainWindow::setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor )
 
 //------------------------------------------------------------------------------
 
+void  MainWindow::setPrgTitleText( const QString&  text )
+{
+    if( 0 != text.length() )
+    {
+        m_zPrgTitle = text + " - " + m_zPrgName;
+
+        if( m_bPrgTitleChanged )
+        {
+            m_zPrgTitle.prepend( "*" );
+        }
+    }
+    else
+    {
+        m_zPrgTitle = m_zPrgName;
+    }
+
+    setWindowTitle( m_zPrgTitle );
+}
+
+void  MainWindow::setPrgTitleChanged( bool  changed )
+{
+    if( changed )
+    {
+        m_zPrgTitle.prepend( "*" );
+
+        setWindowTitle( m_zPrgTitle );
+    }
+    else
+    {
+        m_zPrgTitle.replace( "*", "" );
+
+        setWindowTitle( m_zPrgTitle );
+    }
+}
+
+//------------------------------------------------------------------------------
+
 bool  MainWindow::imageFillShift()
 {
     bool  result = false;
@@ -134,7 +180,7 @@ bool  MainWindow::imageFillShift()
     // обнуляем массив
     memset( m_pImage->data(), 0, static_cast<size_t>(m_tBitMap.bfh.bfSize) );
 
-    stream.setVersion(QDataStream::Qt_5_5);
+    stream.setVersion(QDataStream::Qt_5_12);
 
     // пишем заголовок картинки
     stream.writeRawData( reinterpret_cast<char*>(&m_tBitMap), sizeof(TBitMap) );
@@ -303,7 +349,7 @@ bool  MainWindow::imageFillNormal()
     // обнуляем массив
     memset( m_pImage->data(), 0, static_cast<size_t>(m_tBitMap.bfh.bfSize) );
 
-    stream.setVersion(QDataStream::Qt_5_5);
+    stream.setVersion(QDataStream::Qt_5_12);
 
     // пишем заголовок картинки
     stream.writeRawData( reinterpret_cast<char*>(&m_tBitMap), sizeof(TBitMap) );
@@ -360,6 +406,9 @@ bool  MainWindow::imageCreate()
     unsigned  uWidth = 0;
     unsigned  uHeight = 0;
 
+    m_uRow = static_cast<unsigned>(ui->spinRow->value());
+    m_uColumn = static_cast<unsigned>(ui->spinColumn->value());
+
     // размер картинки в пикселях
     if( keGridTypeShift == m_uGridType )
     {
@@ -410,6 +459,13 @@ bool  MainWindow::imageCreate()
     {
         m_bImageReady = imageFillNormal();
     }
+
+    if( !m_bPrgTitleChanged )
+    {
+        setPrgTitleChanged( true );
+    }
+
+    m_bPrgTitleChanged = m_bImageReady;
 
     return m_bImageReady;
 }
@@ -462,7 +518,7 @@ void  MainWindow::onBtnSave()
 
             QDataStream  stream( &file );
 
-            stream.setVersion(QDataStream::Qt_5_5);
+            stream.setVersion(QDataStream::Qt_5_12);
 
             if( 0 != m_pImage->size() )
             {
@@ -472,6 +528,14 @@ void  MainWindow::onBtnSave()
             if( stream.status() != QDataStream::Ok )
             {
                 qDebug() << "Ошибка записи в файл";
+            }
+            else
+            {
+                if( m_bPrgTitleChanged )
+                {
+                    setPrgTitleChanged( false );
+                }
+                m_bPrgTitleChanged = false;
             }
 
             file.close();
@@ -544,24 +608,35 @@ void  MainWindow::onBtnChangeGridColor()
 
 void  MainWindow::onInfoHandler()
 {
+    QString  zTitle;
     Info *pInfo = new Info;
 
-    pInfo->setWindowTitle( "О программе" );
+    zTitle = "О программе " + m_zPrgName;
+
+    pInfo->setWindowTitle( zTitle );
     pInfo->setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
     pInfo->setWindowFlags( Qt::WindowSystemMenuHint );
-    pInfo->setFixedSize( 320, 280 );
+    //pInfo->setWindowFlag(Qt::WindowSystemMenuHint,false);
+
+    pInfo->setMinimumWidth(400);
+    pInfo->setMinimumHeight(280);
 
     pInfo->exec();
 }
 
 void  MainWindow::onManHandler()
 {
+    QString  zTitle;
     Man *pMan = new Man;
 
-    pMan->setWindowTitle( "Руководство" );
+    zTitle = "Руководство " + m_zPrgName;
+
+    pMan->setWindowTitle( zTitle );
     pMan->setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
     pMan->setWindowFlags( Qt::WindowSystemMenuHint );
-    pMan->setFixedSize( 320, 280 );
+
+    pMan->setMinimumWidth(400);
+    pMan->setMinimumHeight(280);
 
     pMan->exec();
 }
@@ -629,6 +704,78 @@ void  MainWindow::setCellSize()
     {
         m_tCell.h *= 2;
         m_tCell.w *= 2;
+    }
+}
+
+//------------------------------------------------------------------------------
+
+bool  MainWindow::askSaveIfChanged()
+{
+    if( m_bPrgTitleChanged )
+    {
+        QMessageBox     msgBox;
+
+        msgBox.setWindowTitle("Информация");
+        msgBox.setText( "Изображение не сохранено!" );
+        msgBox.setInformativeText( "Хотите сохранить?" );
+        msgBox.setStandardButtons( QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel );
+        msgBox.setDefaultButton( QMessageBox::Save );
+
+        msgBox.setButtonText( QMessageBox::Save, "Сохранить" );
+        msgBox.setButtonText( QMessageBox::Discard, "Выход" );
+        msgBox.setButtonText( QMessageBox::Cancel, "Отмена" );
+
+        int ret = msgBox.exec();
+
+        switch (ret)
+        {
+            case QMessageBox::Save:
+                onBtnSave();
+                break;
+
+            case QMessageBox::Discard:
+                break;
+
+            case QMessageBox::Cancel:
+                return false;
+
+            default:
+                return false;
+        }
+    }
+
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+void  MainWindow::closeEvent( QCloseEvent  *event )
+{
+    if( !askSaveIfChanged() )
+    {
+        event->ignore();
+    }
+    else
+    {
+        event->accept();
+    }
+}
+
+void  MainWindow::resizeEvent(QResizeEvent *event)
+{
+    Q_UNUSED( event );
+
+    //qDebug() << "win" << event->size().width() << event->size().height();
+
+    // новые размеры лейбла
+    int w = ui->lblPicture->width();
+    int h = ui->lblPicture->height();
+
+    // если есть картинка
+    if( !m_pPixmap->isNull() )
+    {
+        // ставим отмасштабированную картинку в лэйбл
+        ui->lblPicture->setPixmap((*m_pPixmap).scaled(w, h, Qt::KeepAspectRatio));
     }
 }
 
