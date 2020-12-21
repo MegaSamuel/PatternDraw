@@ -477,19 +477,22 @@ void  MainWindow::onBtnSave()
     // собственно файл
     QFile file;
 
-    // если не нажимали превью
-    if( !m_bImageReady )
+    // формируем картинку
+    if( imageCreate() )
     {
-        // формируем картинку
-        if( !imageCreate() )
+        if( 0 != m_pImage->size() )
         {
-            qDebug() << "cannot create image";
-            return;
+            m_pPixmap->loadFromData( *m_pImage, "BMP" );
         }
+    }
+    else
+    {
+        qDebug() << "cannot create image";
+        return;
     }
 
     // формируем имя файла по умолчанию
-    QString deffilename = QString( "/pattern%1x%2.bmp" ).arg(m_uRow).arg(m_uColumn);
+    QString deffilename = QString( "/pattern%1x%2" ).arg(m_uRow).arg(m_uColumn);
 
     // каталог где мы находимся
     QDir *pDir = new QDir( QDir::currentPath() + deffilename );
@@ -498,7 +501,7 @@ void  MainWindow::onBtnSave()
     QString dir( pDir->path() );
 
     // формиреум путь и имя файла через диалог
-    QString filename = QFileDialog::getSaveFileName( this, "Сохранить файл", dir, "Изображение (*.bmp)" );
+    QString filename = QFileDialog::getSaveFileName( this, "Сохранить файл", dir, "Изображение в формате PNG (*.png);;Изображение в формате BMP (*.bmp)" );
 
     QApplication::processEvents();
 
@@ -514,28 +517,19 @@ void  MainWindow::onBtnSave()
         }
         else
         {
-            file.resize(m_pImage->size());
+            QString  format = filename.right(3).toUpper();
 
-            QDataStream  stream( &file );
-
-            stream.setVersion(QDataStream::Qt_5_12);
-
-            if( 0 != m_pImage->size() )
-            {
-                stream.writeRawData( m_pImage->data(), m_pImage->size() );
-            }
-
-            if( stream.status() != QDataStream::Ok )
-            {
-                qDebug() << "Ошибка записи в файл";
-            }
-            else
+            if( m_pPixmap->save(&file, format.toStdString().c_str()) )
             {
                 if( m_bPrgTitleChanged )
                 {
                     setPrgTitleChanged( false );
                 }
                 m_bPrgTitleChanged = false;
+            }
+            else
+            {
+                qDebug() << "Ошибка записи в файл";
             }
 
             file.close();
@@ -618,8 +612,8 @@ void  MainWindow::onInfoHandler()
     pInfo->setWindowFlags( Qt::WindowSystemMenuHint );
     //pInfo->setWindowFlag(Qt::WindowSystemMenuHint,false);
 
-    pInfo->setMinimumWidth(400);
-    pInfo->setMinimumHeight(280);
+    pInfo->setMinimumWidth(500);
+    pInfo->setMinimumHeight(200);
 
     pInfo->exec();
 }
@@ -635,8 +629,8 @@ void  MainWindow::onManHandler()
     pMan->setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
     pMan->setWindowFlags( Qt::WindowSystemMenuHint );
 
-    pMan->setMinimumWidth(400);
-    pMan->setMinimumHeight(280);
+    pMan->setMinimumWidth(500);
+    pMan->setMinimumHeight(200);
 
     pMan->exec();
 }
