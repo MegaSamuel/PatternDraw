@@ -180,7 +180,7 @@ bool  MainWindow::imageFillShift()
     // обнуляем массив
     memset( m_pImage->data(), 0, static_cast<size_t>(m_tBitMap.bfh.bfSize) );
 
-    stream.setVersion(QDataStream::Qt_5_12);
+    stream.setVersion(QDataStream::Qt_5_11);
 
     // пишем заголовок картинки
     stream.writeRawData( reinterpret_cast<char*>(&m_tBitMap), sizeof(TBitMap) );
@@ -349,7 +349,7 @@ bool  MainWindow::imageFillNormal()
     // обнуляем массив
     memset( m_pImage->data(), 0, static_cast<size_t>(m_tBitMap.bfh.bfSize) );
 
-    stream.setVersion(QDataStream::Qt_5_12);
+    stream.setVersion(QDataStream::Qt_5_11);
 
     // пишем заголовок картинки
     stream.writeRawData( reinterpret_cast<char*>(&m_tBitMap), sizeof(TBitMap) );
