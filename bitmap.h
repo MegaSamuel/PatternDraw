@@ -1,18 +1,20 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
+#include <QtWidgets>
+
 #include "windows.h"
 
 // структура ячейки
-typedef struct t_cell
+struct TCell
 {
     unsigned h; // высота ячейки
     unsigned w; // ширина ячейки
-}TCell;
+};
 
 #pragma pack(push, 1)
 
-struct BitMap
+struct TBitMap
 {
     BITMAPFILEHEADER bfh;
     BITMAPINFOHEADER bih;
@@ -20,5 +22,8 @@ struct BitMap
 };
 
 #pragma pack(pop)
+
+Q_DECLARE_METATYPE( TCell )
+Q_DECLARE_METATYPE( TBitMap )
 
 #endif // BITMAP_H

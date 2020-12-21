@@ -4,25 +4,19 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow w;
+    QApplication app(argc, argv);
+    MainWindow win;
+
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect size = screen->availableGeometry();
+
+    int x = (size.width() - win.width()) / 2;
+    int y = (size.height() - win.height()) / 2;
 
     // распологаем форму по центру основного экрана
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
-    int x = (screenGeometry.width() - w.width()) / 2;
-    int y = (screenGeometry.height() - w.height()) / 2;
-    w.move(x, y);
+    win.move(x, y);
 
-    // задаем фиксированный размер окна
-    w.setFixedSize( 320, 240 );
+    win.show();
 
-    // определяем шрифт
-    QFont newFont( "Tahoma", 8, QFont::Thin, false );
-    // применяем ко всему приложению
-    QApplication::setFont(newFont);
-
-    w.show();
-
-    return a.exec();
+    return app.exec();
 }

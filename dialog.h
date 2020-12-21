@@ -8,9 +8,19 @@
 class Info:public QDialog
 {
     Q_OBJECT
+
 public:
-    Info();
+    explicit Info();
     ~Info();
+};
+
+class Man:public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit Man();
+    ~Man();
 };
 
 #endif // DIALOG
