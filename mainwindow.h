@@ -6,6 +6,8 @@
 #include <QFile>
 #include <QMainWindow>
 
+//------------------------------------------------------------------------------
+
 namespace Ui {
 class MainWindow;
 }
@@ -96,5 +98,7 @@ private:
     void           closeEvent( QCloseEvent *event );
     void           resizeEvent( QResizeEvent *event );
 };
+
+//------------------------------------------------------------------------------
 
 #endif // MAINWINDOW_H

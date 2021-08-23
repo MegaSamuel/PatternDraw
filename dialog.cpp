@@ -1,7 +1,8 @@
 #include "dialog.h"
 
+//------------------------------------------------------------------------------
 
-Info::Info()
+Info::Info( QWidget *parent ): QDialog( parent )
 {
     QVBoxLayout *vlayout = new QVBoxLayout;
     vlayout->setAlignment( Qt::AlignLeft | Qt::AlignTop );
@@ -48,9 +49,7 @@ Info::Info()
     hlayout1->addWidget(ptInfo);
 
     QPushButton *quitButton = new QPushButton("Закрыть");
-
-    connect( quitButton, SIGNAL(clicked()), SLOT(accept()));
-    //connect( quitButton, &QPushButton::clicked, &QDialog::accept );
+    connect( quitButton, &QPushButton::clicked, this, &QDialog::accept );
 
     QHBoxLayout *hlayout2 = new QHBoxLayout;
     QSpacerItem *item = new QSpacerItem( 1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed );
@@ -69,7 +68,9 @@ Info::~Info()
 
 }
 
-Man::Man()
+//------------------------------------------------------------------------------
+
+Man::Man( QWidget *parent ): QDialog( parent )
 {
     QVBoxLayout *vlayout = new QVBoxLayout;
     vlayout->setAlignment( Qt::AlignLeft | Qt::AlignTop );
@@ -113,8 +114,7 @@ Man::Man()
     hlayout1->addWidget(ptInfo);
 
     QPushButton *quitButton = new QPushButton("Закрыть");
-
-    connect(quitButton, SIGNAL(clicked()), SLOT(accept()));
+    connect( quitButton, &QPushButton::clicked, this, &QDialog::accept );
 
     QHBoxLayout *hlayout2 = new QHBoxLayout;
     QSpacerItem *item = new QSpacerItem( 1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed );
@@ -132,3 +132,5 @@ Man::~Man()
 {
 
 }
+
+//------------------------------------------------------------------------------

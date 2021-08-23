@@ -4,24 +4,28 @@
 #include <QDialog>
 #include <QtWidgets>
 
+//------------------------------------------------------------------------------
 
-class Info:public QDialog
+class Info : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit Info();
+    explicit Info( QWidget *parent = nullptr );
     ~Info();
 };
 
-class Man:public QDialog
+//------------------------------------------------------------------------------
+
+class Man : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit Man();
+    explicit Man( QWidget *parent = nullptr );
     ~Man();
 };
 
-#endif // DIALOG
+//------------------------------------------------------------------------------
 
+#endif // DIALOG
