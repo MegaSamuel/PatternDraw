@@ -598,7 +598,7 @@ void  MainWindow::onBtnChangeGridColor()
 void  MainWindow::onInfoHandler()
 {
     QString  zTitle;
-    Info *pInfo = new Info( this );
+    Info *pInfo = new Info;
 
     zTitle = "О программе " + m_zPrgName;
 
