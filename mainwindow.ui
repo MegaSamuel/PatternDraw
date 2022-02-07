@@ -477,6 +477,9 @@
    <property name="text">
     <string>Выход</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

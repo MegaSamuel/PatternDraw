@@ -84,8 +84,8 @@ private:
 
     void           setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor );
 
-    void           fileSave();
-    void           fileSaveAs();
+    bool           fileSave();
+    bool           fileSaveAs();
 
     unsigned       m_uItemType;
     unsigned       m_uItemSize;

@@ -540,7 +540,8 @@ bool  MainWindow::imageCreate()
 
 //------------------------------------------------------------------------------
 
-void  MainWindow::fileSave() {
+bool  MainWindow::fileSave() {
+    bool result = false;
     // собственно файл
     QFile file;
 
@@ -551,33 +552,20 @@ void  MainWindow::fileSave() {
         }
     } else {
         qDebug() << "cannot create image";
-        return;
+        return false;
     }
-
-//    // формируем имя файла по умолчанию
-//    QString deffilename = QString("/pattern%1x%2").arg(m_uRow).arg(m_uColumn);
-
-//    // каталог где мы находимся
-//    QDir *pDir = new QDir(QDir::currentPath() + deffilename);
-
-//    // строка с именем каталога где мы находимся
-//    QString dir(pDir->path());
-
-//    // формиреум путь и имя файла через диалог
-//    QString filename = QFileDialog::getSaveFileName( this, "Сохранить файл", dir, "Изображение в формате PNG (*.png);;Изображение в формате BMP (*.bmp)" );
-
-//    QApplication::processEvents();
 
     if(!m_zPrgFileName.isEmpty()) {
         file.setFileName(m_zPrgFileName);
 
         if(!file.open(QIODevice::WriteOnly)) {
             qDebug() << "cannot open file" << m_zPrgFileName;
-            return;
+            return false;
         } else {
             QString  format = m_zPrgFileName.right(3).toUpper();
 
             if(m_pPixmap->save(&file, format.toStdString().c_str())) {
+                result = true;
                 if(m_bPrgTitleChanged) {
                     setPrgTitleChanged(false);
                 }
@@ -589,9 +577,12 @@ void  MainWindow::fileSave() {
             file.close();
         }
     }
+
+    return result;
 }
 
-void  MainWindow::fileSaveAs() {
+bool  MainWindow::fileSaveAs() {
+    bool result = false;
     // собственно файл
     QFile file;
 
@@ -602,7 +593,7 @@ void  MainWindow::fileSaveAs() {
         }
     } else {
         qDebug() << "cannot create image";
-        return;
+        return false;
     }
 
     // формируем имя файла по умолчанию
@@ -626,11 +617,12 @@ void  MainWindow::fileSaveAs() {
 
         if(!file.open(QIODevice::WriteOnly)) {
             qDebug() << "cannot open file" << filename;
-            return;
+            return false;
         } else {
             QString  format = filename.right(3).toUpper();
 
             if(m_pPixmap->save(&file, format.toStdString().c_str())) {
+                result = true;
                 if(m_bPrgTitleChanged) {
                     setPrgTitleChanged(false);
                 }
@@ -644,6 +636,8 @@ void  MainWindow::fileSaveAs() {
     } else {
         qDebug() << "no filename";
     }
+
+    return result;
 }
 
 //------------------------------------------------------------------------------
@@ -896,7 +890,10 @@ void  MainWindow::onPrintHandler() {
 }
 
 void  MainWindow::onQuitHandler() {
-
+    //!TODO сейчас хоткей ctrl+q надо бы переделать на alt+f4
+    if(askSaveIfChanged()) {
+        QApplication::quit();
+    }
 }
 
 void  MainWindow::onUndoHandler() {
@@ -1012,6 +1009,8 @@ void  MainWindow::setCellSize()
 
 bool  MainWindow::askSaveIfChanged()
 {
+    bool result = false;
+
     if( m_bPrgTitleChanged )
     {
         QMessageBox     msgBox;
@@ -1031,33 +1030,40 @@ bool  MainWindow::askSaveIfChanged()
         switch (ret)
         {
             case QMessageBox::Save:
-                onBtnSave();
+                // пробуем сохранить
+                if(m_zPrgFileName.isEmpty()) {
+                    result = fileSaveAs();
+                }
+                else {
+                    result = fileSave();
+                }
+                //onBtnSave();
                 break;
 
             case QMessageBox::Discard:
+                // выходим без сохранения
+                result = true;
                 break;
 
             case QMessageBox::Cancel:
-                return false;
+                // отбой
+                break;
 
             default:
-                return false;
+                break;
         }
     }
 
-    return true;
+    return result;
 }
 
 //------------------------------------------------------------------------------
 
 void  MainWindow::closeEvent( QCloseEvent  *event )
 {
-    if( !askSaveIfChanged() )
-    {
+    if(!askSaveIfChanged()) {
         event->ignore();
-    }
-    else
-    {
+    } else {
         event->accept();
     }
 }
