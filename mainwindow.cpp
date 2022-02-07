@@ -72,11 +72,23 @@ MainWindow::MainWindow(QWidget *parent) :
     // ловим нажатие кнопки Изменить цвет сетки
     connect( ui->btnGridColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeGridColor ) ;
 
+    // меню Файл
+    connect(ui->actionNew, &QAction::triggered, this, &MainWindow::onNewHandler);
+    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::onOpenHandler);
+    connect(ui->actionSave, &QAction::triggered, this, &MainWindow::onSaveHandler);
+    connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::onSaveAsHandler);
+    connect(ui->actionPrint, &QAction::triggered, this, &MainWindow::onPrintHandler);
+    connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::onQuitHandler);
+
+    // меню Правка
+    connect(ui->actionUndo, &QAction::triggered, this, &MainWindow::onUndoHandler);
+    connect(ui->actionRedo, &QAction::triggered, this, &MainWindow::onRedoHandler);
+
     // вызов руководства пользователя
-    connect( ui->actionman, &QAction::triggered, this, &MainWindow::onManHandler );
+    connect(ui->actionMan, &QAction::triggered, this, &MainWindow::onManHandler);
 
     // вызов справки о программе
-    connect( ui->actioninfo, &QAction::triggered, this, &MainWindow::onInfoHandler );
+    connect(ui->actionInfo, &QAction::triggered, this, &MainWindow::onInfoHandler);
 
     // комбобокс с типом элемента
     connect( ui->comboBoxItem, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeItem );
@@ -644,6 +656,31 @@ void  MainWindow::onBtnChangeGridColor()
     }
 }
 
+void  MainWindow::onNewHandler() {
+
+}
+void  MainWindow::onOpenHandler() {
+
+}
+void  MainWindow::onSaveHandler() {
+
+}
+void  MainWindow::onSaveAsHandler() {
+
+}
+void  MainWindow::onPrintHandler() {
+
+}
+void  MainWindow::onQuitHandler() {
+
+}
+void  MainWindow::onUndoHandler() {
+
+}
+void  MainWindow::onRedoHandler() {
+
+}
+
 void  MainWindow::onInfoHandler()
 {
     QString  zTitle;
@@ -801,7 +838,7 @@ void  MainWindow::closeEvent( QCloseEvent  *event )
 
 void  MainWindow::resizeEvent(QResizeEvent *event)
 {
-    Q_UNUSED( event );
+    Q_UNUSED(event)
 
     //qDebug() << "win" << event->size().width() << event->size().height();
 

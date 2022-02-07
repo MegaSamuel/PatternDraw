@@ -44,6 +44,14 @@ private Q_SLOTS:
     void       onBtnPreview();
     void       onBtnChangeBackColor();
     void       onBtnChangeGridColor();
+    void       onNewHandler();
+    void       onOpenHandler();
+    void       onSaveHandler();
+    void       onSaveAsHandler();
+    void       onPrintHandler();
+    void       onQuitHandler();
+    void       onUndoHandler();
+    void       onRedoHandler();
     void       onInfoHandler();
     void       onManHandler();
     void       onChangeItem( int  index );
