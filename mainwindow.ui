@@ -399,11 +399,6 @@
    <addaction name="menuEdit"/>
    <addaction name="menuNote"/>
   </widget>
-  <action name="action">
-   <property name="text">
-    <string>О программе</string>
-   </property>
-  </action>
   <action name="actionInfo">
    <property name="text">
     <string>О программе...</string>
@@ -416,10 +411,16 @@
    <property name="text">
     <string>Руководство</string>
    </property>
+   <property name="toolTip">
+    <string>Краткое руководство пользователя</string>
+   </property>
   </action>
   <action name="actionUndo">
    <property name="text">
     <string>Отмена</string>
+   </property>
+   <property name="toolTip">
+    <string>Отмена действия</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -428,6 +429,9 @@
   <action name="actionRedo">
    <property name="text">
     <string>Повтор</string>
+   </property>
+   <property name="toolTip">
+    <string>Повтор действия</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Y</string>
