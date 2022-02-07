@@ -340,8 +340,8 @@ bool  MainWindow::imageFillNormal()
 
     RGBQUAD      color;
     QDataStream  stream( m_pImage, QIODevice::WriteOnly );
-    int  div_i_end = 0, div_i_begin = 0;
-    int  div_j_end = 0, div_j_begin = 0;
+    int  div_i_begin = 0;
+    int  div_j_begin = 0;
 
     // подгоняем массив под размер изображения
     m_pImage->resize( static_cast<int>(m_tBitMap.bfh.bfSize) );
@@ -360,24 +360,19 @@ bool  MainWindow::imageFillNormal()
     for( int i = 0; i < m_tBitMap.bih.biHeight; i++ )
     {
         // признак первого пикселя ячейки по высоте
-        div_i_begin = i % static_cast<int>(m_tCell.h);
-        // признак последнего пикселя ячейки по высоте
-        div_i_end = (i+1) % static_cast<int>(m_tCell.h);
+        div_i_begin = i % static_cast<int>(m_tCell.h-1);
 
         // проход по ширине (по столбцам)
         for( int j = 0; j < m_tBitMap.bih.biWidth; j++ )
         {
             // признак первого пикселя ячейки по ширине
-            div_j_begin = j % static_cast<int>(m_tCell.w);
-            // признак последнего пикселя ячейки по ширине
-            div_j_end = (j+1) % static_cast<int>(m_tCell.w);
+            div_j_begin = j % static_cast<int>(m_tCell.w-1);
 
             // цвет фона
             getBackColor( &color );
 
             // рисуем столбцы
-            if( ( 0 == i ) || ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
-                ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
+            if( ( 0 == div_i_begin ) || ( 0 == div_j_begin ) )
             {
                 // цвет сетки
                 getGridColor( &color );
@@ -412,13 +407,13 @@ bool  MainWindow::imageCreate()
     // размер картинки в пикселях
     if( keGridTypeShift == m_uGridType )
     {
-        uWidth = m_uColumn * m_tCell.w;
+        uWidth = m_uColumn * m_tCell.w - ( m_uColumn - 1 );
         uHeight = static_cast<unsigned>( m_uRow / 2.0 * m_tCell.h + m_tCell.h / 2.0 );
     }
     else
     {
-        uWidth = m_uColumn * m_tCell.w;
-        uHeight = m_uRow * m_tCell.h;
+        uWidth = m_uColumn * m_tCell.w - ( m_uColumn - 1 );
+        uHeight = m_uRow * m_tCell.h - ( m_uRow - 1 );
     }
 
     // очищаем file header

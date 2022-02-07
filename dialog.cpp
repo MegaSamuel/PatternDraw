@@ -1,13 +1,14 @@
 #include "dialog.h"
 
+//------------------------------------------------------------------------------
 
-Info::Info()
+Info::Info( QWidget *parent ): QDialog( parent )
 {
     QVBoxLayout *vlayout = new QVBoxLayout;
     vlayout->setAlignment( Qt::AlignLeft | Qt::AlignTop );
 
     QLabel *caption = new QLabel;
-    caption->setText( "Программа PatternDraw, версия 0.1.2" );
+    caption->setText( "Программа PatternDraw, версия 0.1.3" );
     caption->setStyleSheet("font-weight: bold");
 
     QPlainTextEdit *ptInfo = new QPlainTextEdit;
@@ -15,7 +16,7 @@ Info::Info()
     ptInfo->setFrameStyle(QFrame::NoFrame);
     ptInfo->setStyleSheet("background-color: transparent");
 
-//    ptInfo->appendPlainText("Программа PatternDraw, версия 0.1.2");
+//    ptInfo->appendPlainText("Программа PatternDraw, версия 0.1.3");
 //    ptInfo->appendPlainText("");
     ptInfo->appendPlainText("Разработчик Медведев С.А.");
     ptInfo->appendPlainText("");
@@ -23,7 +24,7 @@ Info::Info()
     ptInfo->appendPlainText("");
     ptInfo->appendPlainText("По вопросам писать на cepaleme@gmail.com");
     ptInfo->appendPlainText("");
-    ptInfo->appendPlainText("2020 г.");
+    ptInfo->appendPlainText("2021 г.");
 
     QLabel *label = new QLabel( "" );
 
@@ -48,9 +49,7 @@ Info::Info()
     hlayout1->addWidget(ptInfo);
 
     QPushButton *quitButton = new QPushButton("Закрыть");
-
-    connect( quitButton, SIGNAL(clicked()), SLOT(accept()));
-    //connect( quitButton, &QPushButton::clicked, &QDialog::accept );
+    connect( quitButton, &QPushButton::clicked, this, &QDialog::accept );
 
     QHBoxLayout *hlayout2 = new QHBoxLayout;
     QSpacerItem *item = new QSpacerItem( 1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed );
@@ -69,7 +68,9 @@ Info::~Info()
 
 }
 
-Man::Man()
+//------------------------------------------------------------------------------
+
+Man::Man( QWidget *parent ): QDialog( parent )
 {
     QVBoxLayout *vlayout = new QVBoxLayout;
     vlayout->setAlignment( Qt::AlignLeft | Qt::AlignTop );
@@ -113,8 +114,7 @@ Man::Man()
     hlayout1->addWidget(ptInfo);
 
     QPushButton *quitButton = new QPushButton("Закрыть");
-
-    connect(quitButton, SIGNAL(clicked()), SLOT(accept()));
+    connect( quitButton, &QPushButton::clicked, this, &QDialog::accept );
 
     QHBoxLayout *hlayout2 = new QHBoxLayout;
     QSpacerItem *item = new QSpacerItem( 1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed );
@@ -132,3 +132,5 @@ Man::~Man()
 {
 
 }
+
+//------------------------------------------------------------------------------
