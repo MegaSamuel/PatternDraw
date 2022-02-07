@@ -579,6 +579,8 @@ void  MainWindow::onBtnSave()
     {
         file.setFileName( filename );
 
+        m_zPrgFileName = filename;
+
         if( !file.open(QIODevice::WriteOnly) )
         {
             qDebug() << "cannot open file" << filename;
@@ -671,7 +673,59 @@ void  MainWindow::onBtnChangeGridColor()
 }
 
 void  MainWindow::onNewHandler() {
+    // есть несохраненные изменения
+    if(!askSaveIfChanged()) {
+        return;
+    }
 
+    // далее ставим везде дефолтные значения
+    //!TODO выделить в отдельную функцию и ее вызывать и тут и в консрукторе
+    m_zPrgTitle.clear();
+
+    m_bPrgTitleChanged = false;
+    setPrgTitleChanged(false);
+
+    m_zPrgFileName.clear();
+
+    // дефолтные значения переменных
+    m_uRow = 10;
+    m_uColumn = 10;
+
+    ui->spinRow->setValue( static_cast<int>(m_uRow) );
+    ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
+
+    m_uItemType = keItemTypeRectan;
+    m_uItemSize = keItemSizeNormal;
+    m_uGridType = keGridTypeShift;
+
+    ui->comboBoxItem->setCurrentIndex( static_cast<int>(m_uItemType) );
+    ui->comboBoxSize->setCurrentIndex( static_cast<int>(m_uItemSize) );
+    ui->comboBoxGrid->setCurrentIndex( static_cast<int>(m_uGridType) );
+
+    // цвет фона
+    m_tBackColor = Qt::white;
+    setLabelBackColor( ui->labelBackColor, &m_tBackColor );
+
+    // цвет сетки
+    m_tGridColor = Qt::gray;
+    setLabelBackColor( ui->labelGridColor, &m_tGridColor );
+
+    // картинка для превью
+    if(!m_pPixmap->isNull()) {
+        //!TODO тут нужно очищать превьюшный лейбл
+        //m_pPixmap = new QPixmap;
+        //ui->lblPicture->setPixmap();
+    }
+
+    // изображение для превью
+    if(m_pImage->size()) {
+        m_pImage->clear();
+    }
+
+    // сформировано ли изображение
+    m_bImageReady = false;
+
+    setCellSize();
 }
 
 void  MainWindow::onOpenHandler() {

@@ -67,6 +67,8 @@ private:
     QString        m_zPrgTitle;
     bool           m_bPrgTitleChanged;
 
+    QString        m_zPrgFileName;
+
     void           setPrgTitleText( const QString&  text = "" );
 
     void           setPrgTitleChanged( bool  changed );
