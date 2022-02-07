@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "dialog.h"
 #include <QDebug>
+#include <QPrinter>
+#include <QPrintDialog>
 
 //------------------------------------------------------------------------------
 
@@ -671,24 +673,55 @@ void  MainWindow::onBtnChangeGridColor()
 void  MainWindow::onNewHandler() {
 
 }
+
 void  MainWindow::onOpenHandler() {
 
 }
+
 void  MainWindow::onSaveHandler() {
 
 }
+
 void  MainWindow::onSaveAsHandler() {
 
 }
-void  MainWindow::onPrintHandler() {
 
+void  MainWindow::onPrintHandler() {
+    // нет картинки
+    if(m_pPixmap->isNull()) {
+        QMessageBox  msgBox;
+
+        msgBox.setWindowTitle("Информация");
+        msgBox.setText( "Нет сформированного изображения!\nПеред печатью нажмите кнопку \"Предпросмотр\"" );
+        msgBox.exec();
+
+        return;
+    }
+
+    QPrinter printer;
+
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    dialog->setWindowTitle(tr("Print Document"));
+
+    // нажали Ок
+    if(dialog->exec() != QDialog::Accepted)
+        return;
+
+    // есть картинка
+    QPainter painter;
+    painter.begin(&printer);
+    painter.drawImage(0, 0, m_pPixmap->toImage());
+    painter.end();
 }
+
 void  MainWindow::onQuitHandler() {
 
 }
+
 void  MainWindow::onUndoHandler() {
 
 }
+
 void  MainWindow::onRedoHandler() {
 
 }
