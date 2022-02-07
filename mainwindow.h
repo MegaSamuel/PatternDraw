@@ -40,7 +40,7 @@ public:
     };
 
 private Q_SLOTS:
-    void       onBtnSave();
+    void       onBtnSave(); //obsolete
     void       onBtnPreview();
     void       onBtnChangeBackColor();
     void       onBtnChangeGridColor();
@@ -54,9 +54,9 @@ private Q_SLOTS:
     void       onRedoHandler();
     void       onInfoHandler();
     void       onManHandler();
-    void       onChangeItem( int  index );
-    void       onChangeSize( int  index );
-    void       onChangeGrid( int  index );
+    void       onChangeItem(int  index);
+    void       onChangeSize(int  index);
+    void       onChangeGrid(int  index);
 
 private:
     Ui::MainWindow *ui;
@@ -83,6 +83,9 @@ private:
     void           getGridColor( RGBQUAD  *a_pColor );
 
     void           setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor );
+
+    void           fileSave();
+    void           fileSaveAs();
 
     unsigned       m_uItemType;
     unsigned       m_uItemSize;

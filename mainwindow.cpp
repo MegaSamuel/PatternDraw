@@ -13,8 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_zPrgName.clear();
-    m_zPrgTitle.clear();
     m_bPrgTitleChanged = false;
 
     m_zPrgName = "PatternDraw";
@@ -63,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
 
     // ловим нажатие кнопки Сохранить
-    connect( ui->btnSave, &QPushButton::clicked, this, &MainWindow::onBtnSave );
+    //connect( ui->btnSave, &QPushButton::clicked, this, &MainWindow::onBtnSave );
 
     // ловим нажатие кнопки Предпросмотр
     connect( ui->btnPreview, &QPushButton::clicked, this, &MainWindow::onBtnPreview );
@@ -542,6 +540,114 @@ bool  MainWindow::imageCreate()
 
 //------------------------------------------------------------------------------
 
+void  MainWindow::fileSave() {
+    // собственно файл
+    QFile file;
+
+    // формируем картинку
+    if(imageCreate()) {
+        if(0 != m_pImage->size()) {
+            m_pPixmap->loadFromData(*m_pImage, "BMP");
+        }
+    } else {
+        qDebug() << "cannot create image";
+        return;
+    }
+
+//    // формируем имя файла по умолчанию
+//    QString deffilename = QString("/pattern%1x%2").arg(m_uRow).arg(m_uColumn);
+
+//    // каталог где мы находимся
+//    QDir *pDir = new QDir(QDir::currentPath() + deffilename);
+
+//    // строка с именем каталога где мы находимся
+//    QString dir(pDir->path());
+
+//    // формиреум путь и имя файла через диалог
+//    QString filename = QFileDialog::getSaveFileName( this, "Сохранить файл", dir, "Изображение в формате PNG (*.png);;Изображение в формате BMP (*.bmp)" );
+
+//    QApplication::processEvents();
+
+    if(!m_zPrgFileName.isEmpty()) {
+        file.setFileName(m_zPrgFileName);
+
+        if(!file.open(QIODevice::WriteOnly)) {
+            qDebug() << "cannot open file" << m_zPrgFileName;
+            return;
+        } else {
+            QString  format = m_zPrgFileName.right(3).toUpper();
+
+            if(m_pPixmap->save(&file, format.toStdString().c_str())) {
+                if(m_bPrgTitleChanged) {
+                    setPrgTitleChanged(false);
+                }
+                m_bPrgTitleChanged = false;
+            } else {
+                qDebug() << "Ошибка записи в файл";
+            }
+
+            file.close();
+        }
+    }
+}
+
+void  MainWindow::fileSaveAs() {
+    // собственно файл
+    QFile file;
+
+    // формируем картинку
+    if(imageCreate()) {
+        if(0 != m_pImage->size()) {
+            m_pPixmap->loadFromData( *m_pImage, "BMP" );
+        }
+    } else {
+        qDebug() << "cannot create image";
+        return;
+    }
+
+    // формируем имя файла по умолчанию
+    QString deffilename = QString("/pattern%1x%2").arg(m_uRow).arg(m_uColumn);
+
+    // каталог где мы находимся
+    QDir *pDir = new QDir(QDir::currentPath() + deffilename);
+
+    // строка с именем каталога где мы находимся
+    QString dir(pDir->path());
+
+    // формиреум путь и имя файла через диалог
+    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "Изображение в формате PNG (*.png);;Изображение в формате BMP (*.bmp)");
+
+    QApplication::processEvents();
+
+    if(!filename.isEmpty()) {
+        file.setFileName(filename);
+
+        m_zPrgFileName = filename;
+
+        if(!file.open(QIODevice::WriteOnly)) {
+            qDebug() << "cannot open file" << filename;
+            return;
+        } else {
+            QString  format = filename.right(3).toUpper();
+
+            if(m_pPixmap->save(&file, format.toStdString().c_str())) {
+                if(m_bPrgTitleChanged) {
+                    setPrgTitleChanged(false);
+                }
+                m_bPrgTitleChanged = false;
+            } else {
+                qDebug() << "Ошибка записи в файл";
+            }
+
+            file.close();
+        }
+    } else {
+        qDebug() << "no filename";
+    }
+}
+
+//------------------------------------------------------------------------------
+
 void  MainWindow::onBtnSave()
 {
     // собственно файл
@@ -683,7 +789,7 @@ void  MainWindow::onNewHandler() {
     m_zPrgTitle.clear();
 
     m_bPrgTitleChanged = false;
-    setPrgTitleChanged(false);
+//    setPrgTitleChanged(false);
 
     m_zPrgFileName.clear();
 
@@ -726,6 +832,9 @@ void  MainWindow::onNewHandler() {
     m_bImageReady = false;
 
     setCellSize();
+
+    // заголовок формы
+    setPrgTitleText();
 }
 
 void  MainWindow::onOpenHandler() {
@@ -733,11 +842,16 @@ void  MainWindow::onOpenHandler() {
 }
 
 void  MainWindow::onSaveHandler() {
-
+    if(m_zPrgFileName.isEmpty()) {
+        fileSaveAs();
+    }
+    else {
+        fileSave();
+    }
 }
 
 void  MainWindow::onSaveAsHandler() {
-
+    fileSaveAs();
 }
 
 void  MainWindow::onPrintHandler() {
@@ -762,10 +876,23 @@ void  MainWindow::onPrintHandler() {
         return;
 
     // есть картинка
+#if 0
     QPainter painter;
     painter.begin(&printer);
     painter.drawImage(0, 0, m_pPixmap->toImage());
     painter.end();
+#else
+    //!TODO сейчас картинка помещается в левый верхний угол растягивается на весь лист
+    //!добавить настройки: центровка, поля, масштаб?..
+    QPainter painter(&printer);
+    const QImage &image = m_pPixmap->toImage();
+    QRect rect = painter.viewport();
+    QSize size = image.size();
+    size.scale(rect.size(), Qt::KeepAspectRatio);
+    painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+    painter.setWindow(image.rect());
+    painter.drawImage(0, 0, image);
+#endif
 }
 
 void  MainWindow::onQuitHandler() {
