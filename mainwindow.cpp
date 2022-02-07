@@ -466,6 +466,7 @@ bool  MainWindow::imageCreate()
     m_uColumn = static_cast<unsigned>(ui->spinColumn->value());
 
     // размер картинки в пикселях
+#if 0
     if( keGridTypeShift == m_uGridType )
     {
         uWidth = m_uColumn * m_tCell.w - ( m_uColumn - 1 );
@@ -476,7 +477,18 @@ bool  MainWindow::imageCreate()
         uWidth = m_uColumn * m_tCell.w - ( m_uColumn - 1 );
         uHeight = m_uRow * m_tCell.h - ( m_uRow - 1 );
     }
-
+#else
+    if( keGridTypeShift == m_uGridType )
+    {
+        uWidth = m_uColumn * m_tCell.w;
+        uHeight = static_cast<unsigned>( m_uRow / 2.0 * m_tCell.h + m_tCell.h / 2.0 );
+    }
+    else
+    {
+        uWidth = m_uColumn * m_tCell.w;
+        uHeight = m_uRow * m_tCell.h;
+    }
+#endif
     // очищаем file header
     memset( &m_tBitMap.bfh, 0, sizeof(m_tBitMap.bfh) );
 
