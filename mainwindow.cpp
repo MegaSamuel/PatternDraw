@@ -340,6 +340,7 @@ bool  MainWindow::imageFillNormal()
 
     RGBQUAD      color;
     QDataStream  stream( m_pImage, QIODevice::WriteOnly );
+#if 0
     int  div_i_begin = 0;
     int  div_j_begin = 0;
 
@@ -382,7 +383,55 @@ bool  MainWindow::imageFillNormal()
             stream.writeRawData( reinterpret_cast<char*>(&color), sizeof(color) );
         }
     }
+#else
+    int  div_i_end = 0, div_i_begin = 0;
+    int  div_j_end = 0, div_j_begin = 0;
 
+    // подгоняем массив под размер изображения
+    m_pImage->resize( static_cast<int>(m_tBitMap.bfh.bfSize) );
+
+    // обнуляем массив
+    memset( m_pImage->data(), 0, static_cast<size_t>(m_tBitMap.bfh.bfSize) );
+
+    stream.setVersion(QDataStream::Qt_5_12);
+
+    // пишем заголовок картинки
+    stream.writeRawData( reinterpret_cast<char*>(&m_tBitMap), sizeof(TBitMap) );
+
+    // картинка заполняется слева направо снизу вверх.
+
+    // проход по высоте (по строкам)
+    for( int i = 0; i < m_tBitMap.bih.biHeight; i++ )
+    {
+        // признак первого пикселя ячейки по высоте
+        div_i_begin = i % static_cast<int>(m_tCell.h);
+        // признак последнего пикселя ячейки по высоте
+        div_i_end = (i+1) % static_cast<int>(m_tCell.h);
+
+        // проход по ширине (по столбцам)
+        for( int j = 0; j < m_tBitMap.bih.biWidth; j++ )
+        {
+            // признак первого пикселя ячейки по ширине
+            div_j_begin = j % static_cast<int>(m_tCell.w);
+            // признак последнего пикселя ячейки по ширине
+            div_j_end = (j+1) % static_cast<int>(m_tCell.w);
+
+            // цвет фона
+            getBackColor( &color );
+
+            // рисуем столбцы
+            if( ( 0 == i ) || ( 0 == div_i_begin ) || ( 0 == div_i_end ) ||
+                ( 0 == j ) || ( 0 == div_j_begin ) || ( 0 == div_j_end ) )
+            {
+                // цвет сетки
+                getGridColor( &color );
+            }
+
+            // пишем пиксель
+            stream.writeRawData( reinterpret_cast<char*>(&color), sizeof(color) );
+        }
+    }
+#endif
     if( stream.status() != QDataStream::Ok )
     {
         qDebug() << "Ошибка записи";
