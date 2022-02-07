@@ -61,7 +61,7 @@ private Q_SLOTS:
 private:
     Ui::MainWindow *ui;
 
-    bool           askSaveIfChanged();
+    bool           askSaveIfChanged(const QString& discard = "");
 
     QString        m_zPrgName;
     QString        m_zPrgTitle;

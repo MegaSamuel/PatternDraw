@@ -370,7 +370,7 @@
    </property>
    <widget class="QMenu" name="menuNote">
     <property name="title">
-     <string>Справка</string>
+     <string>?</string>
     </property>
     <addaction name="actionMan"/>
     <addaction name="actionInfo"/>

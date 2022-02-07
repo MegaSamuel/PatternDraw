@@ -8,7 +8,7 @@ Info::Info( QWidget *parent ): QDialog( parent )
     vlayout->setAlignment( Qt::AlignLeft | Qt::AlignTop );
 
     QLabel *caption = new QLabel;
-    caption->setText( "Программа PatternDraw, версия 0.1.3" );
+    caption->setText( "Программа PatternDraw, версия 0.1.4" );
     caption->setStyleSheet("font-weight: bold");
 
     QPlainTextEdit *ptInfo = new QPlainTextEdit;
@@ -16,7 +16,7 @@ Info::Info( QWidget *parent ): QDialog( parent )
     ptInfo->setFrameStyle(QFrame::NoFrame);
     ptInfo->setStyleSheet("background-color: transparent");
 
-//    ptInfo->appendPlainText("Программа PatternDraw, версия 0.1.3");
+//    ptInfo->appendPlainText("Программа PatternDraw, версия 0.1.4");
 //    ptInfo->appendPlainText("");
     ptInfo->appendPlainText("Разработчик Медведев С.А.");
     ptInfo->appendPlainText("");
@@ -24,7 +24,7 @@ Info::Info( QWidget *parent ): QDialog( parent )
     ptInfo->appendPlainText("");
     ptInfo->appendPlainText("По вопросам писать на cepaleme@gmail.com");
     ptInfo->appendPlainText("");
-    ptInfo->appendPlainText("2021 г.");
+    ptInfo->appendPlainText("2022 г.");
 
     QLabel *label = new QLabel( "" );
 

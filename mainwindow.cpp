@@ -774,7 +774,7 @@ void  MainWindow::onBtnChangeGridColor()
 
 void  MainWindow::onNewHandler() {
     // есть несохраненные изменения
-    if(!askSaveIfChanged()) {
+    if(!askSaveIfChanged("Не сохранять")) {
         return;
     }
 
@@ -1007,9 +1007,9 @@ void  MainWindow::setCellSize()
 
 //------------------------------------------------------------------------------
 
-bool  MainWindow::askSaveIfChanged()
+bool  MainWindow::askSaveIfChanged(const QString& discard)
 {
-    bool result = false;
+    bool result = true;
 
     if( m_bPrgTitleChanged )
     {
@@ -1022,7 +1022,10 @@ bool  MainWindow::askSaveIfChanged()
         msgBox.setDefaultButton( QMessageBox::Save );
 
         msgBox.setButtonText( QMessageBox::Save, "Сохранить" );
-        msgBox.setButtonText( QMessageBox::Discard, "Выход" );
+        if(discard.isEmpty())
+            msgBox.setButtonText( QMessageBox::Discard, "Выход" );
+        else
+            msgBox.setButtonText( QMessageBox::Discard, discard );
         msgBox.setButtonText( QMessageBox::Cancel, "Отмена" );
 
         int ret = msgBox.exec();
@@ -1047,6 +1050,7 @@ bool  MainWindow::askSaveIfChanged()
 
             case QMessageBox::Cancel:
                 // отбой
+                result = false;
                 break;
 
             default:
