@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "dialog.h"
 #include <QDebug>
+#include <QPrinter>
+#include <QPrintDialog>
 
 //------------------------------------------------------------------------------
 
@@ -11,8 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_zPrgName.clear();
-    m_zPrgTitle.clear();
     m_bPrgTitleChanged = false;
 
     m_zPrgName = "PatternDraw";
@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
 
     // ловим нажатие кнопки Сохранить
-    connect( ui->btnSave, &QPushButton::clicked, this, &MainWindow::onBtnSave );
+    //connect( ui->btnSave, &QPushButton::clicked, this, &MainWindow::onBtnSave );
 
     // ловим нажатие кнопки Предпросмотр
     connect( ui->btnPreview, &QPushButton::clicked, this, &MainWindow::onBtnPreview );
@@ -72,11 +72,23 @@ MainWindow::MainWindow(QWidget *parent) :
     // ловим нажатие кнопки Изменить цвет сетки
     connect( ui->btnGridColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeGridColor ) ;
 
+    // меню Файл
+    connect(ui->actionNew, &QAction::triggered, this, &MainWindow::onNewHandler);
+    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::onOpenHandler);
+    connect(ui->actionSave, &QAction::triggered, this, &MainWindow::onSaveHandler);
+    connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::onSaveAsHandler);
+    connect(ui->actionPrint, &QAction::triggered, this, &MainWindow::onPrintHandler);
+    connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::onQuitHandler);
+
+    // меню Правка
+    connect(ui->actionUndo, &QAction::triggered, this, &MainWindow::onUndoHandler);
+    connect(ui->actionRedo, &QAction::triggered, this, &MainWindow::onRedoHandler);
+
     // вызов руководства пользователя
-    connect( ui->actionman, &QAction::triggered, this, &MainWindow::onManHandler );
+    connect(ui->actionMan, &QAction::triggered, this, &MainWindow::onManHandler);
 
     // вызов справки о программе
-    connect( ui->actioninfo, &QAction::triggered, this, &MainWindow::onInfoHandler );
+    connect(ui->actionInfo, &QAction::triggered, this, &MainWindow::onInfoHandler);
 
     // комбобокс с типом элемента
     connect( ui->comboBoxItem, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeItem );
@@ -454,6 +466,7 @@ bool  MainWindow::imageCreate()
     m_uColumn = static_cast<unsigned>(ui->spinColumn->value());
 
     // размер картинки в пикселях
+#if 0
     if( keGridTypeShift == m_uGridType )
     {
         uWidth = m_uColumn * m_tCell.w - ( m_uColumn - 1 );
@@ -464,7 +477,18 @@ bool  MainWindow::imageCreate()
         uWidth = m_uColumn * m_tCell.w - ( m_uColumn - 1 );
         uHeight = m_uRow * m_tCell.h - ( m_uRow - 1 );
     }
-
+#else
+    if( keGridTypeShift == m_uGridType )
+    {
+        uWidth = m_uColumn * m_tCell.w;
+        uHeight = static_cast<unsigned>( m_uRow / 2.0 * m_tCell.h + m_tCell.h / 2.0 );
+    }
+    else
+    {
+        uWidth = m_uColumn * m_tCell.w;
+        uHeight = m_uRow * m_tCell.h;
+    }
+#endif
     // очищаем file header
     memset( &m_tBitMap.bfh, 0, sizeof(m_tBitMap.bfh) );
 
@@ -516,6 +540,108 @@ bool  MainWindow::imageCreate()
 
 //------------------------------------------------------------------------------
 
+bool  MainWindow::fileSave() {
+    bool result = false;
+    // собственно файл
+    QFile file;
+
+    // формируем картинку
+    if(imageCreate()) {
+        if(0 != m_pImage->size()) {
+            m_pPixmap->loadFromData(*m_pImage, "BMP");
+        }
+    } else {
+        qDebug() << "cannot create image";
+        return false;
+    }
+
+    if(!m_zPrgFileName.isEmpty()) {
+        file.setFileName(m_zPrgFileName);
+
+        if(!file.open(QIODevice::WriteOnly)) {
+            qDebug() << "cannot open file" << m_zPrgFileName;
+            return false;
+        } else {
+            QString  format = m_zPrgFileName.right(3).toUpper();
+
+            if(m_pPixmap->save(&file, format.toStdString().c_str())) {
+                result = true;
+                if(m_bPrgTitleChanged) {
+                    setPrgTitleChanged(false);
+                }
+                m_bPrgTitleChanged = false;
+            } else {
+                qDebug() << "Ошибка записи в файл";
+            }
+
+            file.close();
+        }
+    }
+
+    return result;
+}
+
+bool  MainWindow::fileSaveAs() {
+    bool result = false;
+    // собственно файл
+    QFile file;
+
+    // формируем картинку
+    if(imageCreate()) {
+        if(0 != m_pImage->size()) {
+            m_pPixmap->loadFromData( *m_pImage, "BMP" );
+        }
+    } else {
+        qDebug() << "cannot create image";
+        return false;
+    }
+
+    // формируем имя файла по умолчанию
+    QString deffilename = QString("/pattern%1x%2").arg(m_uRow).arg(m_uColumn);
+
+    // каталог где мы находимся
+    QDir *pDir = new QDir(QDir::currentPath() + deffilename);
+
+    // строка с именем каталога где мы находимся
+    QString dir(pDir->path());
+
+    // формиреум путь и имя файла через диалог
+    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "Изображение в формате PNG (*.png);;Изображение в формате BMP (*.bmp)");
+
+    QApplication::processEvents();
+
+    if(!filename.isEmpty()) {
+        file.setFileName(filename);
+
+        m_zPrgFileName = filename;
+
+        if(!file.open(QIODevice::WriteOnly)) {
+            qDebug() << "cannot open file" << filename;
+            return false;
+        } else {
+            QString  format = filename.right(3).toUpper();
+
+            if(m_pPixmap->save(&file, format.toStdString().c_str())) {
+                result = true;
+                if(m_bPrgTitleChanged) {
+                    setPrgTitleChanged(false);
+                }
+                m_bPrgTitleChanged = false;
+            } else {
+                qDebug() << "Ошибка записи в файл";
+            }
+
+            file.close();
+        }
+    } else {
+        qDebug() << "no filename";
+    }
+
+    return result;
+}
+
+//------------------------------------------------------------------------------
+
 void  MainWindow::onBtnSave()
 {
     // собственно файл
@@ -552,6 +678,8 @@ void  MainWindow::onBtnSave()
     if( filename != "" )
     {
         file.setFileName( filename );
+
+        m_zPrgFileName = filename;
 
         if( !file.open(QIODevice::WriteOnly) )
         {
@@ -642,6 +770,138 @@ void  MainWindow::onBtnChangeGridColor()
 
         setLabelBackColor( ui->labelGridColor, &m_tGridColor );
     }
+}
+
+void  MainWindow::onNewHandler() {
+    // есть несохраненные изменения
+    if(!askSaveIfChanged("Не сохранять")) {
+        return;
+    }
+
+    // далее ставим везде дефолтные значения
+    //!TODO выделить в отдельную функцию и ее вызывать и тут и в консрукторе
+    m_zPrgTitle.clear();
+
+    m_bPrgTitleChanged = false;
+//    setPrgTitleChanged(false);
+
+    m_zPrgFileName.clear();
+
+    // дефолтные значения переменных
+    m_uRow = 10;
+    m_uColumn = 10;
+
+    ui->spinRow->setValue( static_cast<int>(m_uRow) );
+    ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
+
+    m_uItemType = keItemTypeRectan;
+    m_uItemSize = keItemSizeNormal;
+    m_uGridType = keGridTypeShift;
+
+    ui->comboBoxItem->setCurrentIndex( static_cast<int>(m_uItemType) );
+    ui->comboBoxSize->setCurrentIndex( static_cast<int>(m_uItemSize) );
+    ui->comboBoxGrid->setCurrentIndex( static_cast<int>(m_uGridType) );
+
+    // цвет фона
+    m_tBackColor = Qt::white;
+    setLabelBackColor( ui->labelBackColor, &m_tBackColor );
+
+    // цвет сетки
+    m_tGridColor = Qt::gray;
+    setLabelBackColor( ui->labelGridColor, &m_tGridColor );
+
+    // картинка для превью
+    if(!m_pPixmap->isNull()) {
+        //!TODO тут нужно очищать превьюшный лейбл
+        //m_pPixmap = new QPixmap;
+        //ui->lblPicture->setPixmap();
+    }
+
+    // изображение для превью
+    if(m_pImage->size()) {
+        m_pImage->clear();
+    }
+
+    // сформировано ли изображение
+    m_bImageReady = false;
+
+    setCellSize();
+
+    // заголовок формы
+    setPrgTitleText();
+}
+
+void  MainWindow::onOpenHandler() {
+
+}
+
+void  MainWindow::onSaveHandler() {
+    if(m_zPrgFileName.isEmpty()) {
+        fileSaveAs();
+    }
+    else {
+        fileSave();
+    }
+}
+
+void  MainWindow::onSaveAsHandler() {
+    fileSaveAs();
+}
+
+void  MainWindow::onPrintHandler() {
+    // нет картинки
+    if(m_pPixmap->isNull()) {
+        QMessageBox  msgBox;
+
+        msgBox.setWindowTitle("Информация");
+        msgBox.setText( "Нет сформированного изображения!\nПеред печатью нажмите кнопку \"Предпросмотр\"" );
+        msgBox.exec();
+
+        return;
+    }
+
+    QPrinter printer;
+
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    dialog->setWindowTitle(tr("Print Document"));
+
+    // нажали Ок
+    if(dialog->exec() != QDialog::Accepted)
+        return;
+
+    // есть картинка
+#if 0
+    QPainter painter;
+    painter.begin(&printer);
+    painter.drawImage(0, 0, m_pPixmap->toImage());
+    painter.end();
+#else
+    //!TODO сейчас картинка помещается в левый верхний угол растягивается на весь лист
+    //!добавить настройки: центровка, поля, масштаб?..
+    QPainter painter(&printer);
+    const QImage &image = m_pPixmap->toImage();
+    QRect rect = painter.viewport();
+    QSize size = image.size();
+    size.scale(rect.size(), Qt::KeepAspectRatio);
+    painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+    painter.setWindow(image.rect());
+    painter.drawImage(0, 0, image);
+#endif
+}
+
+void  MainWindow::onQuitHandler() {
+    //!TODO сейчас хоткей ctrl+q надо бы переделать на alt+f4
+    if(askSaveIfChanged()) {
+        QApplication::quit();
+    }
+}
+
+void  MainWindow::onUndoHandler() {
+
+}
+
+void  MainWindow::onRedoHandler() {
+
 }
 
 void  MainWindow::onInfoHandler()
@@ -747,8 +1007,10 @@ void  MainWindow::setCellSize()
 
 //------------------------------------------------------------------------------
 
-bool  MainWindow::askSaveIfChanged()
+bool  MainWindow::askSaveIfChanged(const QString& discard)
 {
+    bool result = true;
+
     if( m_bPrgTitleChanged )
     {
         QMessageBox     msgBox;
@@ -760,7 +1022,10 @@ bool  MainWindow::askSaveIfChanged()
         msgBox.setDefaultButton( QMessageBox::Save );
 
         msgBox.setButtonText( QMessageBox::Save, "Сохранить" );
-        msgBox.setButtonText( QMessageBox::Discard, "Выход" );
+        if(discard.isEmpty())
+            msgBox.setButtonText( QMessageBox::Discard, "Выход" );
+        else
+            msgBox.setButtonText( QMessageBox::Discard, discard );
         msgBox.setButtonText( QMessageBox::Cancel, "Отмена" );
 
         int ret = msgBox.exec();
@@ -768,40 +1033,48 @@ bool  MainWindow::askSaveIfChanged()
         switch (ret)
         {
             case QMessageBox::Save:
-                onBtnSave();
+                // пробуем сохранить
+                if(m_zPrgFileName.isEmpty()) {
+                    result = fileSaveAs();
+                }
+                else {
+                    result = fileSave();
+                }
+                //onBtnSave();
                 break;
 
             case QMessageBox::Discard:
+                // выходим без сохранения
+                result = true;
                 break;
 
             case QMessageBox::Cancel:
-                return false;
+                // отбой
+                result = false;
+                break;
 
             default:
-                return false;
+                break;
         }
     }
 
-    return true;
+    return result;
 }
 
 //------------------------------------------------------------------------------
 
 void  MainWindow::closeEvent( QCloseEvent  *event )
 {
-    if( !askSaveIfChanged() )
-    {
+    if(!askSaveIfChanged()) {
         event->ignore();
-    }
-    else
-    {
+    } else {
         event->accept();
     }
 }
 
 void  MainWindow::resizeEvent(QResizeEvent *event)
 {
-    Q_UNUSED( event );
+    Q_UNUSED(event)
 
     //qDebug() << "win" << event->size().width() << event->size().height();
 

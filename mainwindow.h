@@ -40,24 +40,34 @@ public:
     };
 
 private Q_SLOTS:
-    void       onBtnSave();
+    void       onBtnSave(); //obsolete
     void       onBtnPreview();
     void       onBtnChangeBackColor();
     void       onBtnChangeGridColor();
+    void       onNewHandler();
+    void       onOpenHandler();
+    void       onSaveHandler();
+    void       onSaveAsHandler();
+    void       onPrintHandler();
+    void       onQuitHandler();
+    void       onUndoHandler();
+    void       onRedoHandler();
     void       onInfoHandler();
     void       onManHandler();
-    void       onChangeItem( int  index );
-    void       onChangeSize( int  index );
-    void       onChangeGrid( int  index );
+    void       onChangeItem(int  index);
+    void       onChangeSize(int  index);
+    void       onChangeGrid(int  index);
 
 private:
     Ui::MainWindow *ui;
 
-    bool           askSaveIfChanged();
+    bool           askSaveIfChanged(const QString& discard = "");
 
     QString        m_zPrgName;
     QString        m_zPrgTitle;
     bool           m_bPrgTitleChanged;
+
+    QString        m_zPrgFileName;
 
     void           setPrgTitleText( const QString&  text = "" );
 
@@ -73,6 +83,9 @@ private:
     void           getGridColor( RGBQUAD  *a_pColor );
 
     void           setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor );
+
+    bool           fileSave();
+    bool           fileSaveAs();
 
     unsigned       m_uItemType;
     unsigned       m_uItemSize;
