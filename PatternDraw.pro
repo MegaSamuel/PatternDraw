@@ -25,11 +25,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++17
 
 SOURCES += \
+        element.cpp \
         main.cpp \
         mainwindow.cpp \
         dialog.cpp
 
 HEADERS += \
+        element.h \
         mainwindow.h \
         dialog.h \
         bitmap.h

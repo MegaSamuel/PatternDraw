@@ -1,10 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <bitmap.h>
 #include <QDir>
 #include <QFile>
 #include <QMainWindow>
+
+#include <bitmap.h>
 
 //------------------------------------------------------------------------------
 

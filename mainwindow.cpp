@@ -2,8 +2,6 @@
 #include <QPrinter>
 #include <QPrintDialog>
 
-#include <algorithm>
-
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dialog.h"
