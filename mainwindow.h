@@ -18,6 +18,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    inline static constexpr int ROW_COUNT = 10;
+    inline static constexpr int COLUMN_COUNT = 10;
+
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
     ~MainWindow();
 

@@ -19,8 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_zPrgName = "PatternDraw";
 
     // дефолтные значения переменных
-    m_uRow = 10;
-    m_uColumn = 10;
+    m_uRow = ROW_COUNT;
+    m_uColumn = COLUMN_COUNT;
 
     ui->spinRow->setValue( static_cast<int>(m_uRow) );
     ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
@@ -795,8 +795,8 @@ void  MainWindow::onNewHandler() {
     m_zPrgFileName.clear();
 
     // дефолтные значения переменных
-    m_uRow = 10;
-    m_uColumn = 10;
+    m_uRow = ROW_COUNT;
+    m_uColumn = COLUMN_COUNT;
 
     ui->spinRow->setValue( static_cast<int>(m_uRow) );
     ui->spinColumn->setValue( static_cast<int>(m_uColumn) );

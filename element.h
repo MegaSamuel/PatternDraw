@@ -10,9 +10,11 @@
 class TElement
 {
 public:
-    explicit      TElement(int id);
+    explicit      TElement();
+    explicit      TElement(int row, int column);
 
-    int           getId() const;
+    void          setId(int row, int column);
+    uint64_t      getId() const;
 
     void          setText(const std::string& txt = "");
     void          setTextColor(const QColor& color = Qt::black);
@@ -33,9 +35,7 @@ public:
     QColor        getFillColor() const;
 
 private:
-    void          setId(int id);
-
-    int           m_id;
+    uint64_t      m_id;
 
     std::string   m_text;
     QColor        m_text_color;

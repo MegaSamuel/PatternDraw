@@ -26,12 +26,14 @@ CONFIG += c++17
 
 SOURCES += \
         element.cpp \
+        grid.cpp \
         main.cpp \
         mainwindow.cpp \
         dialog.cpp
 
 HEADERS += \
         element.h \
+        grid.h \
         mainwindow.h \
         dialog.h \
         bitmap.h
