@@ -58,6 +58,14 @@ private Q_SLOTS:
     void       onChangeSize(int  index);
     void       onChangeGrid(int  index);
 
+    void on_spinRow_valueChanged(int arg1);
+    void on_spinColumn_valueChanged(int arg1);
+
+    void on_btnRowM_clicked();
+    void on_btnRowP_clicked();
+    void on_btnColumnM_clicked();
+    void on_btnColumnP_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -110,6 +118,12 @@ private:
 
     void           closeEvent( QCloseEvent *event );
     void           resizeEvent( QResizeEvent *event );
+
+    // мин/макс количество рядов/колонок
+    unsigned       m_minRowVal;
+    unsigned       m_maxRowVal;
+    unsigned       m_minColumnVal;
+    unsigned       m_maxColumnVal;
 };
 
 //------------------------------------------------------------------------------

@@ -1,9 +1,12 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "dialog.h"
 #include <QDebug>
 #include <QPrinter>
 #include <QPrintDialog>
+
+#include <algorithm>
+
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include "dialog.h"
 
 //------------------------------------------------------------------------------
 
@@ -23,6 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->spinRow->setValue( static_cast<int>(m_uRow) );
     ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
+
+    m_minRowVal = static_cast<unsigned>(ui->spinRow->minimum());
+    m_maxRowVal = static_cast<unsigned>(ui->spinRow->maximum());
+    m_minColumnVal = static_cast<unsigned>(ui->spinColumn->minimum());
+    m_maxColumnVal = static_cast<unsigned>(ui->spinColumn->maximum());
 
     m_uItemType = keItemTypeRectan;
     m_uItemSize = keItemSizeNormal;
@@ -462,8 +470,9 @@ bool  MainWindow::imageCreate()
     unsigned  uWidth = 0;
     unsigned  uHeight = 0;
 
-    m_uRow = static_cast<unsigned>(ui->spinRow->value());
-    m_uColumn = static_cast<unsigned>(ui->spinColumn->value());
+// это больше ненужно - значения забираем через connect
+//    m_uRow = static_cast<unsigned>(ui->spinRow->value());
+//    m_uColumn = static_cast<unsigned>(ui->spinColumn->value());
 
     // размер картинки в пикселях
 #if 0
@@ -1091,3 +1100,55 @@ void  MainWindow::resizeEvent(QResizeEvent *event)
 }
 
 //------------------------------------------------------------------------------
+
+// количество рядов/колонок от спинбоксов
+// -->
+void MainWindow::on_spinRow_valueChanged(int arg1)
+{
+    m_uRow = static_cast<unsigned>(arg1);
+}
+
+void MainWindow::on_spinColumn_valueChanged(int arg1)
+{
+    m_uColumn = static_cast<unsigned>(arg1);
+}
+// <--
+
+// ловим нажатие кнопок минус/плюс ряд/колонка
+// -->
+void MainWindow::on_btnRowM_clicked()
+{
+    m_uRow--;
+
+    if(m_uRow < m_minRowVal) m_uRow = m_minRowVal;
+
+    ui->spinRow->setValue(static_cast<int>(m_uRow));
+}
+
+void MainWindow::on_btnRowP_clicked()
+{
+    m_uRow++;
+
+    if(m_uRow > m_maxRowVal) m_uRow = m_maxRowVal;
+
+    ui->spinRow->setValue(static_cast<int>(m_uRow));
+}
+
+void MainWindow::on_btnColumnM_clicked()
+{
+    m_uColumn--;
+
+    if(m_uColumn < m_minColumnVal) m_uColumn = m_minColumnVal;
+
+    ui->spinColumn->setValue(static_cast<int>(m_uColumn));
+}
+
+void MainWindow::on_btnColumnP_clicked()
+{
+    m_uColumn++;
+
+    if(m_uColumn > m_maxColumnVal) m_uColumn = m_maxColumnVal;
+
+    ui->spinColumn->setValue(static_cast<int>(m_uColumn));
+}
+// <--
