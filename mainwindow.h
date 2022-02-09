@@ -7,6 +7,8 @@
 
 #include <bitmap.h>
 
+#include "grid.h"
+
 //------------------------------------------------------------------------------
 
 namespace Ui {
@@ -70,6 +72,9 @@ private Q_SLOTS:
     void on_btnColumnM_clicked();
     void on_btnColumnP_clicked();
 
+    void on_checkBoxGrid_stateChanged(int arg1);
+    void on_checkBoxRuler_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 
@@ -128,6 +133,8 @@ private:
     unsigned       m_maxRowVal;
     unsigned       m_minColumnVal;
     unsigned       m_maxColumnVal;
+
+    TGrid         *m_pGrid;
 };
 
 //------------------------------------------------------------------------------

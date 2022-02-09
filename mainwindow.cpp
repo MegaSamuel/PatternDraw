@@ -52,6 +52,9 @@ MainWindow::MainWindow(QWidget *parent) :
     // изображение для превью
     m_pImage = new QByteArray;
 
+    // таблица элементов
+    m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn), static_cast<int>(m_maxRowVal), static_cast<int>(m_maxColumnVal));
+
     // сформировано ли изображение
     m_bImageReady = false;
 
@@ -1104,11 +1107,15 @@ void  MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::on_spinRow_valueChanged(int arg1)
 {
     m_uRow = static_cast<unsigned>(arg1);
+
+    m_pGrid->setRows(arg1);
 }
 
 void MainWindow::on_spinColumn_valueChanged(int arg1)
 {
     m_uColumn = static_cast<unsigned>(arg1);
+
+    m_pGrid->setColumns(arg1);
 }
 // <--
 
@@ -1121,6 +1128,8 @@ void MainWindow::on_btnRowM_clicked()
     if(m_uRow < m_minRowVal) m_uRow = m_minRowVal;
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
+
+    m_pGrid->decRow();
 }
 
 void MainWindow::on_btnRowP_clicked()
@@ -1130,6 +1139,8 @@ void MainWindow::on_btnRowP_clicked()
     if(m_uRow > m_maxRowVal) m_uRow = m_maxRowVal;
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
+
+    m_pGrid->incRow();
 }
 
 void MainWindow::on_btnColumnM_clicked()
@@ -1139,6 +1150,8 @@ void MainWindow::on_btnColumnM_clicked()
     if(m_uColumn < m_minColumnVal) m_uColumn = m_minColumnVal;
 
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
+
+    m_pGrid->decColumn();
 }
 
 void MainWindow::on_btnColumnP_clicked()
@@ -1148,5 +1161,21 @@ void MainWindow::on_btnColumnP_clicked()
     if(m_uColumn > m_maxColumnVal) m_uColumn = m_maxColumnVal;
 
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
+
+    m_pGrid->incColumn();
 }
 // <--
+
+// дополнительные настройки
+// -->
+void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
+{
+    m_pGrid->setBorder(Qt::Unchecked != arg1);
+}
+
+void MainWindow::on_checkBoxRuler_stateChanged(int arg1)
+{
+    Q_UNUSED(arg1)
+}
+// <--
+

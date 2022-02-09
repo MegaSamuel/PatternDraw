@@ -2,17 +2,17 @@
 
 //------------------------------------------------------------------------------
 
-TElement::TElement() : TElement(0, 0) {
+TElement::TElement() : TElement({0, 0}) {
 
 }
 
-TElement::TElement(int row, int column) {
-    setId(row, column);
+TElement::TElement(std::pair<int, int> id) {
+    setId(id);
 
     m_text.clear();
     m_text_color = Qt::black;
 
-    m_border = false;
+    m_border = true;
     m_border_color = Qt::gray;
 
     m_fill = false;
@@ -21,11 +21,11 @@ TElement::TElement(int row, int column) {
 
 //------------------------------------------------------------------------------
 
-void TElement::setId(int row, int column) {
-    m_id = (static_cast<unsigned>(row) << 0x10) + static_cast<unsigned>(column);
+void TElement::setId(std::pair<int, int> id) {
+    m_id = id;
 }
 
-uint64_t TElement::getId() const {
+std::pair<int, int> TElement::getId() const {
     return m_id;
 }
 

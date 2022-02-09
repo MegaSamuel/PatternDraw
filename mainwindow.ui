@@ -320,6 +320,46 @@
         </spacer>
        </item>
        <item>
+        <layout class="QGridLayout" name="gridLayoutPropAdd">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="checkBoxRuler">
+           <property name="text">
+            <string>Нумерация</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="checkBoxGrid">
+           <property name="text">
+            <string>Сетка</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="leftMargin">
           <number>2</number>
