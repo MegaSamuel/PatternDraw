@@ -1,10 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <bitmap.h>
 #include <QDir>
 #include <QFile>
 #include <QMainWindow>
+
+#include <bitmap.h>
+
+#include "grid.h"
 
 //------------------------------------------------------------------------------
 
@@ -17,6 +20,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    inline static constexpr int ROW_COUNT = 10;
+    inline static constexpr int COLUMN_COUNT = 10;
+
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
     ~MainWindow();
 
@@ -57,6 +63,17 @@ private Q_SLOTS:
     void       onChangeItem(int  index);
     void       onChangeSize(int  index);
     void       onChangeGrid(int  index);
+
+    void on_spinRow_valueChanged(int arg1);
+    void on_spinColumn_valueChanged(int arg1);
+
+    void on_btnRowM_clicked();
+    void on_btnRowP_clicked();
+    void on_btnColumnM_clicked();
+    void on_btnColumnP_clicked();
+
+    void on_checkBoxGrid_stateChanged(int arg1);
+    void on_checkBoxRuler_stateChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -110,6 +127,14 @@ private:
 
     void           closeEvent( QCloseEvent *event );
     void           resizeEvent( QResizeEvent *event );
+
+    // мин/макс количество рядов/колонок
+    unsigned       m_minRowVal;
+    unsigned       m_maxRowVal;
+    unsigned       m_minColumnVal;
+    unsigned       m_maxColumnVal;
+
+    TGrid         *m_pGrid;
 };
 
 //------------------------------------------------------------------------------
