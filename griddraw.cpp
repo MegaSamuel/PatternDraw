@@ -24,8 +24,13 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     qDebug() << __func__ << glb().m_pGrid->getRows() << glb().m_pGrid->getColumns();
 
-    painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-    painter.setBrush(QBrush(m_color, Qt::SolidPattern));
+    // если border то ставим цвет, иначе цвет как фон
+    if(glb().m_pGrid->getBorder())
+        painter.setPen(QPen(glb().m_tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+    else
+        painter.setPen(QPen(glb().m_tElemColor, 1, Qt::SolidLine, Qt::FlatCap));
+
+    painter.setBrush(QBrush(glb().m_tElemColor, Qt::SolidPattern));
 
     for(int i = 0; i < glb().m_pGrid->getRows(); i++) {
         for(int j = 0; j < glb().m_pGrid->getColumns(); j++) {

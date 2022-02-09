@@ -15,6 +15,10 @@ public:
     unsigned       m_uItemSize;
     unsigned       m_uGridType;
 
+    QColor         m_tElemColor;
+    QColor         m_tBackColor;
+    QColor         m_tGridColor;
+
     unsigned       m_uTemp;
 
     TGrid         *m_pGrid;

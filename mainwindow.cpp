@@ -126,10 +126,13 @@ void  MainWindow::initGuiElements() {
 
     // цвет фона
     m_tBackColor = Qt::white;
+    glb().m_tBackColor = Qt::white;
+    glb().m_tElemColor = Qt::white;
     setLabelBackColor(ui->labelBackColor, &m_tBackColor);
 
     // цвет сетки
     m_tGridColor = Qt::gray;
+    glb().m_tGridColor = Qt::gray;
     setLabelBackColor(ui->labelGridColor, &m_tGridColor);
 }
 
@@ -775,6 +778,9 @@ void  MainWindow::onBtnChangeBackColor()
         m_tBackColor = color;
 
         setLabelBackColor( ui->labelBackColor, &m_tBackColor );
+
+        glb().m_tElemColor = color;
+        glb().m_tBackColor = color;
     }
 }
 
@@ -792,6 +798,10 @@ void  MainWindow::onBtnChangeGridColor()
         m_tGridColor = color;
 
         setLabelBackColor( ui->labelGridColor, &m_tGridColor );
+
+        glb().m_tGridColor = color;
+
+        update();
     }
 }
 
