@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+#include <grid.h>
+
 //------------------------------------------------------------------------------
 
 namespace Ui {
@@ -17,6 +19,7 @@ class TGridDraw : public QWidget
 
 public:
     explicit TGridDraw(QWidget *parent = nullptr);
+    explicit TGridDraw(TGrid *grid, QWidget *parent = nullptr);
     ~TGridDraw() override;
 
 protected:
@@ -31,7 +34,8 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    QColor  m_color;
+    TGrid         *m_pGrid;
+    QColor         m_color;
 };
 
 //------------------------------------------------------------------------------

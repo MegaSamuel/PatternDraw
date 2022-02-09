@@ -5,6 +5,13 @@
 //------------------------------------------------------------------------------
 
 TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
+    m_pGrid = nullptr;
+    m_color = Qt::gray;
+}
+
+TGridDraw::TGridDraw(TGrid *grid, QWidget *parent) : QWidget(parent) {
+
+    m_pGrid = grid;
     m_color = Qt::gray;
 }
 
