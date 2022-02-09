@@ -1,17 +1,11 @@
 #include <QDebug>
 
 #include "griddraw.h"
+#include "global.h"
 
 //------------------------------------------------------------------------------
 
 TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
-    m_pGrid = nullptr;
-    m_color = Qt::gray;
-}
-
-TGridDraw::TGridDraw(TGrid *grid, QWidget *parent) : QWidget(parent) {
-
-    m_pGrid = grid;
     m_color = Qt::gray;
 }
 
@@ -28,11 +22,25 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this); // Создаём объект отрисовщика
 
-    // Устанавливаем кисть абриса
-    painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
+    qDebug() << __func__ << glb().m_pGrid->getRows() << glb().m_pGrid->getColumns();
 
+    painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
     painter.setBrush(QBrush(m_color, Qt::SolidPattern));
-    painter.drawEllipse(25, 25, 50, 75);
+
+    for(int i = 0; i < glb().m_pGrid->getRows(); i++) {
+        for(int j = 0; j < glb().m_pGrid->getColumns(); j++) {
+            int w = 10;
+            int h = 10;
+            int x = 0 + j*w;
+            int y = 0 + i*h;
+            painter.drawRect(x, y, w, h);
+        }
+    }
+
+    // Устанавливаем кисть абриса
+//    painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
+//    painter.setBrush(QBrush(m_color, Qt::SolidPattern));
+//    painter.drawEllipse(25, 25, 50, 75);
 }
 
 void  TGridDraw::mousePressEvent(QMouseEvent *event) {

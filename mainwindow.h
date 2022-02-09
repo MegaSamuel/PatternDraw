@@ -7,7 +7,7 @@
 
 #include <bitmap.h>
 
-#include "grid.h"
+#include "global.h"
 
 //------------------------------------------------------------------------------
 
@@ -77,6 +77,8 @@ private Q_SLOTS:
 
 private:
     Ui::MainWindow *ui;
+
+    void           initGuiElements();
 
     bool           askSaveIfChanged(const QString& discard = "");
 

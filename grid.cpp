@@ -44,22 +44,6 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
 
 //------------------------------------------------------------------------------
 
-bool  TGrid::setRows(int count) {
-    if(isRowValid(count)) {
-        m_row_count = count;
-        return true;
-    }
-    return false;
-}
-
-bool  TGrid::setColumns(int count) {
-    if(isColumnValid(count)) {
-        m_column_count = count;
-        return true;
-    }
-    return false;
-}
-
 int   TGrid::getRows() {
     return m_row_count;
 }

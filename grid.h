@@ -16,8 +16,23 @@ public:
     explicit TGrid(int row, int column);
     explicit TGrid(int row, int column, int row_max, int column_max);
 
-    bool          setRows(int count);
-    bool          setColumns(int count);
+    template <typename ValType>
+    bool     setRows(ValType count) {
+        if(isRowValid(count)) {
+            m_row_count = count;
+            return true;
+        }
+        return false;
+    }
+
+    template <typename ValType>
+    bool     setColumns(ValType count){
+        if(isColumnValid(count)) {
+            m_column_count = count;
+            return true;
+        }
+        return false;
+    }
 
     int           getRows();
     int           getColumns();

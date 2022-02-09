@@ -19,7 +19,6 @@ class TGridDraw : public QWidget
 
 public:
     explicit TGridDraw(QWidget *parent = nullptr);
-    explicit TGridDraw(TGrid *grid, QWidget *parent = nullptr);
     ~TGridDraw() override;
 
 protected:
@@ -34,7 +33,6 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    TGrid         *m_pGrid;
     QColor         m_color;
 };
 
