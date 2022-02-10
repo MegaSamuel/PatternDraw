@@ -26,6 +26,8 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
     assert(isColumnValid(column));
 
     m_border = true;
+    m_split = false;
+    m_ruler = false;
 
     m_grid.resize(static_cast<unsigned>(m_max_row_count));
     for(int i = 0; i < m_max_row_count; i++) {

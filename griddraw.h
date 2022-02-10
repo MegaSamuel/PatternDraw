@@ -17,6 +17,14 @@ class TGridDraw : public QWidget
 {
     Q_OBJECT
 
+    enum ERowNumber
+    {
+        keRowNumberNone = 0,
+        keRowNumberAll  = 1,
+        keRowNumberOdd  = 2,
+        keRowNumberEven = 3,
+    };
+
 public:
     explicit TGridDraw(QWidget *parent = nullptr);
     ~TGridDraw() override;
@@ -35,11 +43,25 @@ protected:
 private:
     QColor         m_color;
 
+    QSize          m_hruler_size;
+    QSize          m_vruler_size;
+
+    void           updateRulerSize();
+
     QSize          getElemSize();
     QPoint         getElemShift();
 
-    // x, y - начальные координаты; painter - указатель на отрисовщик
-    void DrawRuler(int x, int y, QPainter *painter);
+    // x, y - начальные координаты; number - нумерация; painter - указатель на отрисовщик
+    void DrawVRuler(int x, int y, ERowNumber number, QPainter *painter);
+
+    // ind - номер ячейки; x, y - начальные координаты; painter - указатель на отрисовщик
+    void DrawVRulerElement(int ind, int x, int y, QPainter *painter);
+
+    // x, y - начальные координаты; number - нумерация; painter - указатель на отрисовщик
+    void DrawHRuler(int x, int y, ERowNumber number, QPainter *painter);
+
+    // ind - номер ячейки; x, y - начальные координаты; painter - указатель на отрисовщик
+    void DrawHRulerElement(int ind, int x, int y, QPainter *painter);
 
     // x, y - начальные координаты; painter - указатель на отрисовщик
     void DrawElements(int x, int y, QPainter *painter);
