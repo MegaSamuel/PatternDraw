@@ -42,7 +42,7 @@ private Q_SLOTS:
     void       onInfoHandler();
     void       onManHandler();
     void       onChangeItem(int  index);
-    void       onChangeSize(int  index);
+//    void       onChangeSize(int  index);
     void       onChangeGrid(int  index);
 
     void on_spinRow_valueChanged(int arg1);

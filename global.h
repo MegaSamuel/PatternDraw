@@ -31,14 +31,12 @@ public:
     explicit TGlobal();
 
     unsigned       m_uItemType;
-    unsigned       m_uItemSize;
     unsigned       m_uGridType;
 
-    QColor         m_tElemColor;
-    QColor         m_tBackColor;
+    QColor         m_tItemColor;
     QColor         m_tGridColor;
 
-    unsigned       m_uTemp;
+//    unsigned       m_uTemp;
 
     TGrid         *m_pGrid;
 };

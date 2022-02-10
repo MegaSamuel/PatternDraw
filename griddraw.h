@@ -37,6 +37,15 @@ private:
 
     QSize          getElemSize();
     QPoint         getElemShift();
+
+    // x, y - начальные координаты; painter - указатель на отрисовщик
+    void DrawRuler(int x, int y, QPainter *painter);
+
+    // x, y - начальные координаты; painter - указатель на отрисовщик
+    void DrawElements(int x, int y, QPainter *painter);
+
+    // i, j - номер ячейки; x, y - координаты; painter - указатель на отрисовщик
+    void DrawElement(int i, int j, int x, int y, QPainter *painter);
 };
 
 //------------------------------------------------------------------------------

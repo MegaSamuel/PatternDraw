@@ -22,18 +22,28 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this); // Создаём объект отрисовщика
 
-    qDebug() << __func__ << glb().m_pGrid->getRows() << glb().m_pGrid->getColumns();
+    //qDebug() << __func__ << glb().m_pGrid->getRows() << glb().m_pGrid->getColumns();
 
-    // если border то ставим цвет, иначе цвет как фон
-    if(glb().m_pGrid->getBorder())
-        painter.setPen(QPen(glb().m_tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
-    else
-        painter.setPen(QPen(glb().m_tElemColor, 1, Qt::SolidLine, Qt::FlatCap));
+    int x_shift = 0;
+    QSize  elem_size = getElemSize();
 
-    painter.setBrush(QBrush(glb().m_tElemColor, Qt::SolidPattern));
+    if(glb().m_pGrid->getRuler()) {
+        DrawRuler(x_shift, 0, &painter);
+        x_shift += elem_size.width();
+    }
 
-    int x = 0;
-    int y = 0;
+    DrawElements(x_shift, 0, &painter);
+}
+
+void  TGridDraw::DrawRuler(int x, int y, QPainter *painter) {
+    Q_UNUSED(x)
+    Q_UNUSED(y)
+    Q_UNUSED(painter)
+}
+
+void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
+    int _x = 0;
+    int _y = 0;
 
     QSize  elem_size = getElemSize();
     QPoint elem_shift = getElemShift();
@@ -41,33 +51,49 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
     for(int i = 0; i < glb().m_pGrid->getRows(); i++) {
         for(int j = 0; j < glb().m_pGrid->getColumns(); j++) {
             if(keGridTypeNormal == glb().m_uGridType) {
-                x = elem_shift.x() + j*elem_size.width();
-                y = elem_shift.y() + i*elem_size.height();
-                painter.drawRect(x, y, elem_size.width(), elem_size.height());
+                _x = x + elem_shift.x() + j*elem_size.width();
+                _y = y + elem_shift.y() + i*elem_size.height();
+                DrawElement(i, j, _x, _y, painter);
             } else if(keGridTypeShift == glb().m_uGridType) {
                 if(i%2) {
                     if(j%2) {
                         // четная строка, четный столбец
-                        x = j*elem_size.width();
-                        y = i*elem_shift.y();
-                        painter.drawRect(x, y, elem_size.width(), elem_size.height());
+                        _x = x + j*elem_size.width();
+                        _y = y + i*elem_shift.y();
+                        DrawElement(i, j, _x, _y, painter);
                     }
                 } else {
                     if(!(j%2)) {
                         // нечетная строка, нечетный столбец
-                        x = j*elem_size.width();
-                        y = i*elem_shift.y();
-                        painter.drawRect(x, y, elem_size.width(), elem_size.height());
+                        _x = x + j*elem_size.width();
+                        _y = y + i*elem_shift.y();
+                        DrawElement(i, j, _x, _y, painter);
                     }
                 }
             }
         }
     }
+}
 
-    // Устанавливаем кисть абриса
-//    painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-//    painter.setBrush(QBrush(m_color, Qt::SolidPattern));
-//    painter.drawEllipse(25, 25, 50, 75);
+void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
+    QSize  elem_size = getElemSize();
+
+    // если border то ставим цвет, иначе цвет как фон
+    if(glb().m_pGrid->getBorder()) {
+        painter->setPen(QPen(glb().m_tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+    } else {
+        if(glb().m_pGrid->getElement(i,j).getFill())
+            painter->setPen(QPen(glb().m_tItemColor, 1, Qt::SolidLine, Qt::FlatCap));
+        else
+            painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
+    }
+
+    if(glb().m_pGrid->getElement(i,j).getFill())
+        painter->setBrush(QBrush(glb().m_tItemColor, Qt::SolidPattern));
+    else
+        painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
+
+    painter->drawRect(x, y, elem_size.width(), elem_size.height());
 }
 
 void  TGridDraw::mousePressEvent(QMouseEvent *event) {

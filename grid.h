@@ -46,6 +46,14 @@ public:
     void          setBorder(bool border);
     bool          getBorder() const;
 
+    void          setSplit(bool split);
+    bool          getSplit() const;
+
+    void          setRuler(bool ruler);
+    bool          getRuler() const;
+
+    const TElement& getElement(int row, int column) const;
+
 private:
     std::vector<std::vector<TElement>> m_grid;
 
@@ -56,6 +64,10 @@ private:
     int           m_max_column_count;
 
     bool          m_border;
+
+    bool          m_split;
+
+    bool          m_ruler;
 
     bool          isRowValid(int value);
     bool          isColumnValid(int value);

@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->comboBoxItem, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeItem );
 
     // комбобокс с размером элемента
-    connect( ui->comboBoxSize, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeSize );
+    //connect( ui->comboBoxSize, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeSize );
 
     // комбобокс с типом строки
     connect( ui->comboBoxGrid, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeGrid );
@@ -117,17 +117,17 @@ void  MainWindow::initGuiElements() {
     m_uGridType = keGridTypeShift;
 
     glb().m_uItemType = keItemTypeRectan;
-    glb().m_uItemSize = keItemSizeNormal;
+    //glb().m_uItemSize = keItemSizeNormal;
     glb().m_uGridType = keGridTypeShift;
 
     ui->comboBoxItem->setCurrentIndex(static_cast<int>(m_uItemType));
-    ui->comboBoxSize->setCurrentIndex(static_cast<int>(m_uItemSize));
+    //ui->comboBoxSize->setCurrentIndex(static_cast<int>(m_uItemSize));
     ui->comboBoxGrid->setCurrentIndex(static_cast<int>(m_uGridType));
 
-    // цвет фона
+    // цвет элемента
     m_tBackColor = Qt::white;
-    glb().m_tBackColor = Qt::white;
-    glb().m_tElemColor = Qt::white;
+    //glb().m_tBackColor = Qt::white;
+    glb().m_tItemColor = Qt::white;
     setLabelBackColor(ui->labelBackColor, &m_tBackColor);
 
     // цвет сетки
@@ -779,8 +779,7 @@ void  MainWindow::onBtnChangeBackColor()
 
         setLabelBackColor( ui->labelBackColor, &m_tBackColor );
 
-        glb().m_tElemColor = color;
-        glb().m_tBackColor = color;
+        glb().m_tItemColor = color;
     }
 }
 
@@ -972,19 +971,19 @@ void  MainWindow::onChangeItem( int  index )
     update();
 }
 
-void  MainWindow::onChangeSize( int  index )
-{
-    if( 0 == index )
-        m_uItemSize = keItemSizeSmall;
-    else if( 1 == index )
-        m_uItemSize = keItemSizeNormal;
-    else if( 2 == index )
-        m_uItemSize = keItemSizeHuge;
+//void  MainWindow::onChangeSize( int  index )
+//{
+//    if( 0 == index )
+//        m_uItemSize = keItemSizeSmall;
+//    else if( 1 == index )
+//        m_uItemSize = keItemSizeNormal;
+//    else if( 2 == index )
+//        m_uItemSize = keItemSizeHuge;
 
-    glb().m_uItemSize = m_uItemSize;
+//    glb().m_uItemSize = m_uItemSize;
 
-    setCellSize();
-}
+//    setCellSize();
+//}
 
 void  MainWindow::onChangeGrid( int  index )
 {
@@ -1208,7 +1207,9 @@ void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
 
 void MainWindow::on_checkBoxRuler_stateChanged(int arg1)
 {
-    Q_UNUSED(arg1)
+    m_pGrid->setRuler(Qt::Unchecked != arg1);
+
+    update();
 }
 // <--
 

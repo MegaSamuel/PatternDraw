@@ -103,6 +103,22 @@ bool TGrid::getBorder() const {
     return m_border;
 }
 
+void  TGrid::setSplit(bool split) {
+    m_split = split;
+}
+
+bool TGrid::getSplit() const {
+    return m_split;
+}
+
+void  TGrid::setRuler(bool ruler) {
+    m_ruler = ruler;
+}
+
+bool TGrid::getRuler() const {
+    return m_ruler;
+}
+
 //------------------------------------------------------------------------------
 
 bool  TGrid::isRowValid(int value) {
@@ -111,6 +127,13 @@ bool  TGrid::isRowValid(int value) {
 
 bool  TGrid::isColumnValid(int value) {
     return ((0 < value) && (value < m_max_column_count));
+}
+
+//------------------------------------------------------------------------------
+
+const TElement&  TGrid::getElement(int row, int column) const {
+    const TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(column));
+    return elem;
 }
 
 //------------------------------------------------------------------------------
