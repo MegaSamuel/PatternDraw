@@ -45,22 +45,35 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
     int x_shift = 0;
     int y_shift = 0;
 
+    int y_shift_start = 0;
+
     updateRulerSize();
 
     // рулетка слева
     if(glb().m_pGrid->getRuler()) {
         DrawVRuler(x_shift, y_shift, keRowNumberEven, &painter);
+        // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
     }
 
     // собственно табличка ячеек
     DrawElements(x_shift, y_shift, &painter);
     QSize  elem_size = getElemSize();
+    // сдвигаемся на высоту таблицы
+    y_shift += glb().m_pGrid->getRows()*elem_size.height();
+
+    // рулетка снизу
+    if(glb().m_pGrid->getRuler()) {
+        DrawHRuler(x_shift, y_shift, keRowNumberAll, &painter);
+    }
+
+    // сдвигаемся на ширину таблицы
     x_shift += glb().m_pGrid->getColumns()*elem_size.width();
 
     // рулетка справа
     if(glb().m_pGrid->getRuler()) {
-        DrawVRuler(x_shift, y_shift, keRowNumberOdd, &painter);
+        DrawVRuler(x_shift, y_shift_start, keRowNumberOdd, &painter);
+        // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
     }
 }
@@ -123,17 +136,58 @@ void  TGridDraw::DrawVRulerElement(int ind, int x, int y, QPainter *painter) {
 }
 
 void  TGridDraw::DrawHRuler(int x, int y, ERowNumber number, QPainter *painter) {
-    Q_UNUSED(x)
-    Q_UNUSED(y)
-    Q_UNUSED(number)
-    Q_UNUSED(painter)
+    int _x = 0;
+    int _y = 0;
+
+    _y += y;
+
+    QSize  elem_size = getElemSize();
+//    QPoint elem_shift = getElemShift();
+
+    int num_for_draw = -1;
+
+    for(int i = 0; i < glb().m_pGrid->getColumns(); i++) {
+        if(keGridTypeNormal == glb().m_uGridType) {
+            _x = x + i*elem_size.width();
+            if(keRowNumberAll == number)
+                num_for_draw = glb().m_pGrid->getColumns()-i;
+            else if(keRowNumberOdd == number) {
+                if((glb().m_pGrid->getColumns()-i)%2)
+                    num_for_draw = glb().m_pGrid->getColumns()-i;
+                else
+                    num_for_draw = -1;
+            } else if(keRowNumberEven == number) {
+                if(!((glb().m_pGrid->getColumns()-i)%2))
+                    num_for_draw = glb().m_pGrid->getColumns()-i;
+                else
+                    num_for_draw = -1;
+            }
+            DrawHRulerElement(num_for_draw, _x, _y, painter);
+        } else if(keGridTypeShift == glb().m_uGridType) {
+            _x = x + i*elem_size.width();
+            DrawHRulerElement(glb().m_pGrid->getRows()-i, _x, _y, painter);
+        }
+    }
 }
 
 void  TGridDraw::DrawHRulerElement(int ind, int x, int y, QPainter *painter) {
-    Q_UNUSED(ind)
-    Q_UNUSED(x)
-    Q_UNUSED(y)
-    Q_UNUSED(painter)
+    QSize  elem_size = getElemSize();
+
+    // если border то ставим цвет, иначе цвет как фон
+    if(glb().m_pGrid->getBorder()) {
+        painter->setPen(QPen(glb().m_tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+    } else {
+        painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
+    }
+
+    painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
+
+    painter->drawRect(x, y, elem_size.width(), m_hruler_size.height());
+
+    QString str;
+    if(ind > 0) str = QString::number(ind);
+    painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
+    painter->drawText(x+(elem_size.width()-5*str.length())/2, y+(3*m_vruler_size.height())/4, str);
 }
 
 void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
