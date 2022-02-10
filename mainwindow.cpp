@@ -968,6 +968,8 @@ void  MainWindow::onChangeItem( int  index )
     glb().m_uItemType = m_uItemType;
 
     setCellSize();
+
+    update();
 }
 
 void  MainWindow::onChangeSize( int  index )
@@ -992,6 +994,8 @@ void  MainWindow::onChangeGrid( int  index )
         m_uGridType = keGridTypeShift;
 
     glb().m_uGridType = m_uGridType;
+
+    update();
 }
 
 //------------------------------------------------------------------------------

@@ -6,6 +6,25 @@
 
 //------------------------------------------------------------------------------
 
+enum EGridType
+{
+    keGridTypeNormal = 0,
+    keGridTypeShift  = 1,
+};
+
+enum EItemType
+{
+    keItemTypeRectan = 0,
+    keItemTypeSquare = 1,
+};
+
+enum EItemSize
+{
+    keItemSizeSmall  = 0,
+    keItemSizeNormal = 1,
+    keItemSizeHuge   = 2,
+};
+
 class TGlobal : public TStatic<TGlobal>
 {
 public:

@@ -34,6 +34,9 @@ protected:
 
 private:
     QColor         m_color;
+
+    QSize          getElemSize();
+    QPoint         getElemShift();
 };
 
 //------------------------------------------------------------------------------

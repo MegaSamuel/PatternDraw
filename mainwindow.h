@@ -26,25 +26,6 @@ public:
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
     ~MainWindow();
 
-    enum EGridType
-    {
-        keGridTypeNormal = 0,
-        keGridTypeShift  = 1,
-    };
-
-    enum EItemType
-    {
-        keItemTypeRectan = 0,
-        keItemTypeSquare = 1,
-    };
-
-    enum EItemSize
-    {
-        keItemSizeSmall  = 0,
-        keItemSizeNormal = 1,
-        keItemSizeHuge   = 2,
-    };
-
 private Q_SLOTS:
     void       onBtnSave(); //obsolete
     void       onBtnPreview();

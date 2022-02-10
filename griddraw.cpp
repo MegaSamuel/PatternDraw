@@ -32,13 +32,35 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     painter.setBrush(QBrush(glb().m_tElemColor, Qt::SolidPattern));
 
+    int x = 0;
+    int y = 0;
+
+    QSize  elem_size = getElemSize();
+    QPoint elem_shift = getElemShift();
+
     for(int i = 0; i < glb().m_pGrid->getRows(); i++) {
         for(int j = 0; j < glb().m_pGrid->getColumns(); j++) {
-            int w = 10;
-            int h = 10;
-            int x = 0 + j*w;
-            int y = 0 + i*h;
-            painter.drawRect(x, y, w, h);
+            if(keGridTypeNormal == glb().m_uGridType) {
+                x = elem_shift.x() + j*elem_size.width();
+                y = elem_shift.y() + i*elem_size.height();
+                painter.drawRect(x, y, elem_size.width(), elem_size.height());
+            } else if(keGridTypeShift == glb().m_uGridType) {
+                if(i%2) {
+                    if(j%2) {
+                        // четная строка, четный столбец
+                        x = j*elem_size.width();
+                        y = i*elem_shift.y();
+                        painter.drawRect(x, y, elem_size.width(), elem_size.height());
+                    }
+                } else {
+                    if(!(j%2)) {
+                        // нечетная строка, нечетный столбец
+                        x = j*elem_size.width();
+                        y = i*elem_shift.y();
+                        painter.drawRect(x, y, elem_size.width(), elem_size.height());
+                    }
+                }
+            }
         }
     }
 
@@ -76,6 +98,36 @@ void  TGridDraw::resizeEvent(QResizeEvent *event)
     // новые размеры лейбла
 //    int w = ui->lblPicture->width();
 //    int h = ui->lblPicture->height();
+}
+
+//------------------------------------------------------------------------------
+
+QSize  TGridDraw::getElemSize() {
+    QSize size(10, 10);
+
+    if(keItemTypeRectan == glb().m_uItemType) {
+        size.setHeight(20);
+        size.setWidth(10);
+    } else if(keItemTypeSquare == glb().m_uItemType) {
+        size.setHeight(10);
+        size.setWidth(10);
+    }
+
+    return size;
+}
+
+QPoint  TGridDraw::getElemShift() {
+    QPoint shift(0, 0);
+
+    if(keGridTypeNormal == glb().m_uGridType) {
+        shift.setX(0);
+        shift.setY(0);
+    } else if(keGridTypeShift == glb().m_uGridType) {
+        shift.setX(0);
+        shift.setY(getElemSize().height()/2);
+    }
+
+    return shift;
 }
 
 //------------------------------------------------------------------------------
