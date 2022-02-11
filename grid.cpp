@@ -26,6 +26,8 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
     assert(isColumnValid(column));
 
     m_border = true;
+    m_split = false;
+    m_ruler = false;
 
     m_grid.resize(static_cast<unsigned>(m_max_row_count));
     for(int i = 0; i < m_max_row_count; i++) {
@@ -43,22 +45,6 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
 }
 
 //------------------------------------------------------------------------------
-
-bool  TGrid::setRows(int count) {
-    if(isRowValid(count)) {
-        m_row_count = count;
-        return true;
-    }
-    return false;
-}
-
-bool  TGrid::setColumns(int count) {
-    if(isColumnValid(count)) {
-        m_column_count = count;
-        return true;
-    }
-    return false;
-}
 
 int   TGrid::getRows() {
     return m_row_count;
@@ -119,6 +105,22 @@ bool TGrid::getBorder() const {
     return m_border;
 }
 
+void  TGrid::setSplit(bool split) {
+    m_split = split;
+}
+
+bool TGrid::getSplit() const {
+    return m_split;
+}
+
+void  TGrid::setRuler(bool ruler) {
+    m_ruler = ruler;
+}
+
+bool TGrid::getRuler() const {
+    return m_ruler;
+}
+
 //------------------------------------------------------------------------------
 
 bool  TGrid::isRowValid(int value) {
@@ -127,6 +129,13 @@ bool  TGrid::isRowValid(int value) {
 
 bool  TGrid::isColumnValid(int value) {
     return ((0 < value) && (value < m_max_column_count));
+}
+
+//------------------------------------------------------------------------------
+
+const TElement&  TGrid::getElement(int row, int column) const {
+    const TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(column));
+    return elem;
 }
 
 //------------------------------------------------------------------------------

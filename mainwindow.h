@@ -7,7 +7,7 @@
 
 #include <bitmap.h>
 
-#include "grid.h"
+#include "global.h"
 
 //------------------------------------------------------------------------------
 
@@ -26,25 +26,6 @@ public:
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
     ~MainWindow();
 
-    enum EGridType
-    {
-        keGridTypeNormal = 0,
-        keGridTypeShift  = 1,
-    };
-
-    enum EItemType
-    {
-        keItemTypeRectan = 0,
-        keItemTypeSquare = 1,
-    };
-
-    enum EItemSize
-    {
-        keItemSizeSmall  = 0,
-        keItemSizeNormal = 1,
-        keItemSizeHuge   = 2,
-    };
-
 private Q_SLOTS:
     void       onBtnSave(); //obsolete
     void       onBtnPreview();
@@ -61,7 +42,7 @@ private Q_SLOTS:
     void       onInfoHandler();
     void       onManHandler();
     void       onChangeItem(int  index);
-    void       onChangeSize(int  index);
+//    void       onChangeSize(int  index);
     void       onChangeGrid(int  index);
 
     void on_spinRow_valueChanged(int arg1);
@@ -77,6 +58,8 @@ private Q_SLOTS:
 
 private:
     Ui::MainWindow *ui;
+
+    void           initGuiElements();
 
     bool           askSaveIfChanged(const QString& discard = "");
 

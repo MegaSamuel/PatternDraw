@@ -25,20 +25,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++17
 
 SOURCES += \
+        dialog.cpp \
         element.cpp \
+        global.cpp \
         grid.cpp \
         griddraw.cpp \
         main.cpp \
-        mainwindow.cpp \
-        dialog.cpp
+        mainwindow.cpp
 
 HEADERS += \
+        bitmap.h \
+        dialog.h \
         element.h \
+        global.h \
         grid.h \
         griddraw.h \
         mainwindow.h \
-        dialog.h \
-        bitmap.h
+        uni_static.h
 
 FORMS += \
         mainwindow.ui

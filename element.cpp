@@ -17,6 +17,8 @@ TElement::TElement(std::pair<int, int> id) {
 
     m_fill = false;
     m_fill_color = Qt::white;
+
+    m_split = false;
 }
 
 //------------------------------------------------------------------------------
@@ -75,6 +77,14 @@ bool TElement::getFill() const {
 
 QColor TElement::getFillColor() const {
     return m_fill_color;
+}
+
+void TElement::setSplit(bool split) {
+    m_split = split;
+}
+
+bool TElement::getSplit() {
+    return m_split;
 }
 
 //------------------------------------------------------------------------------

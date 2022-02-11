@@ -5,6 +5,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dialog.h"
+#include "griddraw.h"
+#include "global.h"
 
 //------------------------------------------------------------------------------
 
@@ -30,21 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_minColumnVal = static_cast<unsigned>(ui->spinColumn->minimum());
     m_maxColumnVal = static_cast<unsigned>(ui->spinColumn->maximum());
 
-    m_uItemType = keItemTypeRectan;
-    m_uItemSize = keItemSizeNormal;
-    m_uGridType = keGridTypeShift;
-
-    ui->comboBoxItem->setCurrentIndex( static_cast<int>(m_uItemType) );
-    ui->comboBoxSize->setCurrentIndex( static_cast<int>(m_uItemSize) );
-    ui->comboBoxGrid->setCurrentIndex( static_cast<int>(m_uGridType) );
-
-    // цвет фона
-    m_tBackColor = Qt::white;
-    setLabelBackColor( ui->labelBackColor, &m_tBackColor );
-
-    // цвет сетки
-    m_tGridColor = Qt::gray;
-    setLabelBackColor( ui->labelGridColor, &m_tGridColor );
+    initGuiElements();
 
     // картинка для превью
     m_pPixmap = new QPixmap;
@@ -54,6 +42,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // таблица элементов
     m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn), static_cast<int>(m_maxRowVal), static_cast<int>(m_maxColumnVal));
+
+    // отправляем указатель на таблицу в рисовалку
+    glb().m_pGrid = m_pGrid;
 
     // сформировано ли изображение
     m_bImageReady = false;
@@ -103,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->comboBoxItem, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeItem );
 
     // комбобокс с размером элемента
-    connect( ui->comboBoxSize, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeSize );
+    //connect( ui->comboBoxSize, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeSize );
 
     // комбобокс с типом строки
     connect( ui->comboBoxGrid, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeGrid );
@@ -118,6 +109,31 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void  MainWindow::initGuiElements() {
+    m_uItemType = keItemTypeRectan;
+    m_uItemSize = keItemSizeNormal;
+    m_uGridType = keGridTypeShift;
+
+    glb().m_uItemType = keItemTypeRectan;
+    //glb().m_uItemSize = keItemSizeNormal;
+    glb().m_uGridType = keGridTypeShift;
+
+    ui->comboBoxItem->setCurrentIndex(static_cast<int>(m_uItemType));
+    //ui->comboBoxSize->setCurrentIndex(static_cast<int>(m_uItemSize));
+    ui->comboBoxGrid->setCurrentIndex(static_cast<int>(m_uGridType));
+
+    // цвет элемента
+    m_tBackColor = Qt::white;
+    //glb().m_tBackColor = Qt::white;
+    glb().m_tItemColor = Qt::white;
+    setLabelBackColor(ui->labelBackColor, &m_tBackColor);
+
+    // цвет сетки
+    m_tGridColor = Qt::gray;
+    glb().m_tGridColor = Qt::gray;
+    setLabelBackColor(ui->labelGridColor, &m_tGridColor);
 }
 
 //------------------------------------------------------------------------------
@@ -762,6 +778,8 @@ void  MainWindow::onBtnChangeBackColor()
         m_tBackColor = color;
 
         setLabelBackColor( ui->labelBackColor, &m_tBackColor );
+
+        glb().m_tItemColor = color;
     }
 }
 
@@ -779,6 +797,10 @@ void  MainWindow::onBtnChangeGridColor()
         m_tGridColor = color;
 
         setLabelBackColor( ui->labelGridColor, &m_tGridColor );
+
+        glb().m_tGridColor = color;
+
+        update();
     }
 }
 
@@ -804,21 +826,7 @@ void  MainWindow::onNewHandler() {
     ui->spinRow->setValue( static_cast<int>(m_uRow) );
     ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
 
-    m_uItemType = keItemTypeRectan;
-    m_uItemSize = keItemSizeNormal;
-    m_uGridType = keGridTypeShift;
-
-    ui->comboBoxItem->setCurrentIndex( static_cast<int>(m_uItemType) );
-    ui->comboBoxSize->setCurrentIndex( static_cast<int>(m_uItemSize) );
-    ui->comboBoxGrid->setCurrentIndex( static_cast<int>(m_uGridType) );
-
-    // цвет фона
-    m_tBackColor = Qt::white;
-    setLabelBackColor( ui->labelBackColor, &m_tBackColor );
-
-    // цвет сетки
-    m_tGridColor = Qt::gray;
-    setLabelBackColor( ui->labelGridColor, &m_tGridColor );
+    initGuiElements();
 
     // картинка для превью
     if(!m_pPixmap->isNull()) {
@@ -956,20 +964,26 @@ void  MainWindow::onChangeItem( int  index )
     else if( 1 == index )
         m_uItemType = keItemTypeSquare;
 
-    setCellSize();
-}
-
-void  MainWindow::onChangeSize( int  index )
-{
-    if( 0 == index )
-        m_uItemSize = keItemSizeSmall;
-    else if( 1 == index )
-        m_uItemSize = keItemSizeNormal;
-    else if( 2 == index )
-        m_uItemSize = keItemSizeHuge;
+    glb().m_uItemType = m_uItemType;
 
     setCellSize();
+
+    update();
 }
+
+//void  MainWindow::onChangeSize( int  index )
+//{
+//    if( 0 == index )
+//        m_uItemSize = keItemSizeSmall;
+//    else if( 1 == index )
+//        m_uItemSize = keItemSizeNormal;
+//    else if( 2 == index )
+//        m_uItemSize = keItemSizeHuge;
+
+//    glb().m_uItemSize = m_uItemSize;
+
+//    setCellSize();
+//}
 
 void  MainWindow::onChangeGrid( int  index )
 {
@@ -977,6 +991,10 @@ void  MainWindow::onChangeGrid( int  index )
         m_uGridType = keGridTypeNormal;
     else if( 1 == index )
         m_uGridType = keGridTypeShift;
+
+    glb().m_uGridType = m_uGridType;
+
+    update();
 }
 
 //------------------------------------------------------------------------------
@@ -1109,6 +1127,8 @@ void MainWindow::on_spinRow_valueChanged(int arg1)
     m_uRow = static_cast<unsigned>(arg1);
 
     m_pGrid->setRows(arg1);
+
+    update();
 }
 
 void MainWindow::on_spinColumn_valueChanged(int arg1)
@@ -1116,6 +1136,8 @@ void MainWindow::on_spinColumn_valueChanged(int arg1)
     m_uColumn = static_cast<unsigned>(arg1);
 
     m_pGrid->setColumns(arg1);
+
+    update();
 }
 // <--
 
@@ -1129,7 +1151,9 @@ void MainWindow::on_btnRowM_clicked()
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
 
-    m_pGrid->decRow();
+    m_pGrid->setRows(m_uRow);
+
+    update();
 }
 
 void MainWindow::on_btnRowP_clicked()
@@ -1140,7 +1164,9 @@ void MainWindow::on_btnRowP_clicked()
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
 
-    m_pGrid->incRow();
+    m_pGrid->setRows(m_uRow);
+
+    update();
 }
 
 void MainWindow::on_btnColumnM_clicked()
@@ -1151,7 +1177,9 @@ void MainWindow::on_btnColumnM_clicked()
 
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
-    m_pGrid->decColumn();
+    m_pGrid->setColumns(m_uColumn);
+
+    update();
 }
 
 void MainWindow::on_btnColumnP_clicked()
@@ -1162,7 +1190,9 @@ void MainWindow::on_btnColumnP_clicked()
 
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
-    m_pGrid->incColumn();
+    m_pGrid->setColumns(m_uColumn);
+
+    update();
 }
 // <--
 
@@ -1171,11 +1201,15 @@ void MainWindow::on_btnColumnP_clicked()
 void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
 {
     m_pGrid->setBorder(Qt::Unchecked != arg1);
+
+    update();
 }
 
 void MainWindow::on_checkBoxRuler_stateChanged(int arg1)
 {
-    Q_UNUSED(arg1)
+    m_pGrid->setRuler(Qt::Unchecked != arg1);
+
+    update();
 }
 // <--
 
