@@ -31,7 +31,8 @@ SOURCES += \
         grid.cpp \
         griddraw.cpp \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        newdialog.cpp
 
 HEADERS += \
         bitmap.h \
@@ -41,6 +42,7 @@ HEADERS += \
         grid.h \
         griddraw.h \
         mainwindow.h \
+        newdialog.h \
         uni_static.h
 
 FORMS += \

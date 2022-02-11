@@ -8,6 +8,7 @@
 #include <bitmap.h>
 
 #include "global.h"
+#include "newdialog.h"
 
 //------------------------------------------------------------------------------
 
@@ -86,6 +87,8 @@ private:
 
     bool           fileSave();
     bool           fileSaveAs();
+
+    TNewDialog    *m_ptNewDialog;
 
     unsigned       m_uItemType;
     unsigned       m_uItemSize;

@@ -30,13 +30,14 @@ class TGlobal : public TStatic<TGlobal>
 public:
     explicit TGlobal();
 
+    unsigned       m_uRow;
+    unsigned       m_uColumn;
+
     unsigned       m_uItemType;
     unsigned       m_uGridType;
 
     QColor         m_tItemColor;
     QColor         m_tGridColor;
-
-//    unsigned       m_uTemp;
 
     TGrid         *m_pGrid;
 };
