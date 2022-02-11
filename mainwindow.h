@@ -21,9 +21,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    inline static constexpr int ROW_COUNT = 10;
-    inline static constexpr int COLUMN_COUNT = 10;
-
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
     ~MainWindow();
 
@@ -56,6 +53,8 @@ private Q_SLOTS:
 
     void on_checkBoxGrid_stateChanged(int arg1);
     void on_checkBoxRuler_stateChanged(int arg1);
+
+    void       onDlgCreate();
 
 private:
     Ui::MainWindow *ui;

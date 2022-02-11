@@ -34,6 +34,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initGuiElements();
 
+    // диалог Новыя сетка
+    m_ptNewDialog = new TNewDialog(this);
+    connect(m_ptNewDialog, &TNewDialog::dlgCreate, this, &MainWindow::onDlgCreate);
+
     // картинка для превью
     m_pPixmap = new QPixmap;
 
@@ -810,6 +814,14 @@ void  MainWindow::onNewHandler() {
         return;
     }
 
+    m_ptNewDialog->open();
+
+#if 0
+    // есть несохраненные изменения
+    if(!askSaveIfChanged("Не сохранять")) {
+        return;
+    }
+
     // далее ставим везде дефолтные значения
     //!TODO выделить в отдельную функцию и ее вызывать и тут и в консрукторе
     m_zPrgTitle.clear();
@@ -825,6 +837,43 @@ void  MainWindow::onNewHandler() {
 
     ui->spinRow->setValue( static_cast<int>(m_uRow) );
     ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
+
+    initGuiElements();
+
+    // картинка для превью
+    if(!m_pPixmap->isNull()) {
+        //!TODO тут нужно очищать превьюшный лейбл
+        //m_pPixmap = new QPixmap;
+        //ui->lblPicture->setPixmap();
+    }
+
+    // изображение для превью
+    if(m_pImage->size()) {
+        m_pImage->clear();
+    }
+
+    // сформировано ли изображение
+    m_bImageReady = false;
+
+    setCellSize();
+
+    // заголовок формы
+    setPrgTitleText();
+#endif
+}
+
+void  MainWindow::onDlgCreate() {
+    m_zPrgTitle.clear();
+
+    m_bPrgTitleChanged = false;
+
+    m_zPrgFileName.clear();
+
+    m_uRow = glb().m_uRow;
+    m_uColumn = glb().m_uColumn;
+
+    ui->spinRow->setValue(static_cast<int>(m_uRow));
+    ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
     initGuiElements();
 

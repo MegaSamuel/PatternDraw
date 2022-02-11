@@ -7,6 +7,14 @@ class TPrivNewDialog
 {
     friend class TNewDialog;
 
+    struct TDlgData {
+        int  nItemType;
+        int  nGridType;
+
+        int  nRow;
+        int  nColumn;
+    };
+
 public:
     QComboBox        *m_ptComboItem;
     QComboBox        *m_ptComboGrid;
@@ -18,8 +26,10 @@ public:
 
     QGridLayout      *m_ptGridLayout;
 
-    inline TPrivNewDialog()
-    {
+    TDlgData          m_tDefData;
+    TDlgData          m_tCurData;
+
+    inline TPrivNewDialog() {
         m_ptComboItem = Q_NULLPTR;
         m_ptComboGrid = Q_NULLPTR;
 
@@ -29,40 +39,38 @@ public:
         m_ptBtnBox = Q_NULLPTR;
 
         m_ptGridLayout = new QGridLayout;
+
+        m_tDefData.nItemType = keItemTypeRectan;
+        m_tDefData.nGridType = keGridTypeShift;
+        m_tDefData.nRow = ROW_COUNT;
+        m_tDefData.nColumn = COLUMN_COUNT;
+
+        m_tCurData = m_tDefData;
     }
 
-    ~TPrivNewDialog()
-    {
+    ~TPrivNewDialog() {
         m_ptGridLayout->deleteLater();
     }
 };
 
 //------------------------------------------------------------------------------
 
-TNewDialog::TNewDialog(QWidget *parent) : QDialog(parent)
-{
-    QPushButton 	*btn;
-    QLabel          *title;
-    int              row = 0;
+TNewDialog::TNewDialog(QWidget *parent) : QDialog(parent) {
+    int row = 0;
 
     priv__ = std::unique_ptr<TPrivNewDialog>(new TPrivNewDialog);
 
-    title = new QLabel( tr("Разработчик") + ":", this );
-    auto  pCompanyName = new QLabel( tr("АО «Авионика вертолетов»"), this );
-    priv__->m_ptGridLayout->addWidget( title, row, 0, 1, 1 );
-    priv__->m_ptGridLayout->addWidget( pCompanyName, row, 1, 1, 1 );
-    row++;
-    row = priv__->m_ptGridLayout->rowCount();
+    QLabel *title;
 
     QComboBox *combo;
 
     // ячейка
     combo = new QComboBox(this);
-    std::vector<QString> vctComboItems = {"Прямоугольник", "Квадрат"};
+    std::vector<QString> vctComboItems = {tr("Прямоугольник"), tr("Квадрат")};
     for(const QString& it : vctComboItems)
         combo->addItem(it);
-    combo->setCurrentIndex(keItemTypeRectan);
-    connect( combo, SIGNAL( currentIndexChanged(int) ), this, SLOT(onComboNetwork(int)) );
+    combo->setCurrentIndex(priv__->m_tDefData.nItemType);
+    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TNewDialog::onChangeItem);
 
     priv__->m_ptComboItem = combo;
     title = new QLabel(tr("Ячейка") + ":", this);
@@ -72,141 +80,170 @@ TNewDialog::TNewDialog(QWidget *parent) : QDialog(parent)
 
     // смещение
     combo = new QComboBox(this);
-    std::vector<QString> vctComboGrid = {"Прямоугольник", "Квадрат"};
-    for(const QString& it : vctComboItems)
+    std::vector<QString> vctComboGrid = {tr("Без смещения"), tr("Со смещением")};
+    for(const QString& it : vctComboGrid)
         combo->addItem(it);
-    combo->setCurrentIndex(keItemTypeRectan);
-    connect( combo, SIGNAL( currentIndexChanged(int) ), this, SLOT(onComboNetwork(int)) );
+    combo->setCurrentIndex(priv__->m_tDefData.nGridType);
+    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TNewDialog::onChangeGrid);
 
-    priv__->m_ptComboItem = combo;
-    title = new QLabel(tr("Ячейка") + ":", this);
+    priv__->m_ptComboGrid = combo;
+    title = new QLabel(tr("Смещение") + ":", this);
     priv__->m_ptGridLayout->addWidget(title, row, 0, 1, 1);
     priv__->m_ptGridLayout->addWidget(combo, row, 1, 1, 1);
     row++;
 
+    QSpinBox *spin;
+
     // ряды
+    spin = new QSpinBox(this);
+    spin->setMinimum(1);
+    spin->setMaximum(128);
+    spin->setValue(priv__->m_tDefData.nRow);
+    connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, &TNewDialog::onChangeRow);
+
+    priv__->m_ptSpinRow = spin;
+    title = new QLabel(tr("Количество рядов") + ":", this);
+    priv__->m_ptGridLayout->addWidget(title, row, 0, 1, 1);
+    priv__->m_ptGridLayout->addWidget(spin, row, 1, 1, 1);
+    row++;
 
     // петли
+    spin = new QSpinBox(this);
+    spin->setMinimum(1);
+    spin->setMaximum(128);
+    spin->setValue(priv__->m_tDefData.nColumn);
+    connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, &TNewDialog::onChangeColumn);
 
-    btn = new QPushButton( this );
-    setPathName( btn, config );
-    connect( btn, &QPushButton::clicked, this, &TNewDialog::onBtnConfigPath );
-    priv__->m_ptBtnConfigPath = btn;
-    title = new QLabel( tr("Путь к конфигурационным файлам") + ":", this );
-    priv__->m_ptGridLayout->addWidget( title, row, 0, 1, 1 );
-    priv__->m_ptGridLayout->addWidget( btn, row, 1, 1, 1 );
+    priv__->m_ptSpinColumn = spin;
+    title = new QLabel(tr("Количество петель") + ":", this);
+    priv__->m_ptGridLayout->addWidget(title, row, 0, 1, 1);
+    priv__->m_ptGridLayout->addWidget(spin, row, 1, 1, 1);
     row++;
 
-    btn = new QPushButton( this );
-    setPathName( btn, binary );
-    connect( btn, &QPushButton::clicked, this, &TNewDialog::onBtnBinaryPath );
-    priv__->m_ptBtnBinaryPath = btn;
-    title = new QLabel( tr("Путь к исполняемым файлам") + ":", this );
+    // пустота
+    title = new QLabel(tr(""), this);
     priv__->m_ptGridLayout->addWidget( title, row, 0, 1, 1 );
-    priv__->m_ptGridLayout->addWidget( btn, row, 1, 1, 1 );
     row++;
-
-    btn = new QPushButton( this );
-    setPathName( btn, logger );
-    connect( btn, &QPushButton::clicked, this, &TNewDialog::onBtnLoggerPath );
-    priv__->m_ptBtnLoggerPath = btn;
-    title = new QLabel( tr("Путь к лог файлам") + ":", this );
-    priv__->m_ptGridLayout->addWidget( title, row, 0, 1, 1 );
-    priv__->m_ptGridLayout->addWidget( btn, row, 1, 1, 1 );
-    row++;
-
-    // set minimum row height for m_ptGridLayout based on maximum height of sizeHint() for all widgets in m_ptGridLayout
-    QLayoutItem    *pItem;
-    int             nMinRowHeight = 0;
-    for( int index = 0; index < priv__->layout->count(); index++ )
-    {
-        if( Q_NULLPTR != ( pItem = priv__->layout->itemAt( index ) ) )
-        {
-            if( pItem->sizeHint().height() > nMinRowHeight )
-                nMinRowHeight = pItem->sizeHint().height();
-        }
-    }
-    for( int i = 0; i < priv__->layout->rowCount(); i++ )
-        priv__->layout->setRowMinimumHeight( i, nMinRowHeight );
+    row = priv__->m_ptGridLayout->rowCount();
 
     // создаем диалоговые кнопки
-    auto  box = new QDialogButtonBox( QDialogButtonBox::Ok | QDialogButtonBox::Reset, this );
-    connect( box, &QDialogButtonBox::accepted, this, &TNewDialog::close );
-    connect( box, &QDialogButtonBox::rejected, this, &TNewDialog::close );
-    connect( box, &QDialogButtonBox::clicked, this, &TNewDialog::onReset );
+    auto  box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Reset, this);
+    //connect(box, &QDialogButtonBox::accepted, this, &TNewDialog::close);
+    //connect(box, &QDialogButtonBox::rejected, this, &TNewDialog::close);
+    connect(box, &QDialogButtonBox::clicked, this, &TNewDialog::onCreate);
+    connect(box, &QDialogButtonBox::clicked, this, &TNewDialog::onReset);
 
     // принудительно переименовываем кнопку Ok
-    QPushButton 	*ptr = box->button( QDialogButtonBox::Ok );
-    if( ptr )
-        ptr->setText( tr( "Сохранить" ) );
+    QPushButton *ptr = box->button(QDialogButtonBox::Ok);
+    if(ptr)
+        ptr->setText(tr("Создать"));
 
     // принудительно переименовываем кнопку Reset
-    ptr = box->button( QDialogButtonBox::Reset );
-    if( ptr )
-        ptr->setText( tr( "Сброс" ) );
+    ptr = box->button(QDialogButtonBox::Reset);
+    if(ptr)
+        ptr->setText(tr("Сброс"));
 
     // добавляем диалоговые кнопки в окно
     priv__->m_ptBtnBox = box;
-    priv__->layout->addWidget( box, row, 0, 1, 2 );
+    priv__->m_ptGridLayout->addWidget(box, row, 0, 1, 2);
     row++;
 
-    priv__->layout->setSizeConstraint( QLayout::SetFixedSize );
-    setLayout( priv__->layout );
+    priv__->m_ptGridLayout->setSizeConstraint(QLayout::SetFixedSize);
+    setLayout(priv__->m_ptGridLayout);
 
-    setWindowTitle( tr( "Диалог настроек" ) );
+    setWindowTitle(tr("Создание сетки"));
 }
 
 TNewDialog::~TNewDialog() {
-
+    qDebug() << "delete dialog";
 }
 
 //------------------------------------------------------------------------------
 
 // тип ячейки
 void TNewDialog::onChangeItem(int  index) {
-    unsigned type = keItemTypeRectan;
+    int type = keItemTypeRectan;
 
     if(0 == index)
         type = keItemTypeRectan;
     else if(1 == index)
         type = keItemTypeSquare;
 
-    glb().m_uItemType = type;
+    priv__->m_tCurData.nItemType = type;
 }
 
 // смещение
 void TNewDialog::onChangeGrid(int  index) {
-    unsigned type = keGridTypeShift;
+    int type = keGridTypeShift;
 
     if(0 == index)
         type = keGridTypeNormal;
     else if( 1 == index )
         type = keGridTypeShift;
 
-    glb().m_uGridType = type;
+    priv__->m_tCurData.nGridType = type;
 }
 
 // количество рядов
 void TNewDialog::onChangeRow(int value) {
-    glb().m_uRow = static_cast<unsigned>(value);
+    priv__->m_tCurData.nRow = value;
 }
 
 // количество петель
 void TNewDialog::onChangeColumn(int value) {
-    glb().m_uColumn = static_cast<unsigned>(value);
+    priv__->m_tCurData.nColumn = value;
+}
+
+// обработка нажатия Создать
+void TNewDialog::onCreate(QAbstractButton *btn) {
+    if(QDialogButtonBox::AcceptRole != priv__->m_ptBtnBox->buttonRole(btn))
+        return;
+
+    qDebug() << "create";
+
+    do_create();
+
+    Q_EMIT(dlgCreate());
+
+    close();
 }
 
 // обработка нажатия Сброс
-void TNewDialog::onReset(QAbstractButton*  btn)
-{
+void TNewDialog::onReset(QAbstractButton*  btn) {
     if(QDialogButtonBox::ResetRole != priv__->m_ptBtnBox->buttonRole(btn))
         return;
 
-    priv__->m_ptComboItem->setCurrentIndex(keItemTypeRectan);
-    priv__->m_ptComboGrid->setCurrentIndex(keGridTypeShift);
+    qDebug() << "reset";
 
-    priv__->m_ptSpinRow->setValue(DLG_ROW_COUNT);
-    priv__->m_ptSpinColumn->setValue(DLG_COLUMN_COUNT);
+    do_reset();
+}
+
+//------------------------------------------------------------------------------
+
+void TNewDialog::do_create() {
+    glb().m_uItemType = static_cast<unsigned>(priv__->m_tCurData.nItemType);
+    glb().m_uGridType = static_cast<unsigned>(priv__->m_tCurData.nGridType);
+
+    glb().m_uRow = static_cast<unsigned>(priv__->m_tCurData.nRow);
+    glb().m_uColumn = static_cast<unsigned>(priv__->m_tCurData.nColumn);
+}
+
+void TNewDialog::do_reset() {
+    priv__->m_tCurData = priv__->m_tDefData;
+
+    priv__->m_ptComboItem->setCurrentIndex(priv__->m_tDefData.nItemType);
+    priv__->m_ptComboGrid->setCurrentIndex(priv__->m_tDefData.nGridType);
+
+    priv__->m_ptSpinRow->setValue(priv__->m_tDefData.nRow);
+    priv__->m_ptSpinColumn->setValue(priv__->m_tDefData.nColumn);
+}
+
+//------------------------------------------------------------------------------
+
+void TNewDialog::closeEvent(QCloseEvent *event) {
+    qDebug() << "close event";
+    priv__->m_tCurData = priv__->m_tDefData;
+    event->accept();
 }
 
 //------------------------------------------------------------------------------

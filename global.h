@@ -25,6 +25,9 @@ enum EItemSize
     keItemSizeHuge   = 2,
 };
 
+inline static constexpr int ROW_COUNT = 10;
+inline static constexpr int COLUMN_COUNT = 10;
+
 class TGlobal : public TStatic<TGlobal>
 {
 public:

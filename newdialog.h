@@ -16,11 +16,11 @@ class TNewDialog : public QDialog
     Q_OBJECT
 
 public :
-    inline static constexpr int DLG_ROW_COUNT = 10;
-    inline static constexpr int DLG_COLUMN_COUNT = 10;
-
     TNewDialog(QWidget *parent = nullptr);
-    ~TNewDialog();
+    ~TNewDialog() override;
+
+signals:
+    void       dlgCreate();
 
 private Q_SLOTS:
     void       onChangeItem(int  index);
@@ -29,10 +29,16 @@ private Q_SLOTS:
     void       onChangeRow(int value);
     void       onChangeColumn(int value);
 
+    void 	   onCreate(QAbstractButton *btn);
     void 	   onReset(QAbstractButton *btn);
 
 private:
     std::unique_ptr<TPrivNewDialog> priv__;
+
+    void       do_create();
+    void       do_reset();
+
+    void       closeEvent(QCloseEvent *event) override;
 };
 
 //------------------------------------------------------------------------------

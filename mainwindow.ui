@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>958</width>
+    <width>960</width>
     <height>349</height>
    </rect>
   </property>
@@ -61,6 +61,9 @@
            </item>
            <item>
             <widget class="QSpinBox" name="spinColumn">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество столбцов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -163,6 +166,9 @@
            </item>
            <item>
             <widget class="QSpinBox" name="spinRow">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество строк&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -496,7 +502,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>958</width>
+     <width>960</width>
      <height>21</height>
     </rect>
    </property>
