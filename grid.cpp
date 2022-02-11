@@ -1,6 +1,7 @@
 #include <cassert>
 
 #include "grid.h"
+#include "global.h"
 
 //------------------------------------------------------------------------------
 
@@ -12,15 +13,16 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
     m_row_count = row;
     m_column_count = column;
 
-    if(1 > m_max_row_count)
-        m_max_row_count = MAX_ROW_COUNT;
-    else
+    // тут бы std::clamp использовать...
+    if((MIN_ROW_COUNT <= row_max) && (row_max <= MAX_ROW_COUNT))
         m_max_row_count = row_max;
-
-    if(1 > m_max_column_count)
-        m_max_column_count = MAX_COLUMN_COUNT;
     else
+        m_max_row_count = MAX_ROW_COUNT;
+
+    if((MIN_COLUMN_COUNT <= column_max) && (column_max <= MAX_COLUMN_COUNT))
         m_max_column_count = column_max;
+    else
+        m_max_column_count = MAX_COLUMN_COUNT;
 
     assert(isRowValid(row));
     assert(isColumnValid(column));
@@ -39,9 +41,6 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
             m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setId({i+1, j+1});
         }
     }
-
-//    qDebug() << "sizeof grid" << static_cast<unsigned>(m_max_row_count*m_max_column_count)*sizeof(TElement);
-//    qDebug() << "sizeof grid" << m_grid.capacity();
 }
 
 //------------------------------------------------------------------------------
@@ -89,8 +88,6 @@ bool  TGrid::decColumn() {
 //------------------------------------------------------------------------------
 
 void  TGrid::setBorder(bool border) {
-//    qDebug() << "try set border" << border << "current border" << m_border;
-
     if(border != m_border) {
         m_border = border;
         for(int i = 0; i < m_row_count; i++) {
@@ -124,11 +121,11 @@ bool TGrid::getRuler() const {
 //------------------------------------------------------------------------------
 
 bool  TGrid::isRowValid(int value) {
-    return ((0 < value) && (value < m_max_row_count));
+    return ((0 < value) && (value <= m_max_row_count));
 }
 
 bool  TGrid::isColumnValid(int value) {
-    return ((0 < value) && (value < m_max_column_count));
+    return ((0 < value) && (value <= m_max_column_count));
 }
 
 //------------------------------------------------------------------------------

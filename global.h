@@ -21,6 +21,12 @@ enum EItemType
 inline static constexpr int ROW_COUNT = 10;
 inline static constexpr int COLUMN_COUNT = 10;
 
+inline static constexpr int MIN_ROW_COUNT = 1;
+inline static constexpr int MIN_COLUMN_COUNT = 1;
+
+inline static constexpr int MAX_ROW_COUNT = 128;
+inline static constexpr int MAX_COLUMN_COUNT = 128;
+
 //------------------------------------------------------------------------------
 
 struct TGridData {

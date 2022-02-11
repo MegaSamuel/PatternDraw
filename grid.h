@@ -10,9 +10,6 @@
 class TGrid
 {
 public:
-    inline static constexpr int MAX_ROW_COUNT = 128;
-    inline static constexpr int MAX_COLUMN_COUNT = 128;
-
     explicit TGrid(int row, int column);
     explicit TGrid(int row, int column, int row_max, int column_max);
 

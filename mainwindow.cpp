@@ -1155,8 +1155,10 @@ void MainWindow::on_btnRowM_clicked()
 
     m_pGrid->setRows(m_uRow);
 
-    m_bPrgTitleChanged = true;
-    setPrgTitleChanged(true);
+    if(!m_bPrgTitleChanged) {
+        m_bPrgTitleChanged = true;
+        setPrgTitleChanged(true);
+    }
 
     update();
 }
@@ -1171,8 +1173,10 @@ void MainWindow::on_btnRowP_clicked()
 
     m_pGrid->setRows(m_uRow);
 
-    m_bPrgTitleChanged = true;
-    setPrgTitleChanged(true);
+    if(!m_bPrgTitleChanged) {
+        m_bPrgTitleChanged = true;
+        setPrgTitleChanged(true);
+    }
 
     update();
 }
@@ -1187,8 +1191,10 @@ void MainWindow::on_btnColumnM_clicked()
 
     m_pGrid->setColumns(m_uColumn);
 
-    m_bPrgTitleChanged = true;
-    setPrgTitleChanged(true);
+    if(!m_bPrgTitleChanged) {
+        m_bPrgTitleChanged = true;
+        setPrgTitleChanged(true);
+    }
 
     update();
 }
@@ -1203,8 +1209,10 @@ void MainWindow::on_btnColumnP_clicked()
 
     m_pGrid->setColumns(m_uColumn);
 
-    m_bPrgTitleChanged = true;
-    setPrgTitleChanged(true);
+    if(!m_bPrgTitleChanged) {
+        m_bPrgTitleChanged = true;
+        setPrgTitleChanged(true);
+    }
 
     update();
 }
