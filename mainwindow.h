@@ -90,7 +90,6 @@ private:
     TNewDialog    *m_ptNewDialog;
 
     unsigned       m_uItemType;
-//    unsigned       m_uItemSize;
     unsigned       m_uGridType;
 
     TBitMap        m_tBitMap;
@@ -112,12 +111,6 @@ private:
 
     void           closeEvent( QCloseEvent *event );
     void           resizeEvent( QResizeEvent *event );
-
-    // мин/макс количество рядов/колонок
-    unsigned       m_minRowVal;
-    unsigned       m_maxRowVal;
-    unsigned       m_minColumnVal;
-    unsigned       m_maxColumnVal;
 
     TGrid         *m_pGrid;
 };

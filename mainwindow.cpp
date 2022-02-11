@@ -20,18 +20,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_zPrgName = "PatternDraw";
 
-    // дефолтные значения переменных
-//    m_uRow = ROW_COUNT;
-//    m_uColumn = COLUMN_COUNT;
-
-//    ui->spinRow->setValue( static_cast<int>(m_uRow) );
-//    ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
-
-    m_minRowVal = static_cast<unsigned>(ui->spinRow->minimum());
-    m_maxRowVal = static_cast<unsigned>(ui->spinRow->maximum());
-    m_minColumnVal = static_cast<unsigned>(ui->spinColumn->minimum());
-    m_maxColumnVal = static_cast<unsigned>(ui->spinColumn->maximum());
-
     initGuiElements();
 
     // диалог Новыя сетка
@@ -44,11 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // изображение для превью
     m_pImage = new QByteArray;
 
-    // таблица элементов
-    m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn), static_cast<int>(m_maxRowVal), static_cast<int>(m_maxColumnVal));
-
-    // отправляем указатель на таблицу в рисовалку
-    glb().pGrid = m_pGrid;
+    m_pGrid = nullptr;
 
     // сформировано ли изображение
     m_bImageReady = false;
@@ -799,7 +783,9 @@ void  MainWindow::onBtnChangeGridColor()
 
         glb().tGridColor = color;
 
-        update();
+        if(nullptr != m_pGrid) {
+            update();
+        }
     }
 }
 
@@ -820,6 +806,14 @@ void  MainWindow::onDlgCreate() {
     m_zPrgFileName.clear();
 
     initGuiElements();
+
+    if(nullptr == m_pGrid) {
+        // таблица элементов
+        m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn));
+
+        // отправляем указатель на таблицу в рисовалку
+        glb().pGrid = m_pGrid;
+    }
 
     // картинка для превью
     if(!m_pPixmap->isNull()) {
@@ -962,7 +956,9 @@ void  MainWindow::onChangeItem( int  index )
 
     setCellSize();
 
-    update();
+    if(nullptr != m_pGrid) {
+        update();
+    }
 #else
     Q_UNUSED(index)
 #endif
@@ -992,7 +988,9 @@ void  MainWindow::onChangeGrid( int  index )
 
     glb().m_uGridType = m_uGridType;
 
-    update();
+    if(nullptr != m_pGrid) {
+        update();
+    }
 #else
     Q_UNUSED(index)
 #endif
@@ -1128,18 +1126,20 @@ void MainWindow::on_spinRow_valueChanged(int arg1)
 {
     m_uRow = static_cast<unsigned>(arg1);
 
-    m_pGrid->setRows(arg1);
-
-    update();
+    if(nullptr != m_pGrid) {
+        m_pGrid->setRows(arg1);
+        update();
+    }
 }
 
 void MainWindow::on_spinColumn_valueChanged(int arg1)
 {
     m_uColumn = static_cast<unsigned>(arg1);
 
-    m_pGrid->setColumns(arg1);
-
-    update();
+    if(nullptr != m_pGrid) {
+        m_pGrid->setColumns(arg1);
+        update();
+    }
 }
 // <--
 
@@ -1149,72 +1149,76 @@ void MainWindow::on_btnRowM_clicked()
 {
     m_uRow--;
 
-    if(m_uRow < m_minRowVal) m_uRow = m_minRowVal;
+    if(m_uRow < MIN_ROW_COUNT) m_uRow = MIN_ROW_COUNT;
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
 
-    m_pGrid->setRows(m_uRow);
+    if(nullptr != m_pGrid) {
+        m_pGrid->setRows(m_uRow);
+        update();
+    }
 
     if(!m_bPrgTitleChanged) {
         m_bPrgTitleChanged = true;
         setPrgTitleChanged(true);
     }
-
-    update();
 }
 
 void MainWindow::on_btnRowP_clicked()
 {
     m_uRow++;
 
-    if(m_uRow > m_maxRowVal) m_uRow = m_maxRowVal;
+    if(m_uRow > MAX_ROW_COUNT) m_uRow = MAX_ROW_COUNT;
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
 
-    m_pGrid->setRows(m_uRow);
+    if(nullptr != m_pGrid) {
+        m_pGrid->setRows(m_uRow);
+        update();
+    }
 
     if(!m_bPrgTitleChanged) {
         m_bPrgTitleChanged = true;
         setPrgTitleChanged(true);
     }
-
-    update();
 }
 
 void MainWindow::on_btnColumnM_clicked()
 {
     m_uColumn--;
 
-    if(m_uColumn < m_minColumnVal) m_uColumn = m_minColumnVal;
+    if(m_uColumn < MIN_COLUMN_COUNT) m_uColumn = MIN_COLUMN_COUNT;
 
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
-    m_pGrid->setColumns(m_uColumn);
+    if(nullptr != m_pGrid) {
+        m_pGrid->setColumns(m_uColumn);
+        update();
+    }
 
     if(!m_bPrgTitleChanged) {
         m_bPrgTitleChanged = true;
         setPrgTitleChanged(true);
     }
-
-    update();
 }
 
 void MainWindow::on_btnColumnP_clicked()
 {
     m_uColumn++;
 
-    if(m_uColumn > m_maxColumnVal) m_uColumn = m_maxColumnVal;
+    if(m_uColumn > MAX_COLUMN_COUNT) m_uColumn = MAX_COLUMN_COUNT;
 
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
-    m_pGrid->setColumns(m_uColumn);
+    if(nullptr != m_pGrid) {
+        m_pGrid->setColumns(m_uColumn);
+        update();
+    }
 
     if(!m_bPrgTitleChanged) {
         m_bPrgTitleChanged = true;
         setPrgTitleChanged(true);
     }
-
-    update();
 }
 // <--
 
@@ -1222,16 +1226,18 @@ void MainWindow::on_btnColumnP_clicked()
 // -->
 void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
 {
-    m_pGrid->setBorder(Qt::Unchecked != arg1);
-
-    update();
+    if(nullptr != m_pGrid) {
+        m_pGrid->setBorder(Qt::Unchecked != arg1);
+        update();
+    }
 }
 
 void MainWindow::on_checkBoxRuler_stateChanged(int arg1)
 {
-    m_pGrid->setRuler(Qt::Unchecked != arg1);
-
-    update();
+    if(nullptr != m_pGrid) {
+        m_pGrid->setRuler(Qt::Unchecked != arg1);
+        update();
+    }
 }
 // <--
 
