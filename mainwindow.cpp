@@ -32,7 +32,13 @@ MainWindow::MainWindow(QWidget *parent) :
     // изображение для превью
     m_pImage = new QByteArray;
 
-    m_pGrid = nullptr;
+    // таблица элементов
+    m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn));
+
+    ui->tGridDraw->setVisible(false);
+
+    // отправляем указатель на таблицу в рисовалку
+    glb().pGrid = m_pGrid;
 
     // сформировано ли изображение
     m_bImageReady = false;
@@ -783,9 +789,7 @@ void  MainWindow::onBtnChangeGridColor()
 
         glb().tGridColor = color;
 
-        if(nullptr != m_pGrid) {
-            update();
-        }
+        update();
     }
 }
 
@@ -807,13 +811,7 @@ void  MainWindow::onDlgCreate() {
 
     initGuiElements();
 
-    if(nullptr == m_pGrid) {
-        // таблица элементов
-        m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn));
-
-        // отправляем указатель на таблицу в рисовалку
-        glb().pGrid = m_pGrid;
-    }
+    ui->tGridDraw->setVisible(true);
 
     // картинка для превью
     if(!m_pPixmap->isNull()) {
@@ -956,9 +954,7 @@ void  MainWindow::onChangeItem( int  index )
 
     setCellSize();
 
-    if(nullptr != m_pGrid) {
-        update();
-    }
+    update();
 #else
     Q_UNUSED(index)
 #endif
@@ -988,9 +984,7 @@ void  MainWindow::onChangeGrid( int  index )
 
     glb().m_uGridType = m_uGridType;
 
-    if(nullptr != m_pGrid) {
-        update();
-    }
+    update();
 #else
     Q_UNUSED(index)
 #endif
@@ -1126,20 +1120,18 @@ void MainWindow::on_spinRow_valueChanged(int arg1)
 {
     m_uRow = static_cast<unsigned>(arg1);
 
-    if(nullptr != m_pGrid) {
-        m_pGrid->setRows(arg1);
-        update();
-    }
+    m_pGrid->setRows(arg1);
+
+    update();
 }
 
 void MainWindow::on_spinColumn_valueChanged(int arg1)
 {
     m_uColumn = static_cast<unsigned>(arg1);
 
-    if(nullptr != m_pGrid) {
-        m_pGrid->setColumns(arg1);
-        update();
-    }
+    m_pGrid->setColumns(arg1);
+
+    update();
 }
 // <--
 
@@ -1153,15 +1145,14 @@ void MainWindow::on_btnRowM_clicked()
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
 
-    if(nullptr != m_pGrid) {
-        m_pGrid->setRows(m_uRow);
-        update();
-    }
+    m_pGrid->setRows(m_uRow);
 
     if(!m_bPrgTitleChanged) {
         m_bPrgTitleChanged = true;
         setPrgTitleChanged(true);
     }
+
+    update();
 }
 
 void MainWindow::on_btnRowP_clicked()
@@ -1172,15 +1163,14 @@ void MainWindow::on_btnRowP_clicked()
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
 
-    if(nullptr != m_pGrid) {
-        m_pGrid->setRows(m_uRow);
-        update();
-    }
+    m_pGrid->setRows(m_uRow);
 
     if(!m_bPrgTitleChanged) {
         m_bPrgTitleChanged = true;
         setPrgTitleChanged(true);
     }
+
+    update();
 }
 
 void MainWindow::on_btnColumnM_clicked()
@@ -1191,15 +1181,14 @@ void MainWindow::on_btnColumnM_clicked()
 
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
-    if(nullptr != m_pGrid) {
-        m_pGrid->setColumns(m_uColumn);
-        update();
-    }
+    m_pGrid->setColumns(m_uColumn);
 
     if(!m_bPrgTitleChanged) {
         m_bPrgTitleChanged = true;
         setPrgTitleChanged(true);
     }
+
+    update();
 }
 
 void MainWindow::on_btnColumnP_clicked()
@@ -1210,15 +1199,14 @@ void MainWindow::on_btnColumnP_clicked()
 
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
-    if(nullptr != m_pGrid) {
-        m_pGrid->setColumns(m_uColumn);
-        update();
-    }
+    m_pGrid->setColumns(m_uColumn);
 
     if(!m_bPrgTitleChanged) {
         m_bPrgTitleChanged = true;
         setPrgTitleChanged(true);
     }
+
+    update();
 }
 // <--
 
@@ -1226,18 +1214,16 @@ void MainWindow::on_btnColumnP_clicked()
 // -->
 void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
 {
-    if(nullptr != m_pGrid) {
-        m_pGrid->setBorder(Qt::Unchecked != arg1);
-        update();
-    }
+    m_pGrid->setBorder(Qt::Unchecked != arg1);
+
+    update();
 }
 
 void MainWindow::on_checkBoxRuler_stateChanged(int arg1)
 {
-    if(nullptr != m_pGrid) {
-        m_pGrid->setRuler(Qt::Unchecked != arg1);
-        update();
-    }
+    m_pGrid->setRuler(Qt::Unchecked != arg1);
+
+    update();
 }
 // <--
 

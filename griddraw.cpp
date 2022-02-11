@@ -40,8 +40,6 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this); // Создаём объект отрисовщика
 
-    //qDebug() << __func__ << glb().pGrid->getRows() << glb().pGrid->getColumns();
-
     int x_shift = 0;
     int y_shift = 0;
 
