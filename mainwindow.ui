@@ -54,6 +54,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
             <widget class="QPushButton" name="btnColumnM">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Убавить петлю&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>-</string>
              </property>
@@ -65,7 +68,7 @@
               <bool>false</bool>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество столбцов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество петель (столбцов)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -86,6 +89,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnColumnP">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Добавить петлю&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>+</string>
              </property>
@@ -93,65 +99,31 @@
            </item>
           </layout>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBoxGrid">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид строки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>Без смещения</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Со смещением</string>
-            </property>
-           </item>
-          </widget>
-         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="labeItem">
            <property name="text">
-            <string>Элемент:</string>
+            <string>Ячейка:</string>
            </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="comboBoxItem">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид элемента&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>Прямоугольник</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Квадрат</string>
-            </property>
-           </item>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="labelString">
            <property name="text">
-            <string>Строка:</string>
+            <string>Смещение:</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="labelRow">
            <property name="text">
-            <string>Количество строк:</string>
+            <string>Количество рядов:</string>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="labelColumn">
            <property name="text">
-            <string>Количество столбцов:</string>
+            <string>Количество петель:</string>
            </property>
           </widget>
          </item>
@@ -159,6 +131,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
             <widget class="QPushButton" name="btnRowM">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Убавить ряд&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>-</string>
              </property>
@@ -170,7 +145,7 @@
               <bool>false</bool>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество строк&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество рядов (строк)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="frame">
               <bool>true</bool>
@@ -194,12 +169,55 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnRowP">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Добавить ряд&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>+</string>
              </property>
             </widget>
            </item>
           </layout>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBoxGrid">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид строки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>Без смещения</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Со смещением</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboBoxItem">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид элемента&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>Прямоугольник</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Квадрат</string>
+            </property>
+           </item>
+          </widget>
          </item>
         </layout>
        </item>
@@ -234,7 +252,7 @@
          <item row="0" column="1">
           <widget class="QLabel" name="labelGridColor">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Цвет элемента&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Цвет сетки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string/>
@@ -244,7 +262,7 @@
          <item row="0" column="2">
           <widget class="QPushButton" name="btnGridColor">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Установка цвета элемента&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Установка цвета сетки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Изменить</string>
@@ -254,14 +272,14 @@
          <item row="1" column="0">
           <widget class="QLabel" name="labelBack">
            <property name="text">
-            <string>Цвет элемента:</string>
+            <string>Цвет ячейки:</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
           <widget class="QLabel" name="labelBackColor">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Цвет фона&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Цвет ячейки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string/>
@@ -271,7 +289,7 @@
          <item row="1" column="2">
           <widget class="QPushButton" name="btnBackColor">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Установка цвета фона&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Установка цвета ячейки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Изменить</string>
@@ -620,7 +638,7 @@
     <string>Выход</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Q</string>
+    <string>Alt+F4</string>
    </property>
   </action>
  </widget>

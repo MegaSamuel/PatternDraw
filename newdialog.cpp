@@ -7,14 +7,6 @@ class TPrivNewDialog
 {
     friend class TNewDialog;
 
-    struct TDlgData {
-        int  nItemType;
-        int  nGridType;
-
-        int  nRow;
-        int  nColumn;
-    };
-
 public:
     QComboBox        *m_ptComboItem;
     QComboBox        *m_ptComboGrid;
@@ -26,8 +18,8 @@ public:
 
     QGridLayout      *m_ptGridLayout;
 
-    TDlgData          m_tDefData;
-    TDlgData          m_tCurData;
+    TGridData         m_tDefData;
+    TGridData         m_tCurData;
 
     inline TPrivNewDialog() {
         m_ptComboItem = Q_NULLPTR;
@@ -39,13 +31,6 @@ public:
         m_ptBtnBox = Q_NULLPTR;
 
         m_ptGridLayout = new QGridLayout;
-
-        m_tDefData.nItemType = keItemTypeRectan;
-        m_tDefData.nGridType = keGridTypeShift;
-        m_tDefData.nRow = ROW_COUNT;
-        m_tDefData.nColumn = COLUMN_COUNT;
-
-        m_tCurData = m_tDefData;
     }
 
     ~TPrivNewDialog() {
@@ -221,11 +206,7 @@ void TNewDialog::onReset(QAbstractButton*  btn) {
 //------------------------------------------------------------------------------
 
 void TNewDialog::do_create() {
-    glb().m_uItemType = static_cast<unsigned>(priv__->m_tCurData.nItemType);
-    glb().m_uGridType = static_cast<unsigned>(priv__->m_tCurData.nGridType);
-
-    glb().m_uRow = static_cast<unsigned>(priv__->m_tCurData.nRow);
-    glb().m_uColumn = static_cast<unsigned>(priv__->m_tCurData.nColumn);
+    glb().tGridData = priv__->m_tCurData;
 }
 
 void TNewDialog::do_reset() {
@@ -242,7 +223,7 @@ void TNewDialog::do_reset() {
 
 void TNewDialog::closeEvent(QCloseEvent *event) {
     qDebug() << "close event";
-    priv__->m_tCurData = priv__->m_tDefData;
+    do_reset();
     event->accept();
 }
 

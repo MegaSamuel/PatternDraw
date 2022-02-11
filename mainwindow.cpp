@@ -21,11 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
     m_zPrgName = "PatternDraw";
 
     // дефолтные значения переменных
-    m_uRow = ROW_COUNT;
-    m_uColumn = COLUMN_COUNT;
+//    m_uRow = ROW_COUNT;
+//    m_uColumn = COLUMN_COUNT;
 
-    ui->spinRow->setValue( static_cast<int>(m_uRow) );
-    ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
+//    ui->spinRow->setValue( static_cast<int>(m_uRow) );
+//    ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
 
     m_minRowVal = static_cast<unsigned>(ui->spinRow->minimum());
     m_maxRowVal = static_cast<unsigned>(ui->spinRow->maximum());
@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn), static_cast<int>(m_maxRowVal), static_cast<int>(m_maxColumnVal));
 
     // отправляем указатель на таблицу в рисовалку
-    glb().m_pGrid = m_pGrid;
+    glb().pGrid = m_pGrid;
 
     // сформировано ли изображение
     m_bImageReady = false;
@@ -116,27 +116,26 @@ MainWindow::~MainWindow()
 }
 
 void  MainWindow::initGuiElements() {
-    m_uItemType = keItemTypeRectan;
-    m_uItemSize = keItemSizeNormal;
-    m_uGridType = keGridTypeShift;
+    m_uRow = static_cast<unsigned>(glb().tGridData.nRow);
+    m_uColumn = static_cast<unsigned>(glb().tGridData.nColumn);
 
-    glb().m_uItemType = keItemTypeRectan;
-    //glb().m_uItemSize = keItemSizeNormal;
-    glb().m_uGridType = keGridTypeShift;
+    m_uItemType = static_cast<unsigned>(glb().tGridData.nItemType);
+    m_uGridType = static_cast<unsigned>(glb().tGridData.nGridType);
+
+    ui->spinRow->setValue(static_cast<int>(m_uRow));
+    ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
     ui->comboBoxItem->setCurrentIndex(static_cast<int>(m_uItemType));
-    //ui->comboBoxSize->setCurrentIndex(static_cast<int>(m_uItemSize));
     ui->comboBoxGrid->setCurrentIndex(static_cast<int>(m_uGridType));
 
     // цвет элемента
     m_tBackColor = Qt::white;
-    //glb().m_tBackColor = Qt::white;
-    glb().m_tItemColor = Qt::white;
+    glb().tItemColor = Qt::white;
     setLabelBackColor(ui->labelBackColor, &m_tBackColor);
 
     // цвет сетки
     m_tGridColor = Qt::gray;
-    glb().m_tGridColor = Qt::gray;
+    glb().tGridColor = Qt::gray;
     setLabelBackColor(ui->labelGridColor, &m_tGridColor);
 }
 
@@ -491,10 +490,6 @@ bool  MainWindow::imageCreate()
     unsigned  uWidth = 0;
     unsigned  uHeight = 0;
 
-// это больше ненужно - значения забираем через connect
-//    m_uRow = static_cast<unsigned>(ui->spinRow->value());
-//    m_uColumn = static_cast<unsigned>(ui->spinColumn->value());
-
     // размер картинки в пикселях
 #if 0
     if( keGridTypeShift == m_uGridType )
@@ -783,7 +778,7 @@ void  MainWindow::onBtnChangeBackColor()
 
         setLabelBackColor( ui->labelBackColor, &m_tBackColor );
 
-        glb().m_tItemColor = color;
+        glb().tItemColor = color;
     }
 }
 
@@ -802,7 +797,7 @@ void  MainWindow::onBtnChangeGridColor()
 
         setLabelBackColor( ui->labelGridColor, &m_tGridColor );
 
-        glb().m_tGridColor = color;
+        glb().tGridColor = color;
 
         update();
     }
@@ -815,51 +810,6 @@ void  MainWindow::onNewHandler() {
     }
 
     m_ptNewDialog->open();
-
-#if 0
-    // есть несохраненные изменения
-    if(!askSaveIfChanged("Не сохранять")) {
-        return;
-    }
-
-    // далее ставим везде дефолтные значения
-    //!TODO выделить в отдельную функцию и ее вызывать и тут и в консрукторе
-    m_zPrgTitle.clear();
-
-    m_bPrgTitleChanged = false;
-//    setPrgTitleChanged(false);
-
-    m_zPrgFileName.clear();
-
-    // дефолтные значения переменных
-    m_uRow = ROW_COUNT;
-    m_uColumn = COLUMN_COUNT;
-
-    ui->spinRow->setValue( static_cast<int>(m_uRow) );
-    ui->spinColumn->setValue( static_cast<int>(m_uColumn) );
-
-    initGuiElements();
-
-    // картинка для превью
-    if(!m_pPixmap->isNull()) {
-        //!TODO тут нужно очищать превьюшный лейбл
-        //m_pPixmap = new QPixmap;
-        //ui->lblPicture->setPixmap();
-    }
-
-    // изображение для превью
-    if(m_pImage->size()) {
-        m_pImage->clear();
-    }
-
-    // сформировано ли изображение
-    m_bImageReady = false;
-
-    setCellSize();
-
-    // заголовок формы
-    setPrgTitleText();
-#endif
 }
 
 void  MainWindow::onDlgCreate() {
@@ -868,12 +818,6 @@ void  MainWindow::onDlgCreate() {
     m_bPrgTitleChanged = false;
 
     m_zPrgFileName.clear();
-
-    m_uRow = glb().m_uRow;
-    m_uColumn = glb().m_uColumn;
-
-    ui->spinRow->setValue(static_cast<int>(m_uRow));
-    ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
     initGuiElements();
 
@@ -1008,6 +952,7 @@ void  MainWindow::onManHandler()
 
 void  MainWindow::onChangeItem( int  index )
 {
+#if 0
     if( 0 == index )
         m_uItemType = keItemTypeRectan;
     else if( 1 == index )
@@ -1018,6 +963,9 @@ void  MainWindow::onChangeItem( int  index )
     setCellSize();
 
     update();
+#else
+    Q_UNUSED(index)
+#endif
 }
 
 //void  MainWindow::onChangeSize( int  index )
@@ -1036,6 +984,7 @@ void  MainWindow::onChangeItem( int  index )
 
 void  MainWindow::onChangeGrid( int  index )
 {
+#if 0
     if( 0 == index )
         m_uGridType = keGridTypeNormal;
     else if( 1 == index )
@@ -1044,6 +993,9 @@ void  MainWindow::onChangeGrid( int  index )
     glb().m_uGridType = m_uGridType;
 
     update();
+#else
+    Q_UNUSED(index)
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1070,16 +1022,16 @@ void  MainWindow::setCellSize()
 
     // корректируем размер размер ячейки
 
-    if( keItemSizeSmall == m_uItemSize )
-    {
-        m_tCell.h /= 2;
-        m_tCell.w /= 2;
-    }
-    else if( keItemSizeHuge == m_uItemSize )
-    {
-        m_tCell.h *= 2;
-        m_tCell.w *= 2;
-    }
+//    if( keItemSizeSmall == m_uItemSize )
+//    {
+//        m_tCell.h /= 2;
+//        m_tCell.w /= 2;
+//    }
+//    else if( keItemSizeHuge == m_uItemSize )
+//    {
+//        m_tCell.h *= 2;
+//        m_tCell.w *= 2;
+//    }
 }
 
 //------------------------------------------------------------------------------
@@ -1170,6 +1122,7 @@ void  MainWindow::resizeEvent(QResizeEvent *event)
 //------------------------------------------------------------------------------
 
 // количество рядов/колонок от спинбоксов
+// !!! сейчас настойка делается через диалог "Новая сетка"
 // -->
 void MainWindow::on_spinRow_valueChanged(int arg1)
 {
@@ -1202,6 +1155,9 @@ void MainWindow::on_btnRowM_clicked()
 
     m_pGrid->setRows(m_uRow);
 
+    m_bPrgTitleChanged = true;
+    setPrgTitleChanged(true);
+
     update();
 }
 
@@ -1214,6 +1170,9 @@ void MainWindow::on_btnRowP_clicked()
     ui->spinRow->setValue(static_cast<int>(m_uRow));
 
     m_pGrid->setRows(m_uRow);
+
+    m_bPrgTitleChanged = true;
+    setPrgTitleChanged(true);
 
     update();
 }
@@ -1228,6 +1187,9 @@ void MainWindow::on_btnColumnM_clicked()
 
     m_pGrid->setColumns(m_uColumn);
 
+    m_bPrgTitleChanged = true;
+    setPrgTitleChanged(true);
+
     update();
 }
 
@@ -1240,6 +1202,9 @@ void MainWindow::on_btnColumnP_clicked()
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
     m_pGrid->setColumns(m_uColumn);
+
+    m_bPrgTitleChanged = true;
+    setPrgTitleChanged(true);
 
     update();
 }

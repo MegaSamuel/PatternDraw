@@ -18,31 +18,35 @@ enum EItemType
     keItemTypeSquare = 1,
 };
 
-enum EItemSize
-{
-    keItemSizeSmall  = 0,
-    keItemSizeNormal = 1,
-    keItemSizeHuge   = 2,
-};
-
 inline static constexpr int ROW_COUNT = 10;
 inline static constexpr int COLUMN_COUNT = 10;
+
+//------------------------------------------------------------------------------
+
+struct TGridData {
+    int  nItemType;
+    int  nGridType;
+
+    int  nRow;
+    int  nColumn;
+
+    explicit TGridData();
+    explicit TGridData(int, int, int, int);
+};
+
+//------------------------------------------------------------------------------
 
 class TGlobal : public TStatic<TGlobal>
 {
 public:
     explicit TGlobal();
 
-    unsigned       m_uRow;
-    unsigned       m_uColumn;
+    TGridData   tGridData;
 
-    unsigned       m_uItemType;
-    unsigned       m_uGridType;
+    QColor      tItemColor;
+    QColor      tGridColor;
 
-    QColor         m_tItemColor;
-    QColor         m_tGridColor;
-
-    TGrid         *m_pGrid;
+    TGrid      *pGrid;
 };
 
 //------------------------------------------------------------------------------

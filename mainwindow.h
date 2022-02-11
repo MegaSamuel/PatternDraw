@@ -90,7 +90,7 @@ private:
     TNewDialog    *m_ptNewDialog;
 
     unsigned       m_uItemType;
-    unsigned       m_uItemSize;
+//    unsigned       m_uItemSize;
     unsigned       m_uGridType;
 
     TBitMap        m_tBitMap;
