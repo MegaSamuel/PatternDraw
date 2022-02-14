@@ -2,17 +2,26 @@
 
 //------------------------------------------------------------------------------
 
+TGridData::TGridData() : TGridData(keItemTypeRectan, keGridTypeShift, ROW_COUNT, COLUMN_COUNT) {
+
+}
+
+TGridData::TGridData(int itype, int gtype, int row, int col) {
+    nItemType = itype;
+    nGridType = gtype;
+
+    nRow = row;
+    nColumn = col;
+}
+
+//------------------------------------------------------------------------------
+
 TGlobal::TGlobal()
 {
-    m_uItemType = 0;
-    m_uGridType = 0;
+    tItemColor = Qt::white;
+    tGridColor = Qt::gray;
 
-    m_tItemColor = Qt::white;
-    m_tGridColor = Qt::gray;
-
-//    m_uTemp = 0;
-
-    m_pGrid = nullptr;
+    pGrid = nullptr;
 }
 
 //------------------------------------------------------------------------------

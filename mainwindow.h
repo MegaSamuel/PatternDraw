@@ -8,6 +8,7 @@
 #include <bitmap.h>
 
 #include "global.h"
+#include "newdialog.h"
 
 //------------------------------------------------------------------------------
 
@@ -20,9 +21,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    inline static constexpr int ROW_COUNT = 10;
-    inline static constexpr int COLUMN_COUNT = 10;
-
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
     ~MainWindow();
 
@@ -54,7 +52,17 @@ private Q_SLOTS:
     void on_btnColumnP_clicked();
 
     void on_checkBoxGrid_stateChanged(int arg1);
-    void on_checkBoxRuler_stateChanged(int arg1);
+
+    void       onDlgCreate();
+
+    void on_checkBoxRulerV_stateChanged(int arg1);
+    void on_checkBoxRulerH_stateChanged(int arg1);
+
+    void on_radioRulerV1_clicked();
+    void on_radioRulerV2_clicked();
+
+    void on_radioRulerH1_clicked();
+    void on_radioRulerH2_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -87,8 +95,9 @@ private:
     bool           fileSave();
     bool           fileSaveAs();
 
+    TNewDialog    *m_ptNewDialog;
+
     unsigned       m_uItemType;
-    unsigned       m_uItemSize;
     unsigned       m_uGridType;
 
     TBitMap        m_tBitMap;
@@ -103,6 +112,8 @@ private:
 
     bool           m_bImageReady;
 
+    void           guiBlock(bool block);
+
     QColor         m_tBackColor;
     QColor         m_tGridColor;
 
@@ -110,12 +121,6 @@ private:
 
     void           closeEvent( QCloseEvent *event );
     void           resizeEvent( QResizeEvent *event );
-
-    // мин/макс количество рядов/колонок
-    unsigned       m_minRowVal;
-    unsigned       m_maxRowVal;
-    unsigned       m_minColumnVal;
-    unsigned       m_maxColumnVal;
 
     TGrid         *m_pGrid;
 };
