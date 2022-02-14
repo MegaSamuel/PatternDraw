@@ -58,11 +58,11 @@ private Q_SLOTS:
     void on_checkBoxRulerV_stateChanged(int arg1);
     void on_checkBoxRulerH_stateChanged(int arg1);
 
-    void on_checkRulerV1_stateChanged(int arg1);
-    void on_checkRulerV2_stateChanged(int arg1);
+    void on_radioRulerV1_clicked();
+    void on_radioRulerV2_clicked();
 
-    void on_checkRulerH1_stateChanged(int arg1);
-    void on_checkRulerH2_stateChanged(int arg1);
+    void on_radioRulerH1_clicked();
+    void on_radioRulerH2_clicked();
 
 private:
     Ui::MainWindow *ui;
