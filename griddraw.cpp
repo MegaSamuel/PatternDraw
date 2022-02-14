@@ -8,11 +8,11 @@
 TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
     m_color = Qt::gray;
 
-    m_hruler_size.setHeight(10);
-    m_hruler_size.setWidth(10);
+    m_hruler_size.setHeight(SHORT_SIDE);
+    m_hruler_size.setWidth(SHORT_SIDE);
 
-    m_vruler_size.setHeight(10);
-    m_vruler_size.setWidth(10);
+    m_vruler_size.setHeight(SHORT_SIDE);
+    m_vruler_size.setWidth(SHORT_SIDE);
 }
 
 TGridDraw::~TGridDraw() {
@@ -24,11 +24,11 @@ TGridDraw::~TGridDraw() {
 void  TGridDraw::updateRulerSize() {
     QSize  elem_size = getElemSize();
 
-    m_hruler_size.setHeight(20);
+    m_hruler_size.setHeight(SHORT_SIDE);
     m_hruler_size.setWidth(elem_size.width());
 
     m_vruler_size.setHeight(elem_size.height());
-    m_vruler_size.setWidth(20);
+    m_vruler_size.setWidth(SHORT_SIDE);
 }
 
 //------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
     updateRulerSize();
 
     // рулетка слева
-    if(glb().pGrid->getRuler()) {
+    if(glb().pGrid->getRulerV() && (keRulerTypeRightLeft == glb().pGrid->getRulerVtype())) {
         DrawVRuler(x_shift, y_shift, keRowNumberEven, &painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
@@ -57,20 +57,32 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
     // собственно табличка ячеек
     DrawElements(x_shift, y_shift, &painter);
     QSize  elem_size = getElemSize();
+
     // сдвигаемся на высоту таблицы
-    y_shift += glb().pGrid->getRows()*elem_size.height();
+    if(keGridTypeNormal == glb().tGridData.nGridType) {
+        y_shift += glb().pGrid->getRows()*elem_size.height();
+    } else {
+        y_shift += glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2;
+    }
 
     // рулетка снизу
-    if(glb().pGrid->getRuler()) {
+    if(glb().pGrid->getRulerH()) {
         DrawHRuler(x_shift, y_shift, keRowNumberAll, &painter);
     }
 
     // сдвигаемся на ширину таблицы
     x_shift += glb().pGrid->getColumns()*elem_size.width();
 
+    if(keGridTypeShift == glb().tGridData.nGridType) {
+        y_shift_start += elem_size.height()/2;
+    }
+
     // рулетка справа
-    if(glb().pGrid->getRuler()) {
-        DrawVRuler(x_shift, y_shift_start, keRowNumberOdd, &painter);
+    if(glb().pGrid->getRulerV()) {
+        if(keRulerTypeRightLeft == glb().pGrid->getRulerVtype())
+            DrawVRuler(x_shift, y_shift_start, keRowNumberOdd, &painter);
+        else
+            DrawVRuler(x_shift, y_shift_start, keRowNumberAll, &painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
     }
@@ -107,7 +119,15 @@ void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) 
         } else if(keGridTypeShift == glb().tGridData.nGridType) {
             if(!(i%2)) {
                 _y = y + i*elem_shift.y();
-                DrawVRulerElement(glb().pGrid->getRows()-i, _x, _y, painter);
+                if(keRowNumberAll == number) {
+                    num_for_draw = glb().pGrid->getRows()-i-1;
+                } else if(keRowNumberOdd == number) {
+                    num_for_draw = glb().pGrid->getRows()-i-1;
+                } else if(keRowNumberEven == number) {
+                    num_for_draw = glb().pGrid->getRows()-i;
+                }
+                DrawVRulerElement(num_for_draw, _x, _y, painter);
+                qDebug() << i;
             }
         }
     }
@@ -185,7 +205,7 @@ void  TGridDraw::DrawHRulerElement(int ind, int x, int y, QPainter *painter) {
     QString str;
     if(ind > 0) str = QString::number(ind);
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-    painter->drawText(x+(elem_size.width()-5*str.length())/2, y+(3*m_vruler_size.height())/4, str);
+    painter->drawText(x+(m_hruler_size.width()-5*str.length())/2, y+(3*m_hruler_size.height())/4, str);
 }
 
 void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
@@ -276,14 +296,14 @@ void  TGridDraw::resizeEvent(QResizeEvent *event)
 //------------------------------------------------------------------------------
 
 QSize  TGridDraw::getElemSize() {
-    QSize size(10, 10);
+    QSize size(SHORT_SIDE, SHORT_SIDE);
 
     if(keItemTypeRectan == glb().tGridData.nItemType) {
-        size.setHeight(20);
-        size.setWidth(10);
+        size.setHeight(LONG_SIDE);
+        size.setWidth(SHORT_SIDE);
     } else if(keItemTypeSquare == glb().tGridData.nItemType) {
-        size.setHeight(10);
-        size.setWidth(10);
+        size.setHeight(SHORT_SIDE);
+        size.setWidth(SHORT_SIDE);
     }
 
     return size;

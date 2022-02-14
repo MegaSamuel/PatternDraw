@@ -43,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // сформировано ли изображение
     m_bImageReady = false;
 
+    guiBlock(true);
+
     setCellSize();
 
     // ставим стиль
@@ -127,6 +129,21 @@ void  MainWindow::initGuiElements() {
     m_tGridColor = Qt::gray;
     glb().tGridColor = Qt::gray;
     setLabelBackColor(ui->labelGridColor, &m_tGridColor);
+
+    ui->checkRulerH1->setChecked(true);
+    ui->checkRulerH2->setChecked(false);
+
+    ui->checkRulerV1->setChecked(true);
+    ui->checkRulerV2->setChecked(false);
+}
+
+// изначально часть gui заблокировано
+// снимаем блокировку после создания новой таблички (Ctrl+N)s
+void  MainWindow::guiBlock(bool block) {
+    ui->btnRowP->setEnabled(!block);
+    ui->btnRowM->setEnabled(!block);
+    ui->btnColumnP->setEnabled(!block);
+    ui->btnColumnM->setEnabled(!block);
 }
 
 //------------------------------------------------------------------------------
@@ -828,6 +845,8 @@ void  MainWindow::onDlgCreate() {
     // сформировано ли изображение
     m_bImageReady = false;
 
+    guiBlock(false);
+
     setCellSize();
 
     // заголовок формы
@@ -1219,11 +1238,69 @@ void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
     update();
 }
 
-void MainWindow::on_checkBoxRuler_stateChanged(int arg1)
+void MainWindow::on_checkBoxRulerV_stateChanged(int arg1)
 {
-    m_pGrid->setRuler(Qt::Unchecked != arg1);
+    ui->checkRulerV1->setEnabled(Qt::Unchecked != arg1);
+    ui->checkRulerV2->setEnabled(Qt::Unchecked != arg1);
+
+    m_pGrid->setRulerV(Qt::Unchecked != arg1);
 
     update();
+
+    if(Qt::Unchecked == arg1) {
+        ui->checkRulerV1->setChecked(true);
+        ui->checkRulerV2->setChecked(false);
+    }
+}
+
+void MainWindow::on_checkBoxRulerH_stateChanged(int arg1)
+{
+    ui->checkRulerH1->setEnabled(Qt::Unchecked != arg1);
+    //ui->checkRulerH2->setEnabled(Qt::Unchecked != arg1);
+
+    m_pGrid->setRulerH(Qt::Unchecked != arg1);
+
+    update();
+
+    if(Qt::Unchecked == arg1) {
+        ui->checkRulerH1->setChecked(true);
+        ui->checkRulerH2->setChecked(false);
+    }
+}
+
+void MainWindow::on_checkRulerV1_stateChanged(int arg1)
+{
+    if(Qt::Unchecked != arg1) {
+        ui->checkRulerV2->setChecked(false);
+        m_pGrid->setRulerVtype(keRulerTypeRight);
+        update();
+    }
+}
+
+void MainWindow::on_checkRulerV2_stateChanged(int arg1)
+{
+    if(Qt::Unchecked != arg1) {
+        ui->checkRulerV1->setChecked(false);
+        m_pGrid->setRulerVtype(keRulerTypeRightLeft);
+        update();
+    }
+}
+
+void MainWindow::on_checkRulerH1_stateChanged(int arg1)
+{
+    if(Qt::Unchecked != arg1) {
+        ui->checkRulerH2->setChecked(false);
+        m_pGrid->setRulerHtype(keRulerTypeBottom);
+        update();
+    }
+}
+
+void MainWindow::on_checkRulerH2_stateChanged(int arg1)
+{
+    if(Qt::Unchecked != arg1) {
+        ui->checkRulerH1->setChecked(false);
+        m_pGrid->setRulerHtype(keRulerTypeBottomTop);
+        update();
+    }
 }
 // <--
-

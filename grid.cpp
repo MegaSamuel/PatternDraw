@@ -29,7 +29,12 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
 
     m_border = true;
     m_split = false;
-    m_ruler = false;
+
+    m_ruler_v = false;
+    m_ruler_h = false;
+
+    m_ruler_v_type = keRulerTypeRight;
+    m_ruler_h_type = keRulerTypeBottom;
 
     m_grid.resize(static_cast<unsigned>(m_max_row_count));
     for(int i = 0; i < m_max_row_count; i++) {
@@ -110,12 +115,36 @@ bool TGrid::getSplit() const {
     return m_split;
 }
 
-void  TGrid::setRuler(bool ruler) {
-    m_ruler = ruler;
+void  TGrid::setRulerV(bool ruler) {
+    m_ruler_v = ruler;
 }
 
-bool TGrid::getRuler() const {
-    return m_ruler;
+void  TGrid::setRulerVtype(int type) {
+    m_ruler_v_type = type;
+}
+
+bool TGrid::getRulerV() const {
+    return m_ruler_v;
+}
+
+int TGrid::getRulerVtype() const {
+    return m_ruler_v_type;
+}
+
+void  TGrid::setRulerH(bool ruler) {
+    m_ruler_h = ruler;
+}
+
+void  TGrid::setRulerHtype(int type) {
+    m_ruler_h_type = type;
+}
+
+bool TGrid::getRulerH() const {
+    return m_ruler_h;
+}
+
+int TGrid::getRulerHtype() const {
+    return m_ruler_h_type;
 }
 
 //------------------------------------------------------------------------------

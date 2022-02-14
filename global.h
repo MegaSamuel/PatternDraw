@@ -18,6 +18,14 @@ enum EItemType
     keItemTypeSquare = 1,
 };
 
+enum ERulerType
+{
+    keRulerTypeRight     = 0,
+    keRulerTypeBottom    = 0,
+    keRulerTypeRightLeft = 1,
+    keRulerTypeBottomTop = 1,
+};
+
 inline static constexpr int ROW_COUNT = 10;
 inline static constexpr int COLUMN_COUNT = 10;
 
@@ -26,6 +34,9 @@ inline static constexpr int MIN_COLUMN_COUNT = 1;
 
 inline static constexpr int MAX_ROW_COUNT = 128;
 inline static constexpr int MAX_COLUMN_COUNT = 128;
+
+inline static constexpr int SHORT_SIDE = 20;
+inline static constexpr int LONG_SIDE = 30;
 
 //------------------------------------------------------------------------------
 

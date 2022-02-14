@@ -46,8 +46,15 @@ public:
     void          setSplit(bool split);
     bool          getSplit() const;
 
-    void          setRuler(bool ruler);
-    bool          getRuler() const;
+    void          setRulerV(bool ruler);
+    void          setRulerVtype(int type);
+    bool          getRulerV() const;
+    int           getRulerVtype() const;
+
+    void          setRulerH(bool ruler);
+    void          setRulerHtype(int type);
+    bool          getRulerH() const;
+    int           getRulerHtype() const;
 
     const TElement& getElement(int row, int column) const;
 
@@ -64,7 +71,11 @@ private:
 
     bool          m_split;
 
-    bool          m_ruler;
+    bool          m_ruler_v;
+    bool          m_ruler_h;
+
+    int           m_ruler_v_type;
+    int           m_ruler_h_type;
 
     bool          isRowValid(int value);
     bool          isColumnValid(int value);

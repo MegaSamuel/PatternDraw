@@ -52,9 +52,17 @@ private Q_SLOTS:
     void on_btnColumnP_clicked();
 
     void on_checkBoxGrid_stateChanged(int arg1);
-    void on_checkBoxRuler_stateChanged(int arg1);
 
     void       onDlgCreate();
+
+    void on_checkBoxRulerV_stateChanged(int arg1);
+    void on_checkBoxRulerH_stateChanged(int arg1);
+
+    void on_checkRulerV1_stateChanged(int arg1);
+    void on_checkRulerV2_stateChanged(int arg1);
+
+    void on_checkRulerH1_stateChanged(int arg1);
+    void on_checkRulerH2_stateChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -103,6 +111,8 @@ private:
     QByteArray    *m_pImage;
 
     bool           m_bImageReady;
+
+    void           guiBlock(bool block);
 
     QColor         m_tBackColor;
     QColor         m_tGridColor;
