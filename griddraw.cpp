@@ -13,6 +13,9 @@ TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
 
     m_vruler_size.setHeight(SHORT_SIDE);
     m_vruler_size.setWidth(SHORT_SIDE);
+
+    // включаем событие mouse move без нажатия кнопок
+    this->setMouseTracking(true);
 }
 
 TGridDraw::~TGridDraw() {
@@ -158,7 +161,6 @@ void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) 
                     num_for_draw = glb().pGrid->getRows()-i;
                 }
                 DrawVRulerElement(num_for_draw, _x, _y, painter);
-                qDebug() << i;
             }
         }
     }
@@ -309,6 +311,8 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
 
 void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
 //    qDebug() << "move event";
+
+//    qDebug() << "x" << event->pos().x() << "y" << event->pos().y();
 
     Q_UNUSED(event)
 }
