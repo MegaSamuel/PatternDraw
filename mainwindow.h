@@ -52,6 +52,7 @@ private Q_SLOTS:
     void on_btnColumnP_clicked();
 
     void on_checkBoxGrid_stateChanged(int arg1);
+    void on_checkBoxGridRuler_stateChanged(int arg1);
 
     void       onDlgCreate();
 

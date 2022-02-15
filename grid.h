@@ -43,6 +43,9 @@ public:
     void          setBorder(bool border);
     bool          getBorder() const;
 
+    void          setRulerBorder(bool border);
+    bool          getRulerBorder() const;
+
     void          setSplit(bool split);
     bool          getSplit() const;
 
@@ -68,6 +71,7 @@ private:
     int           m_max_column_count;
 
     bool          m_border;
+    bool          m_ruler_border;
 
     bool          m_split;
 

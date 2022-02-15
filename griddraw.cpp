@@ -78,6 +78,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
         DrawVRuler(x_shift, y_shift, keRowNumberEven, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
+        x_shift += 1; //add one
     }
 
     // собственно табличка ячеек
@@ -91,6 +92,8 @@ void  TGridDraw::drawAll(QPainter *painter) {
         y_shift += glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2;
     }
 
+    y_shift += 1; //add one
+
     // рулетка снизу
     if(glb().pGrid->getRulerH()) {
         DrawHRuler(x_shift, y_shift, keRowNumberAll, painter);
@@ -98,6 +101,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
 
     // сдвигаемся на ширину таблицы
     x_shift += glb().pGrid->getColumns()*elem_size.width();
+    x_shift += 1; //add one
 
     if(keGridTypeShift == glb().tGridData.nGridType) {
         y_shift_start += elem_size.height()/2;
@@ -111,6 +115,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
             DrawVRuler(x_shift, y_shift_start, keRowNumberAll, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
+        x_shift += 1; //add one
     }
 }
 
@@ -163,7 +168,7 @@ void  TGridDraw::DrawVRulerElement(int ind, int x, int y, QPainter *painter) {
     QSize  elem_size = getElemSize();
 
     // если border то ставим цвет, иначе цвет как фон
-    if(glb().pGrid->getBorder()) {
+    if(glb().pGrid->getRulerBorder()) {
         painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
     } else {
         painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
@@ -218,7 +223,7 @@ void  TGridDraw::DrawHRulerElement(int ind, int x, int y, QPainter *painter) {
     QSize  elem_size = getElemSize();
 
     // если border то ставим цвет, иначе цвет как фон
-    if(glb().pGrid->getBorder()) {
+    if(glb().pGrid->getRulerBorder()) {
         painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
     } else {
         painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
