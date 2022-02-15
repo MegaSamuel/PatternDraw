@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect( ui->btnSave, &QPushButton::clicked, this, &MainWindow::onBtnSave );
 
     // ловим нажатие кнопки Предпросмотр
-    connect( ui->btnPreview, &QPushButton::clicked, this, &MainWindow::onBtnPreview );
+    //connect( ui->btnPreview, &QPushButton::clicked, this, &MainWindow::onBtnPreview );
 
     // ловим нажатие кнопки Изменить цвет фона
     connect( ui->btnBackColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeBackColor ) ;
@@ -208,6 +208,7 @@ void  MainWindow::setPrgTitleChanged( bool  changed )
 
 //------------------------------------------------------------------------------
 
+#if 0
 bool  MainWindow::imageFillShift()
 {
     bool  result = false;
@@ -567,11 +568,31 @@ bool  MainWindow::imageCreate()
 
     return m_bImageReady;
 }
+#endif
 
 //------------------------------------------------------------------------------
 
+bool  MainWindow::fileSaveToDev(const QString& filename) {
+    bool result;
+    QString  format = filename.right(3).toUpper();
+
+    result = ui->tGridDraw->saveImage(filename, format.toStdString().c_str());
+
+    if(m_bPrgTitleChanged) {
+        setPrgTitleChanged(false);
+    }
+    m_bPrgTitleChanged = false;
+
+    if(!result) {
+        qDebug() << "Ошибка записи в файл";
+    }
+
+    return result;
+}
+
 bool  MainWindow::fileSave() {
     bool result = false;
+#if 0
     // собственно файл
     QFile file;
 
@@ -584,8 +605,14 @@ bool  MainWindow::fileSave() {
         qDebug() << "cannot create image";
         return false;
     }
-
+#endif
     if(!m_zPrgFileName.isEmpty()) {
+
+#if 1
+        result = fileSaveToDev(m_zPrgFileName);
+#endif
+
+#if 0
         file.setFileName(m_zPrgFileName);
 
         if(!file.open(QIODevice::WriteOnly)) {
@@ -606,6 +633,7 @@ bool  MainWindow::fileSave() {
 
             file.close();
         }
+#endif
     }
 
     return result;
@@ -613,6 +641,7 @@ bool  MainWindow::fileSave() {
 
 bool  MainWindow::fileSaveAs() {
     bool result = false;
+#if 0
     // собственно файл
     QFile file;
 
@@ -625,7 +654,7 @@ bool  MainWindow::fileSaveAs() {
         qDebug() << "cannot create image";
         return false;
     }
-
+#endif
     // формируем имя файла по умолчанию
     QString deffilename = QString("/pattern%1x%2").arg(m_uRow).arg(m_uColumn);
 
@@ -641,10 +670,15 @@ bool  MainWindow::fileSaveAs() {
     QApplication::processEvents();
 
     if(!filename.isEmpty()) {
+#if 0
         file.setFileName(filename);
-
+#endif
         m_zPrgFileName = filename;
+#if 1
+        result = fileSaveToDev(m_zPrgFileName);
+#endif
 
+#if 0
         if(!file.open(QIODevice::WriteOnly)) {
             qDebug() << "cannot open file" << filename;
             return false;
@@ -663,6 +697,7 @@ bool  MainWindow::fileSaveAs() {
 
             file.close();
         }
+#endif
     } else {
         qDebug() << "no filename";
     }
@@ -672,6 +707,7 @@ bool  MainWindow::fileSaveAs() {
 
 //------------------------------------------------------------------------------
 
+#if 0
 void  MainWindow::onBtnSave()
 {
     // собственно файл
@@ -767,6 +803,7 @@ void  MainWindow::onBtnPreview()
        qDebug() << "there is no image!";
     }
 }
+#endif
 
 void  MainWindow::onBtnChangeBackColor()
 {

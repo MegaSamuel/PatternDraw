@@ -40,6 +40,32 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this); // Создаём объект отрисовщика
 
+    // рисуем на форму (qwidget)
+    drawAll(&painter);
+}
+
+//QImage  *TGridDraw::getImage() {
+//    return &m_image;
+//}
+
+bool  TGridDraw::saveImage(const QString &fileName, const char *format) {
+    drawPicture();
+    return m_image.save(fileName, format);
+}
+
+void  TGridDraw::drawPicture() {
+    QImage image(QSize(this->width(),this->height()),QImage::Format_ARGB32);
+    image.fill("white");
+
+    QPainter painter(&image); // Создаём объект отрисовщика
+
+    // рисуем в qimage
+    drawAll(&painter);
+
+    m_image = image;
+}
+
+void  TGridDraw::drawAll(QPainter *painter) {
     int x_shift = 0;
     int y_shift = 0;
 
@@ -49,13 +75,13 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     // рулетка слева
     if(glb().pGrid->getRulerV() && (keRulerTypeRightLeft == glb().pGrid->getRulerVtype())) {
-        DrawVRuler(x_shift, y_shift, keRowNumberEven, &painter);
+        DrawVRuler(x_shift, y_shift, keRowNumberEven, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
     }
 
     // собственно табличка ячеек
-    DrawElements(x_shift, y_shift, &painter);
+    DrawElements(x_shift, y_shift, painter);
     QSize  elem_size = getElemSize();
 
     // сдвигаемся на высоту таблицы
@@ -67,7 +93,7 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     // рулетка снизу
     if(glb().pGrid->getRulerH()) {
-        DrawHRuler(x_shift, y_shift, keRowNumberAll, &painter);
+        DrawHRuler(x_shift, y_shift, keRowNumberAll, painter);
     }
 
     // сдвигаемся на ширину таблицы
@@ -80,9 +106,9 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
     // рулетка справа
     if(glb().pGrid->getRulerV()) {
         if(keRulerTypeRightLeft == glb().pGrid->getRulerVtype())
-            DrawVRuler(x_shift, y_shift_start, keRowNumberOdd, &painter);
+            DrawVRuler(x_shift, y_shift_start, keRowNumberOdd, painter);
         else
-            DrawVRuler(x_shift, y_shift_start, keRowNumberAll, &painter);
+            DrawVRuler(x_shift, y_shift_start, keRowNumberAll, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
     }
