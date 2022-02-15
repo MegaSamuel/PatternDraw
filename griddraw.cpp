@@ -1,5 +1,7 @@
 #include <QDebug>
 
+#include <cassert>
+
 #include "griddraw.h"
 #include "global.h"
 
@@ -88,12 +90,19 @@ void  TGridDraw::drawAll(QPainter *painter) {
     DrawElements(x_shift, y_shift, painter);
     QSize  elem_size = getElemSize();
 
+    // запоминаем левый верхний угол таблицы
+    m_left_top_point.setX(x_shift);
+    m_left_top_point.setY(y_shift);
+
     // сдвигаемся на высоту таблицы
     if(keGridTypeNormal == glb().tGridData.nGridType) {
         y_shift += glb().pGrid->getRows()*elem_size.height();
     } else {
         y_shift += glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2;
     }
+
+    // запоминаем правый нижний угол таблицы
+    m_right_bottom_point.setY(y_shift);
 
     y_shift += 1; //add one
 
@@ -104,6 +113,10 @@ void  TGridDraw::drawAll(QPainter *painter) {
 
     // сдвигаемся на ширину таблицы
     x_shift += glb().pGrid->getColumns()*elem_size.width();
+
+    // запоминаем правый нижний угол таблицы
+    m_right_bottom_point.setX(x_shift);
+
     x_shift += 1; //add one
 
     if(keGridTypeShift == glb().tGridData.nGridType) {
@@ -310,11 +323,14 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
 }
 
 void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
-//    qDebug() << "move event";
-
-//    qDebug() << "x" << event->pos().x() << "y" << event->pos().y();
-
     Q_UNUSED(event)
+
+    m_curr_row = calcRowNum(event->pos().y());
+    m_curr_column = calcColumnNum(event->pos().x());
+
+    Q_EMIT(currentPos(m_curr_row, m_curr_column));
+
+    qDebug() << "row" << m_curr_row << "column" << m_curr_column;
 }
 
 void  TGridDraw::resizeEvent(QResizeEvent *event)
@@ -329,6 +345,40 @@ void  TGridDraw::resizeEvent(QResizeEvent *event)
 }
 
 //------------------------------------------------------------------------------
+
+int TGridDraw::getCurrRow() const {
+    return m_curr_row;
+}
+
+int TGridDraw::getCurrColumn() const {
+    return m_curr_column;
+}
+
+int  TGridDraw::calcRowNum(int y) {
+    assert(0 != m_right_bottom_point.y());
+
+    QSize  elem_size = getElemSize();
+
+    int ind = glb().pGrid->getRows() - (y - m_left_top_point.y())/elem_size.height();
+
+    if(ind < 1) ind = 1;
+    if(ind > glb().pGrid->getRows()) ind = glb().pGrid->getRows();
+
+    return ind;
+}
+
+int  TGridDraw::calcColumnNum(int x) {
+    assert(0 != m_right_bottom_point.x());
+
+    QSize  elem_size = getElemSize();
+
+    int ind = glb().pGrid->getColumns() - (x - m_left_top_point.x())/elem_size.width();
+
+    if(ind < 1) ind = 1;
+    if(ind > glb().pGrid->getColumns()) ind = glb().pGrid->getColumns();
+
+    return ind;
+}
 
 QSize  TGridDraw::getElemSize() {
     QSize size(SHORT_SIDE, SHORT_SIDE);

@@ -33,6 +33,12 @@ public:
 
     bool           saveImage(const QString &fileName, const char *format = nullptr);
 
+    int            getCurrRow() const;
+    int            getCurrColumn() const;
+
+Q_SIGNALS:
+    void           currentPos(int, int);
+
 protected:
     /* Определяем виртуальный метод родительского класса
      * для отрисовки содержимого виджета
@@ -59,6 +65,15 @@ private:
 
     void           drawAll(QPainter *painter);
     void           drawPicture();
+
+    QPoint         m_left_top_point;
+    QPoint         m_right_bottom_point;
+
+    int            calcRowNum(int y);
+    int            calcColumnNum(int x);
+
+    int            m_curr_row;
+    int            m_curr_column;
 
     // x, y - начальные координаты; number - нумерация; painter - указатель на отрисовщик
     void DrawVRuler(int x, int y, ERowNumber number, QPainter *painter);

@@ -41,6 +41,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tGridDraw->setVisible(false);
 
+    // ловим сигнал с номером текущей ячейки
+    connect(ui->tGridDraw, &TGridDraw::currentPos, this, &MainWindow::onCurrentPos);
+
     // отправляем указатель на таблицу в рисовалку
     assert(nullptr != m_pGrid);
     glb().pGrid = m_pGrid;
@@ -716,6 +719,14 @@ bool  MainWindow::fileSaveAs() {
 }
 
 //------------------------------------------------------------------------------
+
+void  MainWindow::onCurrentPos(int row, int col) {
+    m_uCurrRow = static_cast<unsigned>(row);
+    m_uCurrColumn = static_cast<unsigned>(col);
+
+    ui->spinCurrRow->setValue(row);
+    ui->spinCurrColumn->setValue(col);
+}
 
 #if 0
 void  MainWindow::onBtnSave()

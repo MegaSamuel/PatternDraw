@@ -25,6 +25,7 @@ public:
     ~MainWindow();
 
 private Q_SLOTS:
+    void       onCurrentPos(int, int);
 //    void       onBtnSave(); //obsolete
 //    void       onBtnPreview(); //obsolete
     void       onBtnChangeBackColor();
