@@ -29,6 +29,10 @@ public:
     explicit TGridDraw(QWidget *parent = nullptr);
     ~TGridDraw() override;
 
+//    QImage        *getImage();
+
+    bool           saveImage(const QString &fileName, const char *format = nullptr);
+
 protected:
     /* Определяем виртуальный метод родительского класса
      * для отрисовки содержимого виджета
@@ -46,10 +50,15 @@ private:
     QSize          m_hruler_size;
     QSize          m_vruler_size;
 
+    QImage         m_image;
+
     void           updateRulerSize();
 
     QSize          getElemSize();
     QPoint         getElemShift();
+
+    void           drawAll(QPainter *painter);
+    void           drawPicture();
 
     // x, y - начальные координаты; number - нумерация; painter - указатель на отрисовщик
     void DrawVRuler(int x, int y, ERowNumber number, QPainter *painter);

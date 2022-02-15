@@ -140,7 +140,7 @@ TNewDialog::TNewDialog(QWidget *parent) : QDialog(parent) {
 }
 
 TNewDialog::~TNewDialog() {
-    qDebug() << "delete dialog";
+//    qDebug() << "delete dialog";
 }
 
 //------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ void TNewDialog::onCreate(QAbstractButton *btn) {
     if(QDialogButtonBox::AcceptRole != priv__->m_ptBtnBox->buttonRole(btn))
         return;
 
-    qDebug() << "create";
+//    qDebug() << "create";
 
     do_create();
 
@@ -198,7 +198,7 @@ void TNewDialog::onReset(QAbstractButton*  btn) {
     if(QDialogButtonBox::ResetRole != priv__->m_ptBtnBox->buttonRole(btn))
         return;
 
-    qDebug() << "reset";
+//    qDebug() << "reset";
 
     do_reset();
 }
@@ -222,7 +222,7 @@ void TNewDialog::do_reset() {
 //------------------------------------------------------------------------------
 
 void TNewDialog::closeEvent(QCloseEvent *event) {
-    qDebug() << "close event";
+//    qDebug() << "close event";
     do_reset();
     event->accept();
 }

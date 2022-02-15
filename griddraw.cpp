@@ -13,6 +13,9 @@ TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
 
     m_vruler_size.setHeight(SHORT_SIDE);
     m_vruler_size.setWidth(SHORT_SIDE);
+
+    // включаем событие mouse move без нажатия кнопок
+    this->setMouseTracking(true);
 }
 
 TGridDraw::~TGridDraw() {
@@ -40,6 +43,32 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this); // Создаём объект отрисовщика
 
+    // рисуем на форму (qwidget)
+    drawAll(&painter);
+}
+
+//QImage  *TGridDraw::getImage() {
+//    return &m_image;
+//}
+
+bool  TGridDraw::saveImage(const QString &fileName, const char *format) {
+    drawPicture();
+    return m_image.save(fileName, format);
+}
+
+void  TGridDraw::drawPicture() {
+    QImage image(QSize(this->width(),this->height()),QImage::Format_ARGB32);
+    image.fill("white");
+
+    QPainter painter(&image); // Создаём объект отрисовщика
+
+    // рисуем в qimage
+    drawAll(&painter);
+
+    m_image = image;
+}
+
+void  TGridDraw::drawAll(QPainter *painter) {
     int x_shift = 0;
     int y_shift = 0;
 
@@ -49,13 +78,14 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
 
     // рулетка слева
     if(glb().pGrid->getRulerV() && (keRulerTypeRightLeft == glb().pGrid->getRulerVtype())) {
-        DrawVRuler(x_shift, y_shift, keRowNumberEven, &painter);
+        DrawVRuler(x_shift, y_shift, keRowNumberEven, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
+        x_shift += 1; //add one
     }
 
     // собственно табличка ячеек
-    DrawElements(x_shift, y_shift, &painter);
+    DrawElements(x_shift, y_shift, painter);
     QSize  elem_size = getElemSize();
 
     // сдвигаемся на высоту таблицы
@@ -65,13 +95,16 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
         y_shift += glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2;
     }
 
+    y_shift += 1; //add one
+
     // рулетка снизу
     if(glb().pGrid->getRulerH()) {
-        DrawHRuler(x_shift, y_shift, keRowNumberAll, &painter);
+        DrawHRuler(x_shift, y_shift, keRowNumberAll, painter);
     }
 
     // сдвигаемся на ширину таблицы
     x_shift += glb().pGrid->getColumns()*elem_size.width();
+    x_shift += 1; //add one
 
     if(keGridTypeShift == glb().tGridData.nGridType) {
         y_shift_start += elem_size.height()/2;
@@ -80,11 +113,12 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
     // рулетка справа
     if(glb().pGrid->getRulerV()) {
         if(keRulerTypeRightLeft == glb().pGrid->getRulerVtype())
-            DrawVRuler(x_shift, y_shift_start, keRowNumberOdd, &painter);
+            DrawVRuler(x_shift, y_shift_start, keRowNumberOdd, painter);
         else
-            DrawVRuler(x_shift, y_shift_start, keRowNumberAll, &painter);
+            DrawVRuler(x_shift, y_shift_start, keRowNumberAll, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
+        x_shift += 1; //add one
     }
 }
 
@@ -127,7 +161,6 @@ void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) 
                     num_for_draw = glb().pGrid->getRows()-i;
                 }
                 DrawVRulerElement(num_for_draw, _x, _y, painter);
-                qDebug() << i;
             }
         }
     }
@@ -137,7 +170,7 @@ void  TGridDraw::DrawVRulerElement(int ind, int x, int y, QPainter *painter) {
     QSize  elem_size = getElemSize();
 
     // если border то ставим цвет, иначе цвет как фон
-    if(glb().pGrid->getBorder()) {
+    if(glb().pGrid->getRulerBorder()) {
         painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
     } else {
         painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
@@ -192,7 +225,7 @@ void  TGridDraw::DrawHRulerElement(int ind, int x, int y, QPainter *painter) {
     QSize  elem_size = getElemSize();
 
     // если border то ставим цвет, иначе цвет как фон
-    if(glb().pGrid->getBorder()) {
+    if(glb().pGrid->getRulerBorder()) {
         painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
     } else {
         painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
@@ -278,6 +311,8 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
 
 void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
 //    qDebug() << "move event";
+
+//    qDebug() << "x" << event->pos().x() << "y" << event->pos().y();
 
     Q_UNUSED(event)
 }

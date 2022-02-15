@@ -2,6 +2,8 @@
 #include <QPrinter>
 #include <QPrintDialog>
 
+#include <cassert>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dialog.h"
@@ -33,11 +35,14 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pImage = new QByteArray;
 
     // таблица элементов
+    assert(0 != m_uRow);
+    assert(0 != m_uColumn);
     m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn));
 
     ui->tGridDraw->setVisible(false);
 
     // отправляем указатель на таблицу в рисовалку
+    assert(nullptr != m_pGrid);
     glb().pGrid = m_pGrid;
 
     // сформировано ли изображение
@@ -60,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect( ui->btnSave, &QPushButton::clicked, this, &MainWindow::onBtnSave );
 
     // ловим нажатие кнопки Предпросмотр
-    connect( ui->btnPreview, &QPushButton::clicked, this, &MainWindow::onBtnPreview );
+    //connect( ui->btnPreview, &QPushButton::clicked, this, &MainWindow::onBtnPreview );
 
     // ловим нажатие кнопки Изменить цвет фона
     connect( ui->btnBackColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeBackColor ) ;
@@ -99,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget( ui->centralWidget );
 
     // центруем лайбл с превью
-    ui->lblPicture->setAlignment( Qt::AlignCenter );
+    //ui->lblPicture->setAlignment( Qt::AlignCenter );
 }
 
 MainWindow::~MainWindow()
@@ -111,11 +116,17 @@ void  MainWindow::initGuiElements() {
     m_uRow = static_cast<unsigned>(glb().tGridData.nRow);
     m_uColumn = static_cast<unsigned>(glb().tGridData.nColumn);
 
+    m_uCurrRow = 1;
+    m_uCurrColumn = 1;
+
     m_uItemType = static_cast<unsigned>(glb().tGridData.nItemType);
     m_uGridType = static_cast<unsigned>(glb().tGridData.nGridType);
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
+
+    ui->spinCurrRow->setValue(static_cast<int>(m_uCurrRow));
+    ui->spinCurrColumn->setValue(static_cast<int>(m_uCurrColumn));
 
     ui->comboBoxItem->setCurrentIndex(static_cast<int>(m_uItemType));
     ui->comboBoxGrid->setCurrentIndex(static_cast<int>(m_uGridType));
@@ -131,7 +142,6 @@ void  MainWindow::initGuiElements() {
     setLabelBackColor(ui->labelGridColor, &m_tGridColor);
 
     ui->radioRulerH1->setChecked(true);
-
     ui->radioRulerV1->setChecked(true);
 }
 
@@ -208,6 +218,7 @@ void  MainWindow::setPrgTitleChanged( bool  changed )
 
 //------------------------------------------------------------------------------
 
+#if 0
 bool  MainWindow::imageFillShift()
 {
     bool  result = false;
@@ -567,11 +578,31 @@ bool  MainWindow::imageCreate()
 
     return m_bImageReady;
 }
+#endif
 
 //------------------------------------------------------------------------------
 
+bool  MainWindow::fileSaveToDev(const QString& filename) {
+    bool result;
+    QString  format = filename.right(3).toUpper();
+
+    result = ui->tGridDraw->saveImage(filename, format.toStdString().c_str());
+
+    if(m_bPrgTitleChanged) {
+        setPrgTitleChanged(false);
+    }
+    m_bPrgTitleChanged = false;
+
+    if(!result) {
+        qDebug() << "Ошибка записи в файл";
+    }
+
+    return result;
+}
+
 bool  MainWindow::fileSave() {
     bool result = false;
+#if 0
     // собственно файл
     QFile file;
 
@@ -584,8 +615,14 @@ bool  MainWindow::fileSave() {
         qDebug() << "cannot create image";
         return false;
     }
-
+#endif
     if(!m_zPrgFileName.isEmpty()) {
+
+#if 1
+        result = fileSaveToDev(m_zPrgFileName);
+#endif
+
+#if 0
         file.setFileName(m_zPrgFileName);
 
         if(!file.open(QIODevice::WriteOnly)) {
@@ -606,6 +643,7 @@ bool  MainWindow::fileSave() {
 
             file.close();
         }
+#endif
     }
 
     return result;
@@ -613,6 +651,7 @@ bool  MainWindow::fileSave() {
 
 bool  MainWindow::fileSaveAs() {
     bool result = false;
+#if 0
     // собственно файл
     QFile file;
 
@@ -625,7 +664,7 @@ bool  MainWindow::fileSaveAs() {
         qDebug() << "cannot create image";
         return false;
     }
-
+#endif
     // формируем имя файла по умолчанию
     QString deffilename = QString("/pattern%1x%2").arg(m_uRow).arg(m_uColumn);
 
@@ -641,10 +680,15 @@ bool  MainWindow::fileSaveAs() {
     QApplication::processEvents();
 
     if(!filename.isEmpty()) {
+#if 0
         file.setFileName(filename);
-
+#endif
         m_zPrgFileName = filename;
+#if 1
+        result = fileSaveToDev(m_zPrgFileName);
+#endif
 
+#if 0
         if(!file.open(QIODevice::WriteOnly)) {
             qDebug() << "cannot open file" << filename;
             return false;
@@ -663,6 +707,7 @@ bool  MainWindow::fileSaveAs() {
 
             file.close();
         }
+#endif
     } else {
         qDebug() << "no filename";
     }
@@ -672,6 +717,7 @@ bool  MainWindow::fileSaveAs() {
 
 //------------------------------------------------------------------------------
 
+#if 0
 void  MainWindow::onBtnSave()
 {
     // собственно файл
@@ -767,6 +813,7 @@ void  MainWindow::onBtnPreview()
        qDebug() << "there is no image!";
     }
 }
+#endif
 
 void  MainWindow::onBtnChangeBackColor()
 {
@@ -1117,15 +1164,15 @@ void  MainWindow::resizeEvent(QResizeEvent *event)
     //qDebug() << "win" << event->size().width() << event->size().height();
 
     // новые размеры лейбла
-    int w = ui->lblPicture->width();
-    int h = ui->lblPicture->height();
+//    int w = ui->lblPicture->width();
+//    int h = ui->lblPicture->height();
 
     // если есть картинка
-    if( !m_pPixmap->isNull() )
-    {
-        // ставим отмасштабированную картинку в лэйбл
-        ui->lblPicture->setPixmap((*m_pPixmap).scaled(w, h, Qt::KeepAspectRatio));
-    }
+//    if( !m_pPixmap->isNull() )
+//    {
+//        // ставим отмасштабированную картинку в лэйбл
+//        ui->lblPicture->setPixmap((*m_pPixmap).scaled(w, h, Qt::KeepAspectRatio));
+//    }
 }
 
 //------------------------------------------------------------------------------
@@ -1232,6 +1279,13 @@ void MainWindow::on_btnColumnP_clicked()
 void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
 {
     m_pGrid->setBorder(Qt::Unchecked != arg1);
+
+    update();
+}
+
+void MainWindow::on_checkBoxGridRuler_stateChanged(int arg1)
+{
+    m_pGrid->setRulerBorder(Qt::Unchecked != arg1);
 
     update();
 }

@@ -28,6 +28,7 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
     assert(isColumnValid(column));
 
     m_border = true;
+    m_ruler_border = true;
     m_split = false;
 
     m_ruler_v = false;
@@ -109,6 +110,14 @@ bool TGrid::getBorder() const {
 
 void  TGrid::setSplit(bool split) {
     m_split = split;
+}
+
+void  TGrid::setRulerBorder(bool border) {
+    m_ruler_border = border;
+}
+
+bool TGrid::getRulerBorder() const {
+    return m_ruler_border;
 }
 
 bool TGrid::getSplit() const {

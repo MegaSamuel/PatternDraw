@@ -25,8 +25,8 @@ public:
     ~MainWindow();
 
 private Q_SLOTS:
-    void       onBtnSave(); //obsolete
-    void       onBtnPreview();
+//    void       onBtnSave(); //obsolete
+//    void       onBtnPreview(); //obsolete
     void       onBtnChangeBackColor();
     void       onBtnChangeGridColor();
     void       onNewHandler();
@@ -52,6 +52,7 @@ private Q_SLOTS:
     void on_btnColumnP_clicked();
 
     void on_checkBoxGrid_stateChanged(int arg1);
+    void on_checkBoxGridRuler_stateChanged(int arg1);
 
     void       onDlgCreate();
 
@@ -81,12 +82,12 @@ private:
 
     void           setPrgTitleChanged( bool  changed );
 
-    bool           imageCreate();
+//    bool           imageCreate();
 
-    bool           imageFillNormal();
-    bool           imageFillShift();
+//    bool           imageFillNormal();
+//    bool           imageFillShift();
 
-    void           setCellSize();
+    void           setCellSize(); //obsolete
     void           getBackColor( RGBQUAD  *a_pColor );
     void           getGridColor( RGBQUAD  *a_pColor );
 
@@ -94,6 +95,8 @@ private:
 
     bool           fileSave();
     bool           fileSaveAs();
+
+    bool           fileSaveToDev(const QString& filename);
 
     TNewDialog    *m_ptNewDialog;
 
@@ -107,10 +110,13 @@ private:
     unsigned       m_uRow;
     unsigned       m_uColumn;
 
-    QPixmap       *m_pPixmap;
-    QByteArray    *m_pImage;
+    unsigned       m_uCurrRow;
+    unsigned       m_uCurrColumn;
 
-    bool           m_bImageReady;
+    QPixmap       *m_pPixmap; //obsolete
+    QByteArray    *m_pImage; //obsolete
+
+    bool           m_bImageReady; //TODO перевесить признак на картинку QPainter
 
     void           guiBlock(bool block);
 
