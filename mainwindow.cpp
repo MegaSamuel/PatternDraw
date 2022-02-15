@@ -2,6 +2,8 @@
 #include <QPrinter>
 #include <QPrintDialog>
 
+#include <cassert>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dialog.h"
@@ -33,11 +35,14 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pImage = new QByteArray;
 
     // таблица элементов
+    assert(0 != m_uRow);
+    assert(0 != m_uColumn);
     m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn));
 
     ui->tGridDraw->setVisible(false);
 
     // отправляем указатель на таблицу в рисовалку
+    assert(nullptr != m_pGrid);
     glb().pGrid = m_pGrid;
 
     // сформировано ли изображение
@@ -99,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget( ui->centralWidget );
 
     // центруем лайбл с превью
-    ui->lblPicture->setAlignment( Qt::AlignCenter );
+    //ui->lblPicture->setAlignment( Qt::AlignCenter );
 }
 
 MainWindow::~MainWindow()
@@ -111,11 +116,17 @@ void  MainWindow::initGuiElements() {
     m_uRow = static_cast<unsigned>(glb().tGridData.nRow);
     m_uColumn = static_cast<unsigned>(glb().tGridData.nColumn);
 
+    m_uCurrRow = 1;
+    m_uCurrColumn = 1;
+
     m_uItemType = static_cast<unsigned>(glb().tGridData.nItemType);
     m_uGridType = static_cast<unsigned>(glb().tGridData.nGridType);
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
+
+    ui->spinCurrRow->setValue(static_cast<int>(m_uCurrRow));
+    ui->spinCurrColumn->setValue(static_cast<int>(m_uCurrColumn));
 
     ui->comboBoxItem->setCurrentIndex(static_cast<int>(m_uItemType));
     ui->comboBoxGrid->setCurrentIndex(static_cast<int>(m_uGridType));
@@ -131,7 +142,6 @@ void  MainWindow::initGuiElements() {
     setLabelBackColor(ui->labelGridColor, &m_tGridColor);
 
     ui->radioRulerH1->setChecked(true);
-
     ui->radioRulerV1->setChecked(true);
 }
 
@@ -1154,15 +1164,15 @@ void  MainWindow::resizeEvent(QResizeEvent *event)
     //qDebug() << "win" << event->size().width() << event->size().height();
 
     // новые размеры лейбла
-    int w = ui->lblPicture->width();
-    int h = ui->lblPicture->height();
+//    int w = ui->lblPicture->width();
+//    int h = ui->lblPicture->height();
 
     // если есть картинка
-    if( !m_pPixmap->isNull() )
-    {
-        // ставим отмасштабированную картинку в лэйбл
-        ui->lblPicture->setPixmap((*m_pPixmap).scaled(w, h, Qt::KeepAspectRatio));
-    }
+//    if( !m_pPixmap->isNull() )
+//    {
+//        // ставим отмасштабированную картинку в лэйбл
+//        ui->lblPicture->setPixmap((*m_pPixmap).scaled(w, h, Qt::KeepAspectRatio));
+//    }
 }
 
 //------------------------------------------------------------------------------

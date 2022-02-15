@@ -110,6 +110,9 @@ private:
     unsigned       m_uRow;
     unsigned       m_uColumn;
 
+    unsigned       m_uCurrRow;
+    unsigned       m_uCurrColumn;
+
     QPixmap       *m_pPixmap; //obsolete
     QByteArray    *m_pImage; //obsolete
 
