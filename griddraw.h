@@ -105,6 +105,16 @@ private:
 
     //! i, j - номер ячейки; x, y - координаты; painter - указатель на отрисовщик
     void DrawElement(int i, int j, int x, int y, QPainter *painter);
+
+    template<typename T>
+    bool isEven(T value) const {
+        return !(std::abs(value)%2);
+    }
+
+    template<typename T>
+    bool isOdd(T value) const {
+        return (std::abs(value)%2);
+    }
 };
 
 //------------------------------------------------------------------------------

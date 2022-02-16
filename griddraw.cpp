@@ -328,11 +328,11 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
         int row = glb().pGrid->getRows() - m_curr_row;
         int col = glb().pGrid->getColumns() - m_curr_column;
 
-        if(keGridTypeShift == glb().tGridData.nGridType) {
-            glb().pGrid->setColor(0, 0, glb().tItemColor);
-        } else {
-            glb().pGrid->setColor(row, col, glb().tItemColor);
-        }
+        glb().pGrid->setColor(row, col, glb().tItemColor);
+
+//        qDebug() << "rows" << glb().pGrid->getRows() << "colomns" << glb().pGrid->getColumns();
+//        qDebug() << "c_row" << m_curr_row << "c_colomn" << m_curr_column;
+//        qDebug() << "ind_row" << row << "int_colomn" << col;
 
         Q_EMIT(changeState());
 
@@ -371,7 +371,7 @@ void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
     if(need_to_emit) {
         Q_EMIT(currentPos(m_curr_row, m_curr_column));
 
-        qDebug() << "row" << m_curr_row << "column" << m_curr_column;
+//        qDebug() << "row" << m_curr_row << "column" << m_curr_column;
     }
 
 //    if(event->button() == Qt::LeftButton) {
@@ -413,32 +413,56 @@ int  TGridDraw::calcRowNum(int y) {
     int shift  = 0;
 
     if(keGridTypeShift == glb().tGridData.nGridType) {
-        if(glb().pGrid->getColumns()%2) {
+        if(isOdd(glb().pGrid->getColumns())) {
             // нечетное кол-во петель
-            if(getCurrColumn()%2) {
+            if(isOdd(getCurrColumn())) {
                 // находимся на нечетной петле
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+
+                if(isEven(glb().pGrid->getRows())) {
+                    if(isOdd(ind)) ind += 1;
+                } else {
+                    if(isEven(ind)) ind += 1;
+                }
             } else {
                 // находимся на четной петле
                 shift = elem_size.height()/2;
-            }
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
 
+                if(isEven(glb().pGrid->getRows())) {
+                    if(isEven(ind)) ind -= 1;
+                } else {
+                    if(isOdd(ind)) ind -= 1;
+                }
+            }
         } else {
             // четное кол-во петель
-            if(getCurrColumn()%2) {
+            if(isOdd(getCurrColumn())) {
                 // находимся на нечетной петле
                 shift = elem_size.height()/2;
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+
+                if(isEven(glb().pGrid->getRows())) {
+                    if(isEven(ind)) ind -= 1;
+                } else {
+                    if(isOdd(ind)) ind -= 1;
+                }
             } else {
                 // находимся на четной петле
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+
+                if(isEven(glb().pGrid->getRows())) {
+                    if(isOdd(ind)) ind += 1;
+                } else {
+                    if(isEven(ind)) ind += 1;
+                }
             }
         }
-
-        ind = glb().pGrid->getRows()/2 - (y - m_left_top_point.y() - shift)/elem_size.height();
     } else {
         ind = glb().pGrid->getRows() - (y - m_left_top_point.y())/elem_size.height();
     }
 
     if(ind < 1) ind = 1;
-    //!bug сдесь не учена работа со смещением
     if(ind > glb().pGrid->getRows()) ind = glb().pGrid->getRows();
 
     return ind;
