@@ -329,10 +329,12 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
         int col = glb().pGrid->getColumns() - m_curr_column;
 
         if(keGridTypeShift == glb().tGridData.nGridType) {
-            glb().pGrid->setColor(0, 0, Qt::red);
+            glb().pGrid->setColor(0, 0, glb().tItemColor);
         } else {
-            glb().pGrid->setColor(row, col, Qt::red);
+            glb().pGrid->setColor(row, col, glb().tItemColor);
         }
+
+        Q_EMIT(changeState());
 
         repaint();
     } else if(event->button() == Qt::RightButton) {
@@ -369,8 +371,16 @@ void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
     if(need_to_emit) {
         Q_EMIT(currentPos(m_curr_row, m_curr_column));
 
-//        qDebug() << "row" << m_curr_row << "column" << m_curr_column;
+        qDebug() << "row" << m_curr_row << "column" << m_curr_column;
     }
+
+//    if(event->button() == Qt::LeftButton) {
+//        qDebug() << "move with left; row" << m_curr_row << "column" << m_curr_column;
+//    }
+
+//    if(event->button() == Qt::RightButton) {
+//        qDebug() << "move with left; row" << m_curr_row << "column" << m_curr_column;
+//    }
 }
 
 void  TGridDraw::resizeEvent(QResizeEvent *event)

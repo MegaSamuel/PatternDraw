@@ -43,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // ловим сигнал с номером текущей ячейки
     connect(ui->tGridDraw, &TGridDraw::currentPos, this, &MainWindow::onCurrentPos);
+    // ловим сигнал об изменении картинки
+    connect(ui->tGridDraw, &TGridDraw::changeState, this, &MainWindow::onChangeState);
 
     // отправляем указатель на таблицу в рисовалку
     assert(nullptr != m_pGrid);
@@ -591,10 +593,7 @@ bool  MainWindow::fileSaveToDev(const QString& filename) {
 
     result = ui->tGridDraw->saveImage(filename, format.toStdString().c_str());
 
-    if(m_bPrgTitleChanged) {
-        setPrgTitleChanged(false);
-    }
-    m_bPrgTitleChanged = false;
+    resetStateChanged();
 
     if(!result) {
         qDebug() << "Ошибка записи в файл";
@@ -720,12 +719,30 @@ bool  MainWindow::fileSaveAs() {
 
 //------------------------------------------------------------------------------
 
+void  MainWindow::setStateChanged() {
+    if(!m_bPrgTitleChanged) {
+        m_bPrgTitleChanged = true;
+        setPrgTitleChanged(true);
+    }
+}
+
+void  MainWindow::resetStateChanged() {
+    if(m_bPrgTitleChanged) {
+        setPrgTitleChanged(false);
+        m_bPrgTitleChanged = false;
+    }
+}
+
 void  MainWindow::onCurrentPos(int row, int col) {
     m_uCurrRow = static_cast<unsigned>(row);
     m_uCurrColumn = static_cast<unsigned>(col);
 
     ui->spinCurrRow->setValue(row);
     ui->spinCurrColumn->setValue(col);
+}
+
+void  MainWindow::onChangeState() {
+    setStateChanged();
 }
 
 #if 0
@@ -1222,10 +1239,7 @@ void MainWindow::on_btnRowM_clicked()
 
     m_pGrid->setRows(m_uRow);
 
-    if(!m_bPrgTitleChanged) {
-        m_bPrgTitleChanged = true;
-        setPrgTitleChanged(true);
-    }
+    setStateChanged();
 
     update();
 }
@@ -1240,10 +1254,7 @@ void MainWindow::on_btnRowP_clicked()
 
     m_pGrid->setRows(m_uRow);
 
-    if(!m_bPrgTitleChanged) {
-        m_bPrgTitleChanged = true;
-        setPrgTitleChanged(true);
-    }
+    setStateChanged();
 
     update();
 }
@@ -1258,10 +1269,7 @@ void MainWindow::on_btnColumnM_clicked()
 
     m_pGrid->setColumns(m_uColumn);
 
-    if(!m_bPrgTitleChanged) {
-        m_bPrgTitleChanged = true;
-        setPrgTitleChanged(true);
-    }
+    setStateChanged();
 
     update();
 }
@@ -1276,10 +1284,7 @@ void MainWindow::on_btnColumnP_clicked()
 
     m_pGrid->setColumns(m_uColumn);
 
-    if(!m_bPrgTitleChanged) {
-        m_bPrgTitleChanged = true;
-        setPrgTitleChanged(true);
-    }
+    setStateChanged();
 
     update();
 }

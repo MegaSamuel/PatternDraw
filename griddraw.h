@@ -38,6 +38,7 @@ public:
 
 Q_SIGNALS:
     void           currentPos(int, int);
+    void           changeState();
 
 protected:
     /* Определяем виртуальный метод родительского класса
