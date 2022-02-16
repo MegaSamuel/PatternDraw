@@ -8,8 +8,6 @@
 //------------------------------------------------------------------------------
 
 TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
-    m_color = Qt::gray;
-
     m_curr_row = 0;
     m_curr_column = 0;
 
@@ -311,13 +309,13 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
         painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
     } else {
         if(glb().pGrid->getElement(i,j).getFill())
-            painter->setPen(QPen(glb().tItemColor, 1, Qt::SolidLine, Qt::FlatCap));
+            painter->setPen(QPen(glb().pGrid->getColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
         else
             painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
     }
 
     if(glb().pGrid->getElement(i,j).getFill())
-        painter->setBrush(QBrush(glb().tItemColor, Qt::SolidPattern));
+        painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
     else
         painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
 
@@ -326,14 +324,19 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
 
 void  TGridDraw::mousePressEvent(QMouseEvent *event) {
     if(event->button() == Qt::LeftButton) {
-//        qDebug() << "press left event";
-//        qDebug() << "x =" << event->pos().x() << "y =" << event->pos().y();
-        m_color = Qt::green;
+        // по левой кнопке красим ячейку
+        int row = glb().pGrid->getRows() - m_curr_row;
+        int col = glb().pGrid->getColumns() - m_curr_column;
+
+        if(keGridTypeShift == glb().tGridData.nGridType) {
+            glb().pGrid->setColor(0, 0, Qt::red);
+        } else {
+            glb().pGrid->setColor(row, col, Qt::red);
+        }
+
         repaint();
     } else if(event->button() == Qt::RightButton) {
-//        qDebug() << "press right event";
-        m_color = Qt::red;
-        repaint();
+        // по правой кнопке ничего не делаем
     }
 }
 

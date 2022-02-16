@@ -51,8 +51,6 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    QColor         m_color;
-
     QSize          m_hruler_size;
     QSize          m_vruler_size;
 

@@ -108,6 +108,17 @@ bool TGrid::getBorder() const {
     return m_border;
 }
 
+void  TGrid::setColor(int row, int col, QColor color) {
+    TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
+    elem.setFill(true);
+    elem.setFillColor(color);
+}
+
+QColor  TGrid::getColor(int row, int col) const {
+    const TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
+    return elem.getFillColor();
+}
+
 void  TGrid::setSplit(bool split) {
     m_split = split;
 }
