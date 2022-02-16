@@ -10,6 +10,12 @@
 TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
     m_color = Qt::gray;
 
+    m_curr_row = 0;
+    m_curr_column = 0;
+
+    m_prev_row = 0;
+    m_prev_column = 0;
+
     m_hruler_size.setHeight(SHORT_SIDE);
     m_hruler_size.setWidth(SHORT_SIDE);
 
@@ -59,8 +65,12 @@ bool  TGridDraw::saveImage(const QString &fileName, const char *format) {
 }
 
 void  TGridDraw::drawPicture() {
-    QImage image(QSize(this->width(),this->height()),QImage::Format_ARGB32);
-    image.fill("white");
+    assert(0 != m_pic_size.width());
+    assert(0 != m_pic_size.height());
+
+    // m_pic_size заполнится при рисовании на виджете
+    QImage image(m_pic_size, QImage::Format_ARGB32);
+    image.fill(Qt::white);
 
     QPainter painter(&image); // Создаём объект отрисовщика
 
@@ -109,6 +119,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
     // рулетка снизу
     if(glb().pGrid->getRulerH()) {
         DrawHRuler(x_shift, y_shift, keRowNumberAll, painter);
+        y_shift += m_hruler_size.height();
     }
 
     // сдвигаемся на ширину таблицы
@@ -131,8 +142,12 @@ void  TGridDraw::drawAll(QPainter *painter) {
             DrawVRuler(x_shift, y_shift_start, keRowNumberAll, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
-        x_shift += 1; //add one
+        //x_shift += 1; //add one
     }
+
+    // плюс 1 т.к. координаты идут с нуля
+    m_pic_size.setWidth(x_shift+1);
+    m_pic_size.setHeight(y_shift+1);
 }
 
 void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) {
@@ -325,12 +340,34 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
 void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
     Q_UNUSED(event)
 
-    m_curr_row = calcRowNum(event->pos().y());
+    // если курсор вне картинки
+    if((event->pos().x()+1 > m_pic_size.width()) || (event->pos().y()+1 > m_pic_size.height())) {
+        return;
+    }
+
+    // расчет положения
+    // сначала считаем петли - они не зависят от смещения рядов
     m_curr_column = calcColumnNum(event->pos().x());
+    m_curr_row = calcRowNum(event->pos().y());
 
-    Q_EMIT(currentPos(m_curr_row, m_curr_column));
+    bool need_to_emit = false;
 
-    qDebug() << "row" << m_curr_row << "column" << m_curr_column;
+    if(m_curr_row != m_prev_row) {
+        m_prev_row = m_curr_row;
+        need_to_emit = true;
+    }
+
+    if(m_curr_column != m_prev_column) {
+        m_prev_column = m_curr_column;
+        need_to_emit = true;
+    }
+
+    // если положение изменилось - отправляем сигнал
+    if(need_to_emit) {
+        Q_EMIT(currentPos(m_curr_row, m_curr_column));
+
+//        qDebug() << "row" << m_curr_row << "column" << m_curr_column;
+    }
 }
 
 void  TGridDraw::resizeEvent(QResizeEvent *event)
@@ -359,9 +396,36 @@ int  TGridDraw::calcRowNum(int y) {
 
     QSize  elem_size = getElemSize();
 
-    int ind = glb().pGrid->getRows() - (y - m_left_top_point.y())/elem_size.height();
+    int ind = 0;
+    int shift  = 0;
+
+    if(keGridTypeShift == glb().tGridData.nGridType) {
+        if(glb().pGrid->getColumns()%2) {
+            // нечетное кол-во петель
+            if(getCurrColumn()%2) {
+                // находимся на нечетной петле
+            } else {
+                // находимся на четной петле
+                shift = elem_size.height()/2;
+            }
+
+        } else {
+            // четное кол-во петель
+            if(getCurrColumn()%2) {
+                // находимся на нечетной петле
+                shift = elem_size.height()/2;
+            } else {
+                // находимся на четной петле
+            }
+        }
+
+        ind = glb().pGrid->getRows()/2 - (y - m_left_top_point.y() - shift)/elem_size.height();
+    } else {
+        ind = glb().pGrid->getRows() - (y - m_left_top_point.y())/elem_size.height();
+    }
 
     if(ind < 1) ind = 1;
+    //!bug сдесь не учена работа со смещением
     if(ind > glb().pGrid->getRows()) ind = glb().pGrid->getRows();
 
     return ind;
