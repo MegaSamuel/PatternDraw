@@ -86,9 +86,13 @@ void  TGridDraw::drawAll(QPainter *painter) {
 
     updateRulerSize();
 
+    QSize  elem_size = getElemSize();
+
     // рулетка слева
     if(glb().pGrid->getRulerV() && (keRulerTypeRightLeft == glb().pGrid->getRulerVtype())) {
-        DrawVRuler(x_shift, y_shift, keRowNumberEven, painter);
+        int y = y_shift;
+        if(isOdd(glb().pGrid->getRows())) y -= elem_size.height()/2;
+        DrawVRuler(x_shift, y, keRowNumberEven, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
         x_shift += 1; //add one
@@ -96,7 +100,6 @@ void  TGridDraw::drawAll(QPainter *painter) {
 
     // собственно табличка ячеек
     DrawElements(x_shift, y_shift, painter);
-    QSize  elem_size = getElemSize();
 
     // запоминаем левый верхний угол таблицы
     m_left_top_point.setX(x_shift);
@@ -128,7 +131,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
 
     x_shift += 1; //add one
 
-    if(keGridTypeShift == glb().tGridData.nGridType) {
+    if((keGridTypeShift == glb().tGridData.nGridType) && isEven(glb().pGrid->getRows())) {
         y_shift_start += elem_size.height()/2;
     }
 
@@ -177,16 +180,28 @@ void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) 
             }
             DrawVRulerElement(num_for_draw, _x, _y, painter);
         } else if(keGridTypeShift == glb().tGridData.nGridType) {
-            if(!(i%2)) {
+            if(isEven(i)) {
                 _y = y + i*elem_shift.y();
                 if(keRowNumberAll == number) {
                     num_for_draw = glb().pGrid->getRows()-i-1;
                 } else if(keRowNumberOdd == number) {
-                    num_for_draw = glb().pGrid->getRows()-i-1;
+                    if(isEven(glb().pGrid->getRows())) {
+                        num_for_draw = glb().pGrid->getRows()-i-1;
+                    } else {
+                        num_for_draw = glb().pGrid->getRows()-i;
+                    }
                 } else if(keRowNumberEven == number) {
-                    num_for_draw = glb().pGrid->getRows()-i;
+                    if(isEven(glb().pGrid->getRows())) {
+                        num_for_draw = glb().pGrid->getRows()-i;
+                    } else {
+                        num_for_draw = glb().pGrid->getRows()-i+1;
+                    }
                 }
-                DrawVRulerElement(num_for_draw, _x, _y, painter);
+
+                // рисуем только если влезаем в widget
+                if((0 <= _x) && (0 <= _y)) {
+                    DrawVRulerElement(num_for_draw, _x, _y, painter);
+                }
             }
         }
     }
