@@ -1308,6 +1308,13 @@ void MainWindow::on_checkBoxGridRuler_stateChanged(int arg1)
     update();
 }
 
+void MainWindow::on_checkBoxSplit_stateChanged(int arg1)
+{
+    m_pGrid->setSplit(Qt::Unchecked != arg1);
+
+    update();
+}
+
 void MainWindow::on_checkBoxRulerV_stateChanged(int arg1)
 {
     ui->radioRulerV1->setEnabled(Qt::Unchecked != arg1);
