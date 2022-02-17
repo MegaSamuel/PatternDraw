@@ -24,6 +24,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++17
 
+QMAKE_CXXFLAGS += -pedantic -Wshadow -Wuninitialized
+
 SOURCES += \
         dialog.cpp \
         element.cpp \

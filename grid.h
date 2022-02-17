@@ -43,6 +43,9 @@ public:
     void          setBorder(bool border);
     bool          getBorder() const;
 
+    void          setColor(int row, int col, QColor color);
+    QColor        getColor(int row, int col) const;
+
     void          setRulerBorder(bool border);
     bool          getRulerBorder() const;
 

@@ -25,6 +25,8 @@ public:
     ~MainWindow();
 
 private Q_SLOTS:
+    void       onCurrentPos(int, int);
+    void       onChangeState();
 //    void       onBtnSave(); //obsolete
 //    void       onBtnPreview(); //obsolete
     void       onBtnChangeBackColor();
@@ -127,6 +129,9 @@ private:
 
     void           closeEvent( QCloseEvent *event );
     void           resizeEvent( QResizeEvent *event );
+
+    void           setStateChanged();
+    void           resetStateChanged();
 
     TGrid         *m_pGrid;
 };
