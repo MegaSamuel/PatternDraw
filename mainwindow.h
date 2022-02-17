@@ -27,8 +27,6 @@ public:
 private Q_SLOTS:
     void       onCurrentPos(int, int);
     void       onChangeState();
-//    void       onBtnSave(); //obsolete
-//    void       onBtnPreview(); //obsolete
     void       onBtnChangeBackColor();
     void       onBtnChangeGridColor();
     void       onNewHandler();
@@ -42,7 +40,6 @@ private Q_SLOTS:
     void       onInfoHandler();
     void       onManHandler();
     void       onChangeItem(int  index);
-//    void       onChangeSize(int  index);
     void       onChangeGrid(int  index);
 
     void on_spinRow_valueChanged(int arg1);
@@ -85,12 +82,6 @@ private:
 
     void           setPrgTitleChanged( bool  changed );
 
-//    bool           imageCreate();
-
-//    bool           imageFillNormal();
-//    bool           imageFillShift();
-
-    void           setCellSize(); //obsolete
     void           getBackColor( RGBQUAD  *a_pColor );
     void           getGridColor( RGBQUAD  *a_pColor );
 
@@ -108,16 +99,11 @@ private:
 
     TBitMap        m_tBitMap;
 
-    TCell          m_tCell;
-
     unsigned       m_uRow;
     unsigned       m_uColumn;
 
     unsigned       m_uCurrRow;
     unsigned       m_uCurrColumn;
-
-    QPixmap       *m_pPixmap; //obsolete
-    QByteArray    *m_pImage; //obsolete
 
     bool           m_bImageReady; //TODO перевесить признак на картинку QPainter
 
@@ -133,6 +119,8 @@ private:
 
     void           setStateChanged();
     void           resetStateChanged();
+
+    void           showInfoMessage(const QString& msg);
 
     TGrid         *m_pGrid;
 };

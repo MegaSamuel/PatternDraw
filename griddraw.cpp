@@ -58,6 +58,11 @@ bool  TGridDraw::saveImage(const QString &fileName, const char *format) {
     return m_image.save(fileName, format);
 }
 
+QImage*  TGridDraw::getImage() {
+    drawPicture();
+    return &m_image;
+}
+
 void  TGridDraw::drawPicture() {
     assert(0 != m_pic_size.width());
     assert(0 != m_pic_size.height());

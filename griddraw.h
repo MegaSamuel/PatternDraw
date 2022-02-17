@@ -30,6 +30,7 @@ public:
     ~TGridDraw() override;
 
     bool           saveImage(const QString &fileName, const char *format = nullptr);
+    QImage*        getImage();
 
     int            getCurrRow() const;
     int            getCurrColumn() const;
