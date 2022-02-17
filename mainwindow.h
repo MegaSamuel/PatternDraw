@@ -70,7 +70,7 @@ private:
 
     void           initGuiElements(bool first_start = false);
 
-    bool           askSaveIfChanged(const QString& discard = "");
+    bool           askSaveIfChanged();
 
     QString        m_zPrgName;
     QString        m_zPrgTitle;
@@ -120,7 +120,7 @@ private:
     void           setStateChanged();
     void           resetStateChanged();
 
-    void           showInfoMessage(const QString& msg);
+    void           showInfoMessage(const QString&, const QString&);
 
     TGrid         *m_pGrid;
 };

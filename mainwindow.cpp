@@ -248,7 +248,7 @@ bool  MainWindow::fileSaveAs() {
     QString dir(pDir->path());
 
     // формиреум путь и имя файла через диалог
-    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "Изображение в формате PNG (*.png);;Изображение в формате BMP (*.bmp)");
+    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)");
 
     QApplication::processEvents();
 
@@ -332,7 +332,7 @@ void  MainWindow::onBtnChangeGridColor()
 
 void  MainWindow::onNewHandler() {
     // есть несохраненные изменения
-    if(!askSaveIfChanged("Не сохранять")) {
+    if(!askSaveIfChanged()) {
         return;
     }
 
@@ -368,7 +368,7 @@ void  MainWindow::onOpenHandler() {
 void  MainWindow::onSaveHandler() {
     // нет картинки
     if(!m_bImageReady) {
-        showInfoMessage("Нет изображения!\nПеред сохранением создайте новую сетку.");
+        showInfoMessage("Нет изображения!", "Перед сохранением создайте новую сетку.");
         return;
     }
 
@@ -383,7 +383,7 @@ void  MainWindow::onSaveHandler() {
 void  MainWindow::onSaveAsHandler() {
     // нет картинки
     if(!m_bImageReady) {
-        showInfoMessage("Нет изображения!\nПеред сохранением создайте новую сетку.");
+        showInfoMessage("Нет изображения!", "Перед сохранением создайте новую сетку.");
         return;
     }
 
@@ -393,14 +393,14 @@ void  MainWindow::onSaveAsHandler() {
 void  MainWindow::onPrintHandler() {
     // нет картинки
     if(!m_bImageReady) {
-        showInfoMessage("Нет изображения!\nПеред печатью создайте новую сетку.");
+        showInfoMessage("Нет изображения!", "Перед печатью создайте новую сетку.");
         return;
     }
 
     QPrinter printer;
 
     QPrintDialog *dialog = new QPrintDialog(&printer, this);
-    dialog->setWindowTitle(tr("Print Document"));
+    dialog->setWindowTitle(tr("Печать сетки"));
 
     // нажали Ок
     if(dialog->exec() != QDialog::Accepted)
@@ -504,15 +504,16 @@ void  MainWindow::onChangeGrid( int  index )
 
 //------------------------------------------------------------------------------
 
-void  MainWindow::showInfoMessage(const QString& msg) {
+void  MainWindow::showInfoMessage(const QString& msg_text, const QString& msg_info_text) {
     QMessageBox  msgBox;
 
     msgBox.setWindowTitle("Информация");
-    msgBox.setText(msg);
+    msgBox.setText(msg_text);
+    msgBox.setInformativeText(msg_info_text);
     msgBox.exec();
 }
 
-bool  MainWindow::askSaveIfChanged(const QString& discard)
+bool  MainWindow::askSaveIfChanged()
 {
     bool result = true;
 
@@ -526,12 +527,9 @@ bool  MainWindow::askSaveIfChanged(const QString& discard)
         msgBox.setStandardButtons( QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel );
         msgBox.setDefaultButton( QMessageBox::Save );
 
-        msgBox.setButtonText( QMessageBox::Save, "Сохранить" );
-        if(discard.isEmpty())
-            msgBox.setButtonText( QMessageBox::Discard, "Выход" );
-        else
-            msgBox.setButtonText( QMessageBox::Discard, discard );
-        msgBox.setButtonText( QMessageBox::Cancel, "Отмена" );
+        msgBox.setButtonText(QMessageBox::Save, "Сохранить");
+        msgBox.setButtonText(QMessageBox::Discard, "Не сохранять");
+        msgBox.setButtonText(QMessageBox::Cancel, "Отмена");
 
         int ret = msgBox.exec();
 

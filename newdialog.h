@@ -31,6 +31,7 @@ private Q_SLOTS:
 
     void 	   onCreate(QAbstractButton *btn);
     void 	   onReset(QAbstractButton *btn);
+    void 	   onReject(QAbstractButton *btn);
 
 private:
     std::unique_ptr<TPrivNewDialog> priv__;
