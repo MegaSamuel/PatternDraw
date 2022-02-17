@@ -71,7 +71,7 @@ private Q_SLOTS:
 private:
     Ui::MainWindow *ui;
 
-    void           initGuiElements();
+    void           initGuiElements(bool first_start = false);
 
     bool           askSaveIfChanged(const QString& discard = "");
 

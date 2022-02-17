@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_zPrgName = "PatternDraw";
 
-    initGuiElements();
+    initGuiElements(true);
 
     // диалог Новыя сетка
     m_ptNewDialog = new TNewDialog(this);
@@ -117,7 +117,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void  MainWindow::initGuiElements() {
+void  MainWindow::initGuiElements(bool first_start) {
     m_uRow = static_cast<unsigned>(glb().tGridData.nRow);
     m_uColumn = static_cast<unsigned>(glb().tGridData.nColumn);
 
@@ -126,6 +126,10 @@ void  MainWindow::initGuiElements() {
 
     m_uItemType = static_cast<unsigned>(glb().tGridData.nItemType);
     m_uGridType = static_cast<unsigned>(glb().tGridData.nGridType);
+
+    if(!first_start) {
+        ui->checkBoxSplit->setEnabled(keGridTypeShift == m_uGridType);
+    }
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
