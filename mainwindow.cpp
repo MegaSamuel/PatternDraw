@@ -901,6 +901,8 @@ void  MainWindow::onDlgCreate() {
 
     initGuiElements();
 
+    glb().pGrid->initCells();
+
     ui->tGridDraw->setVisible(true);
 
     // картинка для превью

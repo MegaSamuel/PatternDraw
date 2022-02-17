@@ -64,6 +64,8 @@ public:
 
     const TElement& getElement(int row, int column) const;
 
+    void          initCells();
+
 private:
     std::vector<std::vector<TElement>> m_grid;
 

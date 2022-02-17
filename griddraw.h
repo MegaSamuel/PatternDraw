@@ -29,8 +29,6 @@ public:
     explicit TGridDraw(QWidget *parent = nullptr);
     ~TGridDraw() override;
 
-//    QImage        *getImage();
-
     bool           saveImage(const QString &fileName, const char *format = nullptr);
 
     int            getCurrRow() const;

@@ -49,6 +49,15 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
     }
 }
 
+void  TGrid::initCells() {
+    for(int i = 0; i < m_row_count; i++) {
+        for(int j = 0; j < m_column_count; j++) {
+            m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setFill(false);
+            m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setFillColor(Qt::white);
+        }
+    }
+}
+
 //------------------------------------------------------------------------------
 
 int   TGrid::getRows() {

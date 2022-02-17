@@ -53,10 +53,6 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
     drawAll(&painter);
 }
 
-//QImage  *TGridDraw::getImage() {
-//    return &m_image;
-//}
-
 bool  TGridDraw::saveImage(const QString &fileName, const char *format) {
     drawPicture();
     return m_image.save(fileName, format);
