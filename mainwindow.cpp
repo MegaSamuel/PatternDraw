@@ -128,7 +128,7 @@ void  MainWindow::initGuiElements(bool first_start) {
     m_uGridType = static_cast<unsigned>(glb().tGridData.nGridType);
 
     if(!first_start) {
-        ui->checkBoxSplit->setEnabled(keGridTypeShift == m_uGridType);
+        ui->checkBoxSplit->setEnabled(((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)));
     }
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
