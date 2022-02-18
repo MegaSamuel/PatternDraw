@@ -112,21 +112,23 @@ TNewDialog::TNewDialog(QWidget *parent) : QDialog(parent) {
     row = priv__->m_ptGridLayout->rowCount();
 
     // создаем диалоговые кнопки
-    auto  box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Reset, this);
-    //connect(box, &QDialogButtonBox::accepted, this, &TNewDialog::close);
-    //connect(box, &QDialogButtonBox::rejected, this, &TNewDialog::close);
+    auto  box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Reset | QDialogButtonBox::Cancel, this);
     connect(box, &QDialogButtonBox::clicked, this, &TNewDialog::onCreate);
     connect(box, &QDialogButtonBox::clicked, this, &TNewDialog::onReset);
+    connect(box, &QDialogButtonBox::clicked, this, &TNewDialog::onReject);
 
     // принудительно переименовываем кнопку Ok
-    QPushButton *ptr = box->button(QDialogButtonBox::Ok);
-    if(ptr)
-        ptr->setText(tr("Создать"));
+    QPushButton *button = box->button(QDialogButtonBox::Ok);
+    button->setText(tr("Ок"));
+    button->setDefault(true);
 
     // принудительно переименовываем кнопку Reset
-    ptr = box->button(QDialogButtonBox::Reset);
-    if(ptr)
-        ptr->setText(tr("Сброс"));
+    button = box->button(QDialogButtonBox::Reset);
+    button->setText(tr("По умолчанию"));
+
+    // принудительно переименовываем кнопку Cancel
+    button = box->button(QDialogButtonBox::Cancel);
+    button->setText(tr("Отмена"));
 
     // добавляем диалоговые кнопки в окно
     priv__->m_ptBtnBox = box;
@@ -137,10 +139,12 @@ TNewDialog::TNewDialog(QWidget *parent) : QDialog(parent) {
     setLayout(priv__->m_ptGridLayout);
 
     setWindowTitle(tr("Создание сетки"));
+
+    // убираем знак вопроса из заголовка
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 }
 
 TNewDialog::~TNewDialog() {
-//    qDebug() << "delete dialog";
 }
 
 //------------------------------------------------------------------------------
@@ -184,8 +188,6 @@ void TNewDialog::onCreate(QAbstractButton *btn) {
     if(QDialogButtonBox::AcceptRole != priv__->m_ptBtnBox->buttonRole(btn))
         return;
 
-//    qDebug() << "create";
-
     do_create();
 
     Q_EMIT(dlgCreate());
@@ -198,9 +200,17 @@ void TNewDialog::onReset(QAbstractButton*  btn) {
     if(QDialogButtonBox::ResetRole != priv__->m_ptBtnBox->buttonRole(btn))
         return;
 
-//    qDebug() << "reset";
+    do_reset();
+}
+
+// обработка нажатия Отмена
+void TNewDialog::onReject(QAbstractButton*  btn) {
+    if(QDialogButtonBox::RejectRole != priv__->m_ptBtnBox->buttonRole(btn))
+        return;
 
     do_reset();
+
+    close();
 }
 
 //------------------------------------------------------------------------------
@@ -222,7 +232,6 @@ void TNewDialog::do_reset() {
 //------------------------------------------------------------------------------
 
 void TNewDialog::closeEvent(QCloseEvent *event) {
-//    qDebug() << "close event";
     do_reset();
     event->accept();
 }

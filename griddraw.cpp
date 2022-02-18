@@ -53,13 +53,14 @@ void  TGridDraw::paintEvent(QPaintEvent *event) {
     drawAll(&painter);
 }
 
-//QImage  *TGridDraw::getImage() {
-//    return &m_image;
-//}
-
 bool  TGridDraw::saveImage(const QString &fileName, const char *format) {
     drawPicture();
     return m_image.save(fileName, format);
+}
+
+QImage*  TGridDraw::getImage() {
+    drawPicture();
+    return &m_image;
 }
 
 void  TGridDraw::drawPicture() {
@@ -329,12 +330,26 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
             painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
     }
 
-    if(glb().pGrid->getElement(i,j).getFill())
-        painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
-    else
+    if((keGridTypeShift == glb().tGridData.nGridType) && glb().pGrid->getSplit()) {
+        // белая часть
         painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
+        painter->drawRect(x, y, elem_size.width(), elem_size.height()/2);
 
-    painter->drawRect(x, y, elem_size.width(), elem_size.height());
+        // цветная часть
+        if(glb().pGrid->getElement(i,j).getFill())
+            painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
+        else
+            painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+
+        painter->drawRect(x, y+elem_size.height()/2, elem_size.width(), elem_size.height()/2);
+    } else {
+        if(glb().pGrid->getElement(i,j).getFill())
+            painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
+        else
+            painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
+
+        painter->drawRect(x, y, elem_size.width(), elem_size.height());
+    }
 }
 
 void  TGridDraw::mousePressEvent(QMouseEvent *event) {
