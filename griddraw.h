@@ -5,7 +5,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 
-#include <grid.h>
+#include "grid.h"
 
 //------------------------------------------------------------------------------
 

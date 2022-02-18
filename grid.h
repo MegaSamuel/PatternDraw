@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "element.h"
+#include "undostack.h"
 
 //------------------------------------------------------------------------------
 
@@ -43,7 +44,7 @@ public:
     void          setBorder(bool border);
     bool          getBorder() const;
 
-    void          setColor(int row, int col, QColor color);
+    void          setColor(int row, int col, QColor color, bool undo = true);
     QColor        getColor(int row, int col) const;
 
     void          setRulerBorder(bool border);
@@ -65,6 +66,9 @@ public:
     const TElement& getElement(int row, int column) const;
 
     void          initCells();
+
+    bool          doUndo();
+    bool          doRedo();
 
 private:
     std::vector<std::vector<TElement>> m_grid;
@@ -88,6 +92,8 @@ private:
 
     bool          isRowValid(int value);
     bool          isColumnValid(int value);
+
+    TUndoStack    m_stUndoRedo;
 };
 
 //------------------------------------------------------------------------------

@@ -428,11 +428,17 @@ void  MainWindow::onQuitHandler() {
 }
 
 void  MainWindow::onUndoHandler() {
-
+    // отменяем действие
+    if(m_pGrid->doUndo()) {
+        update();
+    }
 }
 
 void  MainWindow::onRedoHandler() {
-
+    // отменяем отмену действия
+    if(m_pGrid->doRedo()) {
+        update();
+    }
 }
 
 void  MainWindow::onInfoHandler()

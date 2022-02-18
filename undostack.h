@@ -1,7 +1,33 @@
 #ifndef TUNDOSTACK_H
 #define TUNDOSTACK_H
 
+#include <QColor>
+
 #include <stack>
+
+//------------------------------------------------------------------------------
+
+enum EActionType
+{
+    keActionTypeNone     = 0,
+    keActionTypeColor    = 1,
+};
+
+struct TCmdData {
+     // тип события
+    int     action;
+
+    // для какой ячейки
+    int     row;
+    int     col;
+
+    // предыдущие и новые данные
+    QColor  tPrevColor;
+    QColor  tCurrColor;
+
+    explicit TCmdData();
+    explicit TCmdData(int, int);
+};
 
 //------------------------------------------------------------------------------
 
@@ -12,21 +38,31 @@ public:
 
     void   stInit();
 
+    // проверка наличия запомненных действий
+    bool        isUndoEmpty() const;
+    bool        isRedoEmpty() const;
+
     // доступ к стеку undo
-    int    stUndoTop();
-    void   stUndoPop();
+    TCmdData    stUndoTop();
+    void        stUndoPop();
+    void        stUndoPush(const TCmdData& cmd);
 
     // доступ к стеку redo
-    int    stRedoTop();
-    void   stRedoPop();
+    TCmdData    stRedoTop();
+    void        stRedoPop();
+    void        stRedoPush(const TCmdData& cmd);
+
+    // очистка
+    void        stUndoClean();
+    void        stRedoClean();
 
     // команды на выполнение redo/undo
-    int    doUndo();
-    int    doRedo();
+//    TCmdData    stDoUndo();
+//    TCmdData    stDoRedo();
 
 private:
-    std::stack<int>  m_stUndo;
-    std::stack<int>  m_stRedo;
+    std::stack<TCmdData>  m_stUndo;
+    std::stack<TCmdData>  m_stRedo;
 };
 
 //------------------------------------------------------------------------------
