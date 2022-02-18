@@ -1,6 +1,8 @@
 #ifndef TGRID_H
 #define TGRID_H
 
+#include <QObject>
+
 #include <vector>
 
 #include "element.h"
@@ -8,11 +10,14 @@
 
 //------------------------------------------------------------------------------
 
-class TGrid
+class TGrid : public QObject
 {
+    Q_OBJECT
+
 public:
     explicit TGrid(int row, int column);
     explicit TGrid(int row, int column, int row_max, int column_max);
+    virtual ~TGrid();
 
     template <typename ValType>
     bool     setRows(ValType count) {
@@ -70,6 +75,10 @@ public:
     bool          doUndo();
     bool          doRedo();
 
+Q_SIGNALS:
+    void           undoFilled(bool);
+    void           redoFilled(bool);
+
 private:
     std::vector<std::vector<TElement>> m_grid;
 
@@ -94,6 +103,7 @@ private:
     bool          isColumnValid(int value);
 
     TUndoStack    m_stUndoRedo;
+    void          reportUndoRedoState();
 };
 
 //------------------------------------------------------------------------------

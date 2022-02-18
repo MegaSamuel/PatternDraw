@@ -49,6 +49,10 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
     }
 }
 
+TGrid::~TGrid() {
+
+}
+
 void  TGrid::initCells() {
     // инициализация ячеек
     for(int i = 0; i < m_row_count; i++) {
@@ -60,6 +64,8 @@ void  TGrid::initCells() {
 
     // инициализация undo/redo
     m_stUndoRedo.stInit();
+
+    reportUndoRedoState();
 }
 
 //------------------------------------------------------------------------------
@@ -135,6 +141,8 @@ void  TGrid::setColor(int row, int col, QColor color, bool undo) {
 
         // получили новую команду от оператора - очищаем redo
         m_stUndoRedo.stRedoClean();
+
+        reportUndoRedoState();
     }
 
     // применяем действие к ячейке
@@ -212,6 +220,8 @@ bool  TGrid::doUndo() {
     // кладем cmd в redo
     m_stUndoRedo.stRedoPush(cmd);
 
+    reportUndoRedoState();
+
     if(keActionTypeColor == cmd.action) {
         // меняем цвет, это изменение в undo не записываем (4-й агрумент false)
         setColor(cmd.row, cmd.col, cmd.tPrevColor, false);
@@ -234,7 +244,9 @@ bool  TGrid::doRedo() {
     m_stUndoRedo.stRedoPop();
 
     // кладем cmd в undo (напрямую, не через фунцию (setColor))
-    m_stUndoRedo.stRedoPush(cmd);
+    m_stUndoRedo.stUndoPush(cmd);
+
+    reportUndoRedoState();
 
     if(keActionTypeColor == cmd.action) {
         // меняем цвет, это изменение в undo уже записано (4-й агрумент false)
@@ -243,6 +255,11 @@ bool  TGrid::doRedo() {
     }
 
     return result;
+}
+
+void  TGrid::reportUndoRedoState() {
+    Q_EMIT(undoFilled(!m_stUndoRedo.isUndoEmpty()));
+    Q_EMIT(redoFilled(!m_stUndoRedo.isRedoEmpty()));
 }
 
 //------------------------------------------------------------------------------
