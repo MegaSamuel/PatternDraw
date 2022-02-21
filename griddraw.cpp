@@ -150,6 +150,17 @@ void  TGridDraw::drawAll(QPainter *painter) {
     // плюс 1 т.к. координаты идут с нуля
     m_pic_size.setWidth(x_shift+1);
     m_pic_size.setHeight(y_shift+1);
+
+//    qDebug() << "pic" << m_pic_size.width() << m_pic_size.height();
+//    qDebug() << "wgt" << this->width() << this->height();
+
+    // если картинка стала больше видимой области по высоте
+    if(m_pic_size.height() > this->height())
+        this->setMinimumHeight(m_pic_size.height());
+
+    // если картинка стала больше видимой области по ширине
+    if(m_pic_size.width() > this->width())
+        this->setMinimumWidth(m_pic_size.width());
 }
 
 void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) {
