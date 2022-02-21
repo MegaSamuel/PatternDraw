@@ -113,14 +113,7 @@ bool  TGrid::decColumn() {
 //------------------------------------------------------------------------------
 
 void  TGrid::setBorder(bool border) {
-    if(border != m_border) {
-        m_border = border;
-        for(int i = 0; i < m_row_count; i++) {
-            for(int j = 0; j < m_column_count; j++) {
-                m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setBorder(m_border);
-            }
-        }
-    }
+    m_border = border;
 }
 
 bool TGrid::getBorder() const {

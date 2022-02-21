@@ -252,7 +252,7 @@ bool  MainWindow::fileSaveAs() {
     // строка с именем каталога где мы находимся
     QString dir(pDir->path());
 
-    // формиреум путь и имя файла через диалог
+    // формируем путь и имя файла через диалог
     QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)");
 
     QApplication::processEvents();
