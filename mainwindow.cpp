@@ -33,6 +33,11 @@ MainWindow::MainWindow(QWidget *parent) :
     assert(0 != m_uColumn);
     m_pGrid = new TGrid(static_cast<int>(m_uRow), static_cast<int>(m_uColumn));
 
+    // ловим сигнал с состоянии undo
+    connect(m_pGrid, &TGrid::undoFilled, this, &MainWindow::onUndoFilled);
+    // ловим сигнал с состоянии redo
+    connect(m_pGrid, &TGrid::redoFilled, this, &MainWindow::onRedoFilled);
+
     ui->tGridDraw->setVisible(false);
 
     // ловим сигнал с номером текущей ячейки
@@ -428,11 +433,17 @@ void  MainWindow::onQuitHandler() {
 }
 
 void  MainWindow::onUndoHandler() {
-
+    // отменяем действие
+    if(m_pGrid->doUndo()) {
+        update();
+    }
 }
 
 void  MainWindow::onRedoHandler() {
-
+    // отменяем отмену действия
+    if(m_pGrid->doRedo()) {
+        update();
+    }
 }
 
 void  MainWindow::onInfoHandler()
@@ -500,6 +511,14 @@ void  MainWindow::onChangeGrid( int  index )
 #else
     Q_UNUSED(index)
 #endif
+}
+
+void  MainWindow::onUndoFilled(bool filled) {
+    ui->actionUndo->setEnabled(filled);
+}
+
+void  MainWindow::onRedoFilled(bool filled) {
+    ui->actionRedo->setEnabled(filled);
 }
 
 //------------------------------------------------------------------------------

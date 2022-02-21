@@ -1,17 +1,23 @@
 #ifndef TGRID_H
 #define TGRID_H
 
+#include <QObject>
+
 #include <vector>
 
 #include "element.h"
+#include "undostack.h"
 
 //------------------------------------------------------------------------------
 
-class TGrid
+class TGrid : public QObject
 {
+    Q_OBJECT
+
 public:
     explicit TGrid(int row, int column);
     explicit TGrid(int row, int column, int row_max, int column_max);
+    virtual ~TGrid();
 
     template <typename ValType>
     bool     setRows(ValType count) {
@@ -43,7 +49,7 @@ public:
     void          setBorder(bool border);
     bool          getBorder() const;
 
-    void          setColor(int row, int col, QColor color);
+    void          setColor(int row, int col, QColor color, bool undo = true);
     QColor        getColor(int row, int col) const;
 
     void          setRulerBorder(bool border);
@@ -65,6 +71,13 @@ public:
     const TElement& getElement(int row, int column) const;
 
     void          initCells();
+
+    bool          doUndo();
+    bool          doRedo();
+
+Q_SIGNALS:
+    void           undoFilled(bool);
+    void           redoFilled(bool);
 
 private:
     std::vector<std::vector<TElement>> m_grid;
@@ -88,6 +101,9 @@ private:
 
     bool          isRowValid(int value);
     bool          isColumnValid(int value);
+
+    TUndoStack    m_stUndoRedo;
+    void          reportUndoRedoState();
 };
 
 //------------------------------------------------------------------------------

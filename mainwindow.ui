@@ -730,6 +730,9 @@
    </property>
   </action>
   <action name="actionUndo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Отмена</string>
    </property>
@@ -741,6 +744,9 @@
    </property>
   </action>
   <action name="actionRedo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Повтор</string>
    </property>

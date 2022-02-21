@@ -34,7 +34,8 @@ SOURCES += \
         griddraw.cpp \
         main.cpp \
         mainwindow.cpp \
-        newdialog.cpp
+        newdialog.cpp \
+        undostack.cpp
 
 HEADERS += \
         bitmap.h \
@@ -45,6 +46,7 @@ HEADERS += \
         griddraw.h \
         mainwindow.h \
         newdialog.h \
+        undostack.h \
         uni_static.h
 
 FORMS += \

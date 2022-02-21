@@ -42,6 +42,9 @@ private Q_SLOTS:
     void       onChangeItem(int  index);
     void       onChangeGrid(int  index);
 
+    void       onUndoFilled(bool);
+    void       onRedoFilled(bool);
+
     void on_spinRow_valueChanged(int arg1);
     void on_spinColumn_valueChanged(int arg1);
 
