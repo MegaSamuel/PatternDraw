@@ -527,8 +527,8 @@ void  MainWindow::showInfoMessage(const QString& msg_text, const QString& msg_in
     QMessageBox  msgBox;
 
     msgBox.setWindowTitle("Информация");
-    msgBox.setText(msg_text);
-    msgBox.setInformativeText(msg_info_text);
+    msgBox.setText(msg_text + "\n\n" + msg_info_text);
+    //msgBox.setInformativeText(msg_info_text);
     msgBox.exec();
 }
 
