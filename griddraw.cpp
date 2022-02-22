@@ -371,6 +371,10 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
 
 void  TGridDraw::mousePressEvent(QMouseEvent *event) {
     if(event->button() == Qt::LeftButton) {
+        // только если курсор на таблице
+        if((0 == m_curr_row) || (0 == m_curr_column))
+            return;
+
         // по левой кнопке красим ячейку
         int row = glb().pGrid->getRows() - m_curr_row;
         int col = glb().pGrid->getColumns() - m_curr_column;
@@ -385,6 +389,10 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
 
         repaint();
     } else if(event->button() == Qt::RightButton) {
+        // только если курсор на таблице
+        if((0 == m_curr_row) || (0 == m_curr_column))
+            return;
+
         // по правой кнопке ничего не делаем
     }
 }
@@ -392,37 +400,51 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
 void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
     Q_UNUSED(event)
 
-#if 0
-    // если курсор вне картинки
-    if((event->pos().x()+1 > m_pic_size.width()) || (event->pos().y()+1 > m_pic_size.height())) {
-        if(m_need_to_emit) {
-            m_need_to_emit = false;
-            Q_EMIT(currentPos(-1, -1));
+    int column = calcColumnNum(event->pos().x());
+    int y_shift_top = 0;
+    int y_shift_bottom = 0;
+    QPoint elem_shift = getElemShift();
+
+    // если четный столбец (отсчет слева)
+    if(isEven(glb().pGrid->getColumns()-column+1)) {
+        if(isEven(glb().pGrid->getRows())) {
+            // четное количество рядов
+            y_shift_top = elem_shift.y();
+        } else {
+            // нечетное количество рядов
+            y_shift_top = elem_shift.y();
+            y_shift_bottom = elem_shift.y();
         }
-        return;
+    } else {
+        if(isEven(glb().pGrid->getRows())) {
+            // четное количество рядов
+            y_shift_bottom = elem_shift.y();
+        }
     }
 
-    m_need_to_emit = true;
-#else
     // если курсор вне таблицы
-    //TODO для таблицы со смещением надо учитывать что столбцы на разной высоте
-    if((event->pos().x() < m_left_top_point.x()) || (event->pos().y() < m_left_top_point.y()) ||
-       (event->pos().x() > m_right_bottom_point.x()) || (event->pos().y() > m_right_bottom_point.y())) {
+    if((event->pos().x() < m_left_top_point.x()) || (event->pos().y() < (m_left_top_point.y()+y_shift_top)) ||
+       (event->pos().x() > m_right_bottom_point.x()) || (event->pos().y() > (m_right_bottom_point.y()-y_shift_bottom))) {
         if(m_need_to_emit) {
             m_need_to_emit = false;
+
+            m_curr_row = 0;
+            m_curr_column = 0;
+
             m_prev_row = 0;
             m_prev_column = 0;
+
             Q_EMIT(currentPos(-1, -1));
         }
         return;
     }
 
     m_need_to_emit = true;
-#endif
 
     // расчет положения
     // сначала считаем петли - они не зависят от смещения рядов
-    m_curr_column = calcColumnNum(event->pos().x());
+    //m_curr_column = calcColumnNum(event->pos().x());
+    m_curr_column = column;
     m_curr_row = calcRowNum(event->pos().y());
 
     bool need_to_emit = false;

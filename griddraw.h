@@ -51,17 +51,25 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
+    //! размер ячейки горизонтальной линейки
     QSize          m_hruler_size;
+    //! размер ячейки вертикальной линейки
     QSize          m_vruler_size;
 
+    //! картинка с сеткой
     QImage         m_image;
 
+    //! пересчитать размер ячеек линеек
     void           updateRulerSize();
 
+    //! вернуть размер ячейки сетки
     QSize          getElemSize();
+    //! вернуть смещение ячейки сетки
     QPoint         getElemShift();
 
+    //! нарисовать сетку
     void           drawAll(QPainter *painter);
+    //! нарисовать сетку в картинку (m_image)
     void           drawPicture();
 
     //! координаты левого верхнего угла таблицы
@@ -69,7 +77,7 @@ private:
     //! координаты правого ниждего угла таблицы
     QPoint         m_right_bottom_point;
 
-    //! размер всей картинки (с учеиом линеек)
+    //! размер всей картинки (с учетом линеек)
     QSize          m_pic_size;
 
     //! расчет номера ряда
@@ -79,14 +87,15 @@ private:
 
     //! текущий номера ряда
     int            m_curr_row;
-    //! текущий номер петли
+    //! текущий номер петли (справа налево)
     int            m_curr_column;
 
     //! предыдущий номера ряда
     int            m_prev_row;
-    //! предыдущий номер петли
+    //! предыдущий номер петли (справа налево)
     int            m_prev_column;
 
+    //! необходимость отправить сигнал с признаком отсутствия номера текучей ячейки (курсор вне таблицы)
     bool           m_need_to_emit;
 
     //! x, y - начальные координаты; number - нумерация; painter - указатель на отрисовщик
@@ -107,11 +116,13 @@ private:
     //! i, j - номер ячейки; x, y - координаты; painter - указатель на отрисовщик
     void DrawElement(int i, int j, int x, int y, QPainter *painter);
 
+    //! возврат истины если модуль числа четный
     template<typename T>
     bool isEven(T value) const {
         return !(std::abs(value)%2);
     }
 
+    //! возврат истины если модуль числа нечетный
     template<typename T>
     bool isOdd(T value) const {
         return (std::abs(value)%2);
