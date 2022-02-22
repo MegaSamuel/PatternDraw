@@ -148,6 +148,26 @@ QColor  TGrid::getColor(int row, int col) const {
     return elem.getFillColor();
 }
 
+void  TGrid::setBackColor(QColor color) {
+    for(int i = 0; i < m_row_count; i++) {
+        for(int j = 0; j < m_column_count; j++) {
+            m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setBackFill(true);
+            m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setBackFillColor(color);
+        }
+    }
+}
+
+void  TGrid::setBackColor(int row, int col, QColor color) {
+    TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
+    elem.setBackFill(true);
+    elem.setBackFillColor(color);
+}
+
+QColor  TGrid::getBackColor(int row, int col) const {
+    const TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
+    return elem.getBackFillColor();
+}
+
 void  TGrid::setSplit(bool split) {
     m_split = split;
 }

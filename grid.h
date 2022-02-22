@@ -52,6 +52,10 @@ public:
     void          setColor(int row, int col, QColor color, bool undo = true);
     QColor        getColor(int row, int col) const;
 
+    void          setBackColor(QColor color);
+    void          setBackColor(int row, int col, QColor color);
+    QColor        getBackColor(int row, int col) const;
+
     void          setRulerBorder(bool border);
     bool          getRulerBorder() const;
 

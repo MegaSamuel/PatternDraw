@@ -62,6 +62,7 @@ public:
 
     QColor      tItemColor;
     QColor      tGridColor;
+    QColor      tBackColor;
 
     TGrid      *pGrid;
 };

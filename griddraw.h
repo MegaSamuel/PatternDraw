@@ -39,6 +39,10 @@ Q_SIGNALS:
     void           currentPos(int, int);
     void           changeState();
 
+public Q_SLOTS:
+    void       onChangeGridColor(QColor);
+    void       onChangeBackColor(QColor);
+
 protected:
     /* Определяем виртуальный метод родительского класса
      * для отрисовки содержимого виджета

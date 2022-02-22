@@ -44,6 +44,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tGridDraw, &TGridDraw::currentPos, this, &MainWindow::onCurrentPos);
     // ловим сигнал об изменении картинки
     connect(ui->tGridDraw, &TGridDraw::changeState, this, &MainWindow::onChangeState);
+    // отправка сигнала об изменении цвета сетки
+    connect(this, &MainWindow::changeGridColor, ui->tGridDraw, &TGridDraw::onChangeGridColor);
+    // отправка сигнала об изменении цвета фона
+    connect(this, &MainWindow::changeBackColor, ui->tGridDraw, &TGridDraw::onChangeBackColor);
 
     // отправляем указатель на таблицу в рисовалку
     assert(nullptr != m_pGrid);
@@ -63,11 +67,12 @@ MainWindow::MainWindow(QWidget *parent) :
     // иконка формы
     setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
 
-    // ловим нажатие кнопки Изменить цвет фона
-    connect( ui->btnBackColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeBackColor ) ;
-
     // ловим нажатие кнопки Изменить цвет сетки
-    connect( ui->btnGridColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeGridColor ) ;
+    connect(ui->btnGridColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeGridColor);
+    // ловим нажатие кнопки Изменить цвет элемента
+    connect(ui->btnItemColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeItemColor);
+    // ловим нажатие кнопки Изменить цвет фона
+    connect(ui->btnBackColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeBackColor);
 
     // меню Файл
     connect(ui->actionNew, &QAction::triggered, this, &MainWindow::onNewHandler);
@@ -128,15 +133,20 @@ void  MainWindow::initGuiElements(bool first_start) {
     ui->comboBoxItem->setCurrentIndex(static_cast<int>(m_uItemType));
     ui->comboBoxGrid->setCurrentIndex(static_cast<int>(m_uGridType));
 
-    // цвет элемента
-    m_tBackColor = Qt::white;
-    glb().tItemColor = Qt::white;
-    setLabelBackColor(ui->labelBackColor, &m_tBackColor);
-
     // цвет сетки
     m_tGridColor = Qt::gray;
     glb().tGridColor = Qt::gray;
     setLabelBackColor(ui->labelGridColor, &m_tGridColor);
+
+    // цвет элемента
+    m_tItemColor = Qt::white;
+    glb().tItemColor = Qt::white;
+    setLabelBackColor(ui->labelItemColor, &m_tItemColor);
+
+    // цвет фона
+    m_tBackColor = Qt::white;
+    glb().tBackColor = Qt::white;
+    setLabelBackColor(ui->labelBackColor, &m_tBackColor);
 
     ui->radioRulerH1->setChecked(true);
     ui->radioRulerV1->setChecked(true);
@@ -153,21 +163,29 @@ void  MainWindow::guiBlock(bool block) {
 
 //------------------------------------------------------------------------------
 
-void  MainWindow::getBackColor( RGBQUAD  *a_pColor )
-{
-    a_pColor->rgbRed = static_cast<BYTE>(m_tBackColor.red());
-    a_pColor->rgbGreen = static_cast<BYTE>(m_tBackColor.green());
-    a_pColor->rgbBlue = static_cast<BYTE>(m_tBackColor.blue());
-    a_pColor->rgbReserved = 0x0;
-}
+//void  MainWindow::getGridColor( RGBQUAD  *a_pColor )
+//{
+//    a_pColor->rgbRed = static_cast<BYTE>(m_tGridColor.red());
+//    a_pColor->rgbGreen = static_cast<BYTE>(m_tGridColor.green());
+//    a_pColor->rgbBlue = static_cast<BYTE>(m_tGridColor.blue());
+//    a_pColor->rgbReserved = 0x0;
+//}
 
-void  MainWindow::getGridColor( RGBQUAD  *a_pColor )
-{
-    a_pColor->rgbRed = static_cast<BYTE>(m_tGridColor.red());
-    a_pColor->rgbGreen = static_cast<BYTE>(m_tGridColor.green());
-    a_pColor->rgbBlue = static_cast<BYTE>(m_tGridColor.blue());
-    a_pColor->rgbReserved = 0x0;
-}
+//void  MainWindow::getItemColor( RGBQUAD  *a_pColor )
+//{
+//    a_pColor->rgbRed = static_cast<BYTE>(m_tItemColor.red());
+//    a_pColor->rgbGreen = static_cast<BYTE>(m_tItemColor.green());
+//    a_pColor->rgbBlue = static_cast<BYTE>(m_tItemColor.blue());
+//    a_pColor->rgbReserved = 0x0;
+//}
+
+//void  MainWindow::getBackColor( RGBQUAD  *a_pColor )
+//{
+//    a_pColor->rgbRed = static_cast<BYTE>(m_tBackColor.red());
+//    a_pColor->rgbGreen = static_cast<BYTE>(m_tBackColor.green());
+//    a_pColor->rgbBlue = static_cast<BYTE>(m_tBackColor.blue());
+//    a_pColor->rgbReserved = 0x0;
+//}
 
 void  MainWindow::setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor )
 {
@@ -311,43 +329,66 @@ void  MainWindow::onChangeState() {
     setStateChanged();
 }
 
-void  MainWindow::onBtnChangeBackColor()
-{
-    QColor color;
-
-    //!bug почему-то не работает
-    m_tColorDialog.setCurrentColor( m_tBackColor );
-
-    color = m_tColorDialog.getColor();
-
-    if( color.isValid() )
-    {
-        m_tBackColor = color;
-
-        setLabelBackColor( ui->labelBackColor, &m_tBackColor );
-
-        glb().tItemColor = color;
-    }
-}
-
 void  MainWindow::onBtnChangeGridColor()
 {
     QColor color;
 
     //!bug почему-то не работает
-    m_tColorDialog.setCurrentColor( m_tGridColor );
+    m_tColorDialog.setCurrentColor(m_tGridColor);
 
     color = m_tColorDialog.getColor();
 
-    if( color.isValid() )
+    if(color.isValid())
     {
         m_tGridColor = color;
 
-        setLabelBackColor( ui->labelGridColor, &m_tGridColor );
+        setLabelBackColor(ui->labelGridColor, &m_tGridColor);
 
         glb().tGridColor = color;
 
-        ui->tGridDraw->update();
+        Q_EMIT(changeGridColor(color));
+        //ui->tGridDraw->update();
+    }
+}
+
+void  MainWindow::onBtnChangeItemColor()
+{
+    QColor color;
+
+    //!bug почему-то не работает
+    m_tColorDialog.setCurrentColor(m_tItemColor);
+
+    color = m_tColorDialog.getColor();
+
+    if(color.isValid())
+    {
+        m_tItemColor = color;
+
+        setLabelBackColor(ui->labelItemColor, &m_tItemColor);
+
+        glb().tItemColor = color;
+    }
+}
+
+void  MainWindow::onBtnChangeBackColor()
+{
+    QColor color;
+
+    //!bug почему-то не работает
+    m_tColorDialog.setCurrentColor(m_tBackColor);
+
+    color = m_tColorDialog.getColor();
+
+    if(color.isValid())
+    {
+        m_tBackColor = color;
+
+        setLabelBackColor(ui->labelBackColor, &m_tBackColor);
+
+        glb().tBackColor = color;
+
+        Q_EMIT(changeBackColor(color));
+        //ui->tGridDraw->update();
     }
 }
 

@@ -337,37 +337,63 @@ void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
 void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
     QSize  elem_size = getElemSize();
 
-    // если border то ставим цвет, иначе цвет как фон
-    if(glb().pGrid->getBorder()) {
-        painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
-    } else {
-        if(glb().pGrid->getElement(i,j).getFill())
-            painter->setPen(QPen(glb().pGrid->getColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
-        else
-            painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
+    if(!glb().pGrid->getSplit()) {
+        // если border то ставим цвет, иначе цвет как фон
+        if(glb().pGrid->getBorder()) {
+            painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+        } else {
+            if(glb().pGrid->getElement(i,j).getFill())
+                painter->setPen(QPen(glb().pGrid->getColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
+            else if(glb().pGrid->getElement(i,j).getBackFill())
+                painter->setPen(QPen(glb().pGrid->getBackColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
+            else
+                painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
+        }
     }
 
     if((keGridTypeShift == glb().tGridData.nGridType) && glb().pGrid->getSplit()) {
         // белая часть
         painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
+        painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
         painter->drawRect(x, y, elem_size.width(), elem_size.height()/2);
 
         // цветная часть
-        if(glb().pGrid->getElement(i,j).getFill())
+        if(glb().pGrid->getElement(i,j).getFill()) {
             painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
-        else
-            painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+            painter->setPen(QPen(glb().pGrid->getColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
+        } else {
+            painter->setBrush(QBrush(glb().pGrid->getBackColor(i, j), Qt::SolidPattern));
+            painter->setPen(QPen(glb().pGrid->getBackColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
+        }
 
         painter->drawRect(x, y+elem_size.height()/2, elem_size.width(), elem_size.height()/2);
     } else {
         if(glb().pGrid->getElement(i,j).getFill())
             painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
+        else if(glb().pGrid->getElement(i,j).getBackFill())
+            painter->setBrush(QBrush(glb().pGrid->getBackColor(i, j), Qt::SolidPattern));
         else
             painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
 
         painter->drawRect(x, y, elem_size.width(), elem_size.height());
     }
 }
+
+//------------------------------------------------------------------------------
+
+void  TGridDraw::onChangeGridColor(QColor color) {
+    Q_UNUSED(color)
+    //qDebug() << "change grid color";
+    update();
+}
+
+void  TGridDraw::onChangeBackColor(QColor color) {
+    glb().pGrid->setBackColor(color);
+    //qDebug() << "change back color";
+    update();
+}
+
+//------------------------------------------------------------------------------
 
 void  TGridDraw::mousePressEvent(QMouseEvent *event) {
     if(event->button() == Qt::LeftButton) {

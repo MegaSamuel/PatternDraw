@@ -24,11 +24,16 @@ public:
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
     ~MainWindow();
 
+Q_SIGNALS:
+    void       changeGridColor(QColor);
+    void       changeBackColor(QColor);
+
 private Q_SLOTS:
     void       onCurrentPos(int, int);
     void       onChangeState();
-    void       onBtnChangeBackColor();
     void       onBtnChangeGridColor();
+    void       onBtnChangeItemColor();
+    void       onBtnChangeBackColor();
     void       onNewHandler();
     void       onOpenHandler();
     void       onSaveHandler();
@@ -85,8 +90,9 @@ private:
 
     void           setPrgTitleChanged( bool  changed );
 
-    void           getBackColor( RGBQUAD  *a_pColor );
-    void           getGridColor( RGBQUAD  *a_pColor );
+//    void           getGridColor(RGBQUAD  *a_pColor);
+//    void           getItemColor(RGBQUAD  *a_pColor);
+//    void           getBackColor(RGBQUAD  *a_pColor);
 
     void           setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor );
 
@@ -112,8 +118,9 @@ private:
 
     void           guiBlock(bool block);
 
-    QColor         m_tBackColor;
     QColor         m_tGridColor;
+    QColor         m_tItemColor;
+    QColor         m_tBackColor;
 
     QColorDialog   m_tColorDialog;
 
