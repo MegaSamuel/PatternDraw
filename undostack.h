@@ -56,10 +56,6 @@ public:
     void        stUndoClean();
     void        stRedoClean();
 
-    // команды на выполнение redo/undo
-//    TCmdData    stDoUndo();
-//    TCmdData    stDoRedo();
-
 private:
     std::stack<TCmdData>  m_stUndo;
     std::stack<TCmdData>  m_stRedo;

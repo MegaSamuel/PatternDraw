@@ -252,7 +252,7 @@ bool  MainWindow::fileSaveAs() {
     // строка с именем каталога где мы находимся
     QString dir(pDir->path());
 
-    // формиреум путь и имя файла через диалог
+    // формируем путь и имя файла через диалог
     QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)");
 
     QApplication::processEvents();
@@ -331,7 +331,7 @@ void  MainWindow::onBtnChangeGridColor()
 
         glb().tGridColor = color;
 
-        update();
+        ui->tGridDraw->update();
     }
 }
 
@@ -435,14 +435,14 @@ void  MainWindow::onQuitHandler() {
 void  MainWindow::onUndoHandler() {
     // отменяем действие
     if(m_pGrid->doUndo()) {
-        update();
+        ui->tGridDraw->update();
     }
 }
 
 void  MainWindow::onRedoHandler() {
     // отменяем отмену действия
     if(m_pGrid->doRedo()) {
-        update();
+        ui->tGridDraw->update();
     }
 }
 
@@ -491,7 +491,7 @@ void  MainWindow::onChangeItem( int  index )
 
     glb().m_uItemType = m_uItemType;
 
-    update();
+    ui->tGridDraw->update();
 #else
     Q_UNUSED(index)
 #endif
@@ -507,7 +507,7 @@ void  MainWindow::onChangeGrid( int  index )
 
     glb().m_uGridType = m_uGridType;
 
-    update();
+    ui->tGridDraw->update();
 #else
     Q_UNUSED(index)
 #endif
@@ -527,8 +527,8 @@ void  MainWindow::showInfoMessage(const QString& msg_text, const QString& msg_in
     QMessageBox  msgBox;
 
     msgBox.setWindowTitle("Информация");
-    msgBox.setText(msg_text);
-    msgBox.setInformativeText(msg_info_text);
+    msgBox.setText(msg_text + "\n\n" + msg_info_text);
+    //msgBox.setInformativeText(msg_info_text);
     msgBox.exec();
 }
 
@@ -623,7 +623,7 @@ void MainWindow::on_spinRow_valueChanged(int arg1)
 
     m_pGrid->setRows(arg1);
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_spinColumn_valueChanged(int arg1)
@@ -632,7 +632,7 @@ void MainWindow::on_spinColumn_valueChanged(int arg1)
 
     m_pGrid->setColumns(arg1);
 
-    update();
+    ui->tGridDraw->update();
 }
 // <--
 
@@ -650,7 +650,7 @@ void MainWindow::on_btnRowM_clicked()
 
     setStateChanged();
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_btnRowP_clicked()
@@ -665,7 +665,7 @@ void MainWindow::on_btnRowP_clicked()
 
     setStateChanged();
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_btnColumnM_clicked()
@@ -680,7 +680,7 @@ void MainWindow::on_btnColumnM_clicked()
 
     setStateChanged();
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_btnColumnP_clicked()
@@ -695,7 +695,7 @@ void MainWindow::on_btnColumnP_clicked()
 
     setStateChanged();
 
-    update();
+    ui->tGridDraw->update();
 }
 // <--
 
@@ -705,21 +705,21 @@ void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
 {
     m_pGrid->setBorder(Qt::Unchecked != arg1);
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_checkBoxGridRuler_stateChanged(int arg1)
 {
     m_pGrid->setRulerBorder(Qt::Unchecked != arg1);
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_checkBoxSplit_stateChanged(int arg1)
 {
     m_pGrid->setSplit(Qt::Unchecked != arg1);
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_checkBoxRulerV_stateChanged(int arg1)
@@ -729,7 +729,7 @@ void MainWindow::on_checkBoxRulerV_stateChanged(int arg1)
 
     m_pGrid->setRulerV(Qt::Unchecked != arg1);
 
-    update();
+    ui->tGridDraw->update();
 
     if(Qt::Unchecked == arg1) {
         ui->radioRulerV1->setChecked(true);
@@ -743,7 +743,7 @@ void MainWindow::on_checkBoxRulerH_stateChanged(int arg1)
 
     m_pGrid->setRulerH(Qt::Unchecked != arg1);
 
-    update();
+    ui->tGridDraw->update();
 
     if(Qt::Unchecked == arg1) {
         ui->radioRulerH1->setChecked(true);
@@ -754,27 +754,27 @@ void MainWindow::on_radioRulerV1_clicked()
 {
     m_pGrid->setRulerVtype(keRulerTypeRight);
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_radioRulerV2_clicked()
 {
     m_pGrid->setRulerVtype(keRulerTypeRightLeft);
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_radioRulerH1_clicked()
 {
     m_pGrid->setRulerHtype(keRulerTypeBottom);
 
-    update();
+    ui->tGridDraw->update();
 }
 
 void MainWindow::on_radioRulerH2_clicked()
 {
     m_pGrid->setRulerHtype(keRulerTypeBottomTop);
 
-    update();
+    ui->tGridDraw->update();
 }
 // <--

@@ -84,24 +84,4 @@ void  TUndoStack::stRedoClean() {
     }
 }
 
-//TCmdData  TUndoStack::stDoUndo() {
-//    TCmdData cmd;
-//    return cmd;
-//}
-
-//TCmdData  TUndoStack::stDoRedo() {
-//    if(m_stRedo.empty())
-//        return TCmdData();
-
-//    // забрали команду из redo
-//    TCmdData cmd = m_stRedo.top();
-//    m_stRedo.pop();
-
-//    // положили команду в undo
-//    m_stUndo.push(cmd);
-
-//    // выполняем команду
-//    return cmd;
-//}
-
 //------------------------------------------------------------------------------
