@@ -110,9 +110,9 @@ void  TGridDraw::drawAll(QPainter *painter) {
 
     // сдвигаемся на высоту таблицы
     if(keGridTypeNormal == glb().tGridData.nGridType) {
-        y_shift += glb().pGrid->getRows()*elem_size.height();
+        y_shift += glb().pGrid->getRows()*elem_size.height() + glb().pGrid->getRows()-1;
     } else {
-        y_shift += glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2;
+        y_shift += glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2 + glb().pGrid->getRows()/2-1;
     }
 
     // запоминаем правый нижний угол таблицы
@@ -127,7 +127,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
     }
 
     // сдвигаемся на ширину таблицы
-    x_shift += glb().pGrid->getColumns()*elem_size.width();
+    x_shift += glb().pGrid->getColumns()*elem_size.width() + glb().pGrid->getColumns()-1;
 
     // запоминаем правый нижний угол таблицы
     m_right_bottom_point.setX(x_shift);
@@ -166,19 +166,15 @@ void  TGridDraw::drawAll(QPainter *painter) {
 }
 
 void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) {
-    int _x = 0;
-    int _y = 0;
-
-    _x += x;
+    int _x = x;
+    int _y = y;
 
     QSize  elem_size = getElemSize();
-    QPoint elem_shift = getElemShift();
 
     int num_for_draw = -1;
 
     for(int i = 0; i < glb().pGrid->getRows(); i++) {
         if(keGridTypeNormal == glb().tGridData.nGridType) {
-            _y = y + elem_shift.y() + i*elem_size.height();
             if(keRowNumberAll == number)
                 num_for_draw = glb().pGrid->getRows()-i;
             else if(keRowNumberOdd == number) {
@@ -193,9 +189,9 @@ void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) 
                     num_for_draw = -1;
             }
             DrawVRulerElement(num_for_draw, _x, _y, painter);
+            _y += elem_size.height()+1;
         } else if(keGridTypeShift == glb().tGridData.nGridType) {
             if(isEven(i)) {
-                _y = y + i*elem_shift.y();
                 if(keRowNumberAll == number) {
                     num_for_draw = glb().pGrid->getRows()-i-1;
                 } else if(keRowNumberOdd == number) {
@@ -216,6 +212,7 @@ void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) 
                 if((0 <= _x) && (0 <= _y)) {
                     DrawVRulerElement(num_for_draw, _x, _y, painter);
                 }
+                _y += elem_size.height()+1;
             }
         }
     }
@@ -252,18 +249,16 @@ void  TGridDraw::DrawVRulerElement(int ind, int x, int y, QPainter *painter) {
 }
 
 void  TGridDraw::DrawHRuler(int x, int y, ERowNumber number, QPainter *painter) {
-    int _x = 0;
-    int _y = 0;
-
-    _y += y;
+    int _x = x;
+    int _y = y;
 
     Q_UNUSED(number)
 
     QSize  elem_size = getElemSize();
 
     for(int i = 0; i < glb().pGrid->getColumns(); i++) {
-        _x = x + i*elem_size.width();
         DrawHRulerElement(i+1, _x, _y, painter);
+        _x += elem_size.width()+1;
     }
 }
 
@@ -289,35 +284,43 @@ void  TGridDraw::DrawHRulerElement(int ind, int x, int y, QPainter *painter) {
 }
 
 void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
-    int _x = 0;
-    int _y = 0;
+    int _x = x;
+    int _y = y;
 
     QSize  elem_size = getElemSize();
     QPoint elem_shift = getElemShift();
 
+    int shift = 0;
+
     for(int i = 0; i < glb().pGrid->getRows(); i++) {
         for(int j = 0; j < glb().pGrid->getColumns(); j++) {
             if(keGridTypeNormal == glb().tGridData.nGridType) {
-                _x = x + elem_shift.x() + j*elem_size.width();
-                _y = y + elem_shift.y() + i*elem_size.height();
                 DrawElement(i, j, _x, _y, painter);
+                _x += elem_size.width()+1;
             } else if(keGridTypeShift == glb().tGridData.nGridType) {
-                if(i%2) {
-                    if(j%2) {
+                if(isEven(i)) {
+                    if(isEven(j)) {
                         // четная строка, четный столбец
-                        _x = x + j*elem_size.width();
-                        _y = y + i*elem_shift.y();
+                        _x = x + j*elem_size.width() + j;
+                        _y = y + i*elem_shift.y() + shift;
                         DrawElement(i, j, _x, _y, painter);
                     }
                 } else {
-                    if(!(j%2)) {
+                    if(isOdd(j)) {
                         // нечетная строка, нечетный столбец
-                        _x = x + j*elem_size.width();
-                        _y = y + i*elem_shift.y();
+                        _x = x + j*elem_size.width() + j;
+                        _y = y + i*elem_shift.y() + shift - 1;
                         DrawElement(i, j, _x, _y, painter);
                     }
                 }
             }
+        }
+
+        if(keGridTypeNormal == glb().tGridData.nGridType) {
+            _x = x;
+            _y += elem_size.height()+1;
+        } else if(keGridTypeShift == glb().tGridData.nGridType) {
+            if(isEven(i)) shift += 1;
         }
     }
 }
