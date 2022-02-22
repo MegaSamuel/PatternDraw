@@ -109,6 +109,12 @@ private:
     void DrawVRulerElement(int ind, int x, int y, QPainter *painter);
 
     //! x, y - начальные координаты; number - нумерация; painter - указатель на отрисовщик
+    void DrawVRulerAdv(int x, int y, ERowNumber number, QPainter *painter);
+
+    //! ind - номер ячейки; x, y - начальные координаты; painter - указатель на отрисовщик
+    void DrawVRulerAdvElement(int ind, int x, int y, QPainter *painter);
+
+    //! x, y - начальные координаты; number - нумерация; painter - указатель на отрисовщик
     void DrawHRuler(int x, int y, ERowNumber number, QPainter *painter);
 
     //! ind - номер ячейки; x, y - начальные координаты; painter - указатель на отрисовщик
