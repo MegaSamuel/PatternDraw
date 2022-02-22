@@ -22,6 +22,9 @@ TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
 
     m_need_to_emit = true;
 
+    m_left_top_point = {0,0};
+    m_right_bottom_point = {0,0};
+
     // включаем событие mouse move без нажатия кнопок
     this->setMouseTracking(true);
 }
@@ -94,7 +97,9 @@ void  TGridDraw::drawAll(QPainter *painter) {
     // рулетка слева
     if(glb().pGrid->getRulerV() && (keRulerTypeRightLeft == glb().pGrid->getRulerVtype())) {
         int y = y_shift;
-        if(isOdd(glb().pGrid->getRows())) y -= elem_size.height()/2;
+        if(keGridTypeShift == glb().tGridData.nGridType) {
+            if(isOdd(glb().pGrid->getRows())) y -= elem_size.height()/2;
+        }
         DrawVRuler(x_shift, y, keRowNumberEven, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
@@ -193,7 +198,11 @@ void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) 
         } else if(keGridTypeShift == glb().tGridData.nGridType) {
             if(isEven(i)) {
                 if(keRowNumberAll == number) {
-                    num_for_draw = glb().pGrid->getRows()-i-1;
+                    if(isEven(glb().pGrid->getRows())) {
+                        num_for_draw = glb().pGrid->getRows()-i-1;
+                    } else {
+                        num_for_draw = glb().pGrid->getRows()-i;
+                    }
                 } else if(keRowNumberOdd == number) {
                     if(isEven(glb().pGrid->getRows())) {
                         num_for_draw = glb().pGrid->getRows()-i-1;
@@ -383,6 +392,7 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
 void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
     Q_UNUSED(event)
 
+#if 0
     // если курсор вне картинки
     if((event->pos().x()+1 > m_pic_size.width()) || (event->pos().y()+1 > m_pic_size.height())) {
         if(m_need_to_emit) {
@@ -393,6 +403,22 @@ void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
     }
 
     m_need_to_emit = true;
+#else
+    // если курсор вне таблицы
+    //TODO для таблицы со смещением надо учитывать что столбцы на разной высоте
+    if((event->pos().x() < m_left_top_point.x()) || (event->pos().y() < m_left_top_point.y()) ||
+       (event->pos().x() > m_right_bottom_point.x()) || (event->pos().y() > m_right_bottom_point.y())) {
+        if(m_need_to_emit) {
+            m_need_to_emit = false;
+            m_prev_row = 0;
+            m_prev_column = 0;
+            Q_EMIT(currentPos(-1, -1));
+        }
+        return;
+    }
+
+    m_need_to_emit = true;
+#endif
 
     // расчет положения
     // сначала считаем петли - они не зависят от смещения рядов
@@ -415,7 +441,7 @@ void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
     if(need_to_emit) {
         Q_EMIT(currentPos(m_curr_row, (glb().pGrid->getColumns()-m_curr_column+1)));
 
-//        qDebug() << "row" << m_curr_row << "column" << m_curr_column;
+        //qDebug() << "row" << m_curr_row << "column" << (glb().pGrid->getColumns()-m_curr_column+1);
     }
 
 //    if(event->button() == Qt::LeftButton) {
@@ -461,7 +487,7 @@ int  TGridDraw::calcRowNum(int y) {
             // нечетное кол-во петель
             if(isOdd(getCurrColumn())) {
                 // находимся на нечетной петле
-                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/(elem_size.height()+1);
 
                 if(isEven(glb().pGrid->getRows())) {
                     if(isOdd(ind)) ind += 1;
@@ -471,7 +497,7 @@ int  TGridDraw::calcRowNum(int y) {
             } else {
                 // находимся на четной петле
                 shift = elem_size.height()/2;
-                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/(elem_size.height()+1);
 
                 if(isEven(glb().pGrid->getRows())) {
                     if(isEven(ind)) ind -= 1;
@@ -484,7 +510,7 @@ int  TGridDraw::calcRowNum(int y) {
             if(isOdd(getCurrColumn())) {
                 // находимся на нечетной петле
                 shift = elem_size.height()/2;
-                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/(elem_size.height()+1);
 
                 if(isEven(glb().pGrid->getRows())) {
                     if(isEven(ind)) ind -= 1;
@@ -493,7 +519,7 @@ int  TGridDraw::calcRowNum(int y) {
                 }
             } else {
                 // находимся на четной петле
-                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/(elem_size.height()+1);
 
                 if(isEven(glb().pGrid->getRows())) {
                     if(isOdd(ind)) ind += 1;
@@ -503,7 +529,7 @@ int  TGridDraw::calcRowNum(int y) {
             }
         }
     } else {
-        ind = glb().pGrid->getRows() - (y - m_left_top_point.y())/elem_size.height();
+        ind = glb().pGrid->getRows() - (y - m_left_top_point.y())/(elem_size.height()+1);
     }
 
     if(ind < 1) ind = 1;
@@ -517,7 +543,10 @@ int  TGridDraw::calcColumnNum(int x) {
 
     QSize  elem_size = getElemSize();
 
-    int ind = glb().pGrid->getColumns() - (x - m_left_top_point.x())/elem_size.width();
+    int ind = glb().pGrid->getColumns() - (x - m_left_top_point.x())/(elem_size.width()+1);
+
+//    qDebug() << "col 1" << glb().pGrid->getColumns() << ind;
+//    qDebug() << "col 2" << x << m_left_top_point.x();
 
     if(ind < 1) ind = 1;
     if(ind > glb().pGrid->getColumns()) ind = glb().pGrid->getColumns();
