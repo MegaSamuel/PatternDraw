@@ -90,6 +90,10 @@ void  TGridDraw::drawAll(QPainter *painter) {
 
     int y_shift_start = 0;
 
+    // ставим шрифт
+    QFont myFont("MS Shell Dlg 2", 7);
+    painter->setFont(myFont);
+
     updateRulerSize();
 
     QSize  elem_size = getElemSize();
@@ -260,14 +264,14 @@ void  TGridDraw::DrawVRulerElement(int ind, int x, int y, QPainter *painter) {
     QString str;
     if(ind > 0) str = QString::number(ind);
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-    painter->setFont(QFont("MS Shell Dlg 2", 7));
+    QFontMetrics fm(painter->font());
     int shift_x = 0;
     int shift_y = 0;
     if(keItemTypeSquare == glb().tGridData.nItemType) {
-        shift_x = (m_vruler_size.width()-5*str.length())/2;
+        shift_x = (m_vruler_size.width()-fm.horizontalAdvance(str))/2;
         shift_y = (3*elem_size.height())/4;
     } else {
-        shift_x = (m_vruler_size.width()-5*str.length())/2;
+        shift_x = (m_vruler_size.width()-fm.horizontalAdvance(str))/2;
         shift_y = (5*elem_size.height())/8;
     }
     painter->drawText(x+shift_x, y+shift_y, str);
@@ -323,8 +327,8 @@ void  TGridDraw::DrawVRulerAdvElement(int ind, int x, int y, QPainter *painter) 
     QString str;
     if(ind > 0) str = QString::number(ind);
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-    painter->setFont(QFont("MS Shell Dlg 2", 7));
-    int shift_x = (m_vruler_size.width()-5*str.length())/2;
+    QFontMetrics fm(painter->font());
+    int shift_x = (m_vruler_size.width()-fm.horizontalAdvance(str))/2;
     int shift_y = elem_size.height()/2+(3*elem_size.height()/2)/4;
     painter->drawText(x+shift_x, y+shift_y, str);
 }
@@ -362,8 +366,8 @@ void  TGridDraw::DrawHRulerElement(int ind, int x, int y, QPainter *painter) {
     QString str;
     if(ind > 0) str = QString::number(ind);
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-    painter->setFont(QFont("MS Shell Dlg 2", 7));
-    painter->drawText(x+(m_hruler_size.width()-5*str.length())/2, y+(3*m_hruler_size.height())/4, str);
+    QFontMetrics fm(painter->font());
+    painter->drawText(x+(m_hruler_size.width()-fm.horizontalAdvance(str))/2, y+(3*m_hruler_size.height())/4, str);
 }
 
 //------------------------------------------------------------------------------
