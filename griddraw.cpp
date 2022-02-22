@@ -236,7 +236,17 @@ void  TGridDraw::DrawVRulerElement(int ind, int x, int y, QPainter *painter) {
     QString str;
     if(ind > 0) str = QString::number(ind);
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-    painter->drawText(x+(m_vruler_size.width()-5*str.length())/2, y+(3*elem_size.height())/4, str);
+    painter->setFont(QFont("MS Shell Dlg 2", 7));
+    int shift_x = 0;
+    int shift_y = 0;
+    if(keItemTypeSquare == glb().tGridData.nItemType) {
+        shift_x = (m_vruler_size.width()-5*str.length())/2;
+        shift_y = (3*elem_size.height())/4;
+    } else {
+        shift_x = (m_vruler_size.width()-5*str.length())/2;
+        shift_y = (5*elem_size.height())/8;
+    }
+    painter->drawText(x+shift_x, y+shift_y, str);
 }
 
 void  TGridDraw::DrawHRuler(int x, int y, ERowNumber number, QPainter *painter) {
@@ -245,32 +255,13 @@ void  TGridDraw::DrawHRuler(int x, int y, ERowNumber number, QPainter *painter) 
 
     _y += y;
 
-    QSize  elem_size = getElemSize();
-//    QPoint elem_shift = getElemShift();
+    Q_UNUSED(number)
 
-    int num_for_draw = -1;
+    QSize  elem_size = getElemSize();
 
     for(int i = 0; i < glb().pGrid->getColumns(); i++) {
-        if(keGridTypeNormal == glb().tGridData.nGridType) {
-            _x = x + i*elem_size.width();
-            if(keRowNumberAll == number)
-                num_for_draw = glb().pGrid->getColumns()-i;
-            else if(keRowNumberOdd == number) {
-                if((glb().pGrid->getColumns()-i)%2)
-                    num_for_draw = glb().pGrid->getColumns()-i;
-                else
-                    num_for_draw = -1;
-            } else if(keRowNumberEven == number) {
-                if(!((glb().pGrid->getColumns()-i)%2))
-                    num_for_draw = glb().pGrid->getColumns()-i;
-                else
-                    num_for_draw = -1;
-            }
-            DrawHRulerElement(num_for_draw, _x, _y, painter);
-        } else if(keGridTypeShift == glb().tGridData.nGridType) {
-            _x = x + i*elem_size.width();
-            DrawHRulerElement(glb().pGrid->getColumns()-i, _x, _y, painter);
-        }
+        _x = x + i*elem_size.width();
+        DrawHRulerElement(i+1, _x, _y, painter);
     }
 }
 
@@ -291,6 +282,7 @@ void  TGridDraw::DrawHRulerElement(int ind, int x, int y, QPainter *painter) {
     QString str;
     if(ind > 0) str = QString::number(ind);
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
+    painter->setFont(QFont("MS Shell Dlg 2", 7));
     painter->drawText(x+(m_hruler_size.width()-5*str.length())/2, y+(3*m_hruler_size.height())/4, str);
 }
 
