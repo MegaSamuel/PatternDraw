@@ -10,10 +10,15 @@ int main(int argc, char *argv[])
     MainWindow win;
 
     QScreen *screen = QGuiApplication::primaryScreen();
-    QRect size = screen->availableGeometry();
+    QRect rect = screen->availableGeometry();
 
-    int x = (size.width() - win.width()) / 2;
-    int y = (size.height() - win.height()) / 2;
+    QSize new_size;
+    new_size.setWidth(rect.size().width()/2);
+    new_size.setHeight(2*rect.size().height()/3);
+    win.resize( new_size );
+
+    int x = (rect.width() - win.width())/2;
+    int y = (rect.height() - win.height())/2;
 
     // распологаем форму по центру основного экрана
     win.move(x, y);

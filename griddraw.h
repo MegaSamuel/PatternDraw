@@ -87,6 +87,8 @@ private:
     //! предыдущий номер петли
     int            m_prev_column;
 
+    bool           m_need_to_emit;
+
     //! x, y - начальные координаты; number - нумерация; painter - указатель на отрисовщик
     void DrawVRuler(int x, int y, ERowNumber number, QPainter *painter);
 

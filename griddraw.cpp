@@ -20,6 +20,8 @@ TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
     m_vruler_size.setHeight(SHORT_SIDE);
     m_vruler_size.setWidth(SHORT_SIDE);
 
+    m_need_to_emit = true;
+
     // включаем событие mouse move без нажатия кнопок
     this->setMouseTracking(true);
 }
@@ -380,8 +382,14 @@ void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
 
     // если курсор вне картинки
     if((event->pos().x()+1 > m_pic_size.width()) || (event->pos().y()+1 > m_pic_size.height())) {
+        if(m_need_to_emit) {
+            m_need_to_emit = false;
+            Q_EMIT(currentPos(-1, -1));
+        }
         return;
     }
+
+    m_need_to_emit = true;
 
     // расчет положения
     // сначала считаем петли - они не зависят от смещения рядов
@@ -402,7 +410,7 @@ void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
 
     // если положение изменилось - отправляем сигнал
     if(need_to_emit) {
-        Q_EMIT(currentPos(m_curr_row, m_curr_column));
+        Q_EMIT(currentPos(m_curr_row, (glb().pGrid->getColumns()-m_curr_column+1)));
 
 //        qDebug() << "row" << m_curr_row << "column" << m_curr_column;
     }

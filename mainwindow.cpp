@@ -122,8 +122,8 @@ void  MainWindow::initGuiElements(bool first_start) {
     ui->spinRow->setValue(static_cast<int>(m_uRow));
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
-    ui->spinCurrRow->setValue(static_cast<int>(m_uCurrRow));
-    ui->spinCurrColumn->setValue(static_cast<int>(m_uCurrColumn));
+    ui->labelCurrRow->setText("Ряд:");
+    ui->labelCurrColumn->setText("Петля:");
 
     ui->comboBoxItem->setCurrentIndex(static_cast<int>(m_uItemType));
     ui->comboBoxGrid->setCurrentIndex(static_cast<int>(m_uGridType));
@@ -284,11 +284,27 @@ void  MainWindow::resetStateChanged() {
 }
 
 void  MainWindow::onCurrentPos(int row, int col) {
-    m_uCurrRow = static_cast<unsigned>(row);
-    m_uCurrColumn = static_cast<unsigned>(col);
+    QString txt;
 
-    ui->spinCurrRow->setValue(row);
-    ui->spinCurrColumn->setValue(col);
+    if(row > 0) {
+        txt = "Ряд: " + QString::number(row);
+        m_uCurrRow = static_cast<unsigned>(row);
+    } else {
+        txt = "Ряд:";
+        m_uCurrRow = 0;
+    }
+
+    ui->labelCurrRow->setText(txt);
+
+    if(col > 0) {
+        txt = "Петля: " + QString::number(col);
+        m_uCurrColumn = static_cast<unsigned>(col);
+    } else {
+        txt = "Петля:";
+        m_uCurrColumn = 0;
+    }
+
+    ui->labelCurrColumn->setText(txt);
 }
 
 void  MainWindow::onChangeState() {
