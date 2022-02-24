@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_zPrgName = "PatternDraw";
 
-    initGuiElements(true);
+    initGuiElements();
 
     // диалог Новыя сетка
     m_ptNewDialog = new TNewDialog(this);
@@ -111,7 +111,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void  MainWindow::initGuiElements(bool first_start) {
+void  MainWindow::initGuiElements() {
     m_uRow = static_cast<unsigned>(glb().tGridData.nRow);
     m_uColumn = static_cast<unsigned>(glb().tGridData.nColumn);
 
@@ -120,10 +120,6 @@ void  MainWindow::initGuiElements(bool first_start) {
 
     m_uItemType = static_cast<unsigned>(glb().tGridData.nItemType);
     m_uGridType = static_cast<unsigned>(glb().tGridData.nGridType);
-
-    if(!first_start) {
-        ui->checkBoxSplit->setEnabled(((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)));
-    }
 
     ui->spinRow->setValue(static_cast<int>(m_uRow));
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
@@ -823,13 +819,6 @@ void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
 void MainWindow::on_checkBoxGridRuler_stateChanged(int arg1)
 {
     m_pGrid->setRulerBorder(Qt::Unchecked != arg1);
-
-    ui->tGridDraw->update();
-}
-
-void MainWindow::on_checkBoxSplit_stateChanged(int arg1)
-{
-    m_pGrid->setSplit(Qt::Unchecked != arg1);
 
     ui->tGridDraw->update();
 }

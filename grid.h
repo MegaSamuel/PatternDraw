@@ -59,9 +59,6 @@ public:
     void          setRulerBorder(bool border);
     bool          getRulerBorder() const;
 
-    void          setSplit(bool split);
-    bool          getSplit() const;
-
     void          setRulerV(bool ruler);
     void          setRulerVtype(int type);
     bool          getRulerV() const;
@@ -94,8 +91,6 @@ private:
 
     bool          m_border;
     bool          m_ruler_border;
-
-    bool          m_split;
 
     bool          m_ruler_v;
     bool          m_ruler_h;

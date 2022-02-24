@@ -29,7 +29,6 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
 
     m_border = true;
     m_ruler_border = true;
-    m_split = false;
 
     m_ruler_v = false;
     m_ruler_h = false;
@@ -168,20 +167,12 @@ QColor  TGrid::getBackColor(int row, int col) const {
     return elem.getBackFillColor();
 }
 
-void  TGrid::setSplit(bool split) {
-    m_split = split;
-}
-
 void  TGrid::setRulerBorder(bool border) {
     m_ruler_border = border;
 }
 
 bool TGrid::getRulerBorder() const {
     return m_ruler_border;
-}
-
-bool TGrid::getSplit() const {
-    return m_split;
 }
 
 void  TGrid::setRulerV(bool ruler) {

@@ -509,16 +509,6 @@
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QCheckBox" name="checkBoxSplit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Разделить</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </widget>
          </item>

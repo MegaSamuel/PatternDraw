@@ -61,7 +61,6 @@ private Q_SLOTS:
 
     void on_checkBoxGrid_stateChanged(int arg1);
     void on_checkBoxGridRuler_stateChanged(int arg1);
-    void on_checkBoxSplit_stateChanged(int arg1);
 
     void       onDlgCreate();
 
@@ -77,7 +76,7 @@ private Q_SLOTS:
 private:
     Ui::MainWindow *ui;
 
-    void           initGuiElements(bool first_start = false);
+    void           initGuiElements();
 
     bool           askSaveIfChanged();
 
