@@ -30,6 +30,7 @@ public:
     ~TGridDraw() override;
 
     bool           saveImage(const QString &fileName, const char *format = nullptr);
+    bool           saveImageConverted(const QString &fileName, const char *format = nullptr);
     QImage*        getImage();
 
     int            getCurrRow() const;
@@ -62,6 +63,8 @@ private:
 
     //! картинка с сеткой
     QImage         m_image;
+    //! конвертированная картинка с сеткой
+    QImage         m_image_converted;
 
     //! пересчитать размер ячеек линеек
     void           updateRulerSize();
@@ -72,9 +75,9 @@ private:
     QPoint         getElemShift();
 
     //! нарисовать сетку
-    void           drawAll(QPainter *painter);
-    //! нарисовать сетку в картинку (m_image)
-    void           drawPicture();
+    void           drawAll(QPainter *painter, bool converted = false);
+    //! нарисовать сетку в картинку (m_image/m_image_converted)
+    void           drawPicture(bool converted = false);
 
     //! координаты левого верхнего угла таблицы
     QPoint         m_left_top_point;
@@ -83,6 +86,7 @@ private:
 
     //! размер всей картинки (с учетом линеек)
     QSize          m_pic_size;
+    QSize          m_pic_size_converted;
 
     //! расчет номера ряда
     int            calcRowNum(int y);
@@ -121,10 +125,10 @@ private:
     void DrawHRulerElement(int ind, int x, int y, QPainter *painter);
 
     //! x, y - начальные координаты; painter - указатель на отрисовщик
-    void DrawElements(int x, int y, QPainter *painter);
+    void DrawElements(int x, int y, QPainter *painter, bool converted);
 
     //! i, j - номер ячейки; x, y - координаты; painter - указатель на отрисовщик
-    void DrawElement(int i, int j, int x, int y, QPainter *painter);
+    void DrawElement(int i, int j, int x, int y, QPainter *painter, bool converted);
 
     //! возврат истины если модуль числа четный
     template<typename T>

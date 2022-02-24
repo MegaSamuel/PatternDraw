@@ -38,6 +38,7 @@ private Q_SLOTS:
     void       onOpenHandler();
     void       onSaveHandler();
     void       onSaveAsHandler();
+    void       onConvertHandler();
     void       onPrintHandler();
     void       onQuitHandler();
     void       onUndoHandler();
@@ -98,8 +99,10 @@ private:
 
     bool           fileSave();
     bool           fileSaveAs();
+    bool           fileSaveConverted();
 
     bool           fileSaveToDev(const QString& filename);
+    bool           fileSaveConvertedToDev(const QString& filename);
 
     TNewDialog    *m_ptNewDialog;
 

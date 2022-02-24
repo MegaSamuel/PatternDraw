@@ -63,28 +63,40 @@ bool  TGridDraw::saveImage(const QString &fileName, const char *format) {
     return m_image.save(fileName, format);
 }
 
+bool  TGridDraw::saveImageConverted(const QString &fileName, const char *format) {
+    drawPicture(true);
+    return m_image_converted.save(fileName, format);
+}
+
 QImage*  TGridDraw::getImage() {
     drawPicture();
     return &m_image;
 }
 
-void  TGridDraw::drawPicture() {
-    assert(0 != m_pic_size.width());
-    assert(0 != m_pic_size.height());
-
+void  TGridDraw::drawPicture(bool converted) {
     // m_pic_size заполнится при рисовании на виджете
-    QImage image(m_pic_size, QImage::Format_ARGB32);
+    QSize pic_size = m_pic_size;
+
+    if(converted) pic_size = m_pic_size_converted;
+
+    QImage image(pic_size, QImage::Format_ARGB32);
     image.fill(Qt::white);
 
     QPainter painter(&image); // Создаём объект отрисовщика
 
     // рисуем в qimage
-    drawAll(&painter);
+    drawAll(&painter, converted);
 
-    m_image = image;
+    if(converted) {
+        m_image_converted = image;
+//        qDebug() << "1" << m_image_converted.width() << m_image_converted.height();
+    } else {
+        m_image = image;
+//        qDebug() << "2" << m_image.width() << m_image.height();
+    }
 }
 
-void  TGridDraw::drawAll(QPainter *painter) {
+void  TGridDraw::drawAll(QPainter *painter, bool converted) {
     int x_shift = 0;
     int y_shift = 0;
 
@@ -99,7 +111,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
     QSize  elem_size = getElemSize();
 
     // рулетка слева
-    if(glb().pGrid->getSplit()) {
+    if(converted) {
         int y = y_shift;
         DrawVRulerAdv(x_shift, y, keRowNumberEven, painter);
         // сдвигаемся на ширину вертикальной рулетки
@@ -119,7 +131,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
     }
 
     // собственно табличка ячеек
-    DrawElements(x_shift, y_shift, painter);
+    DrawElements(x_shift, y_shift, painter, converted);
 
     // запоминаем левый верхний угол таблицы
     m_left_top_point.setX(x_shift);
@@ -138,7 +150,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
     y_shift += 1; //add one
 
     // рулетка снизу
-    if(glb().pGrid->getRulerH() || glb().pGrid->getSplit()) {
+    if(glb().pGrid->getRulerH() || converted) {
         DrawHRuler(x_shift, y_shift, keRowNumberAll, painter);
         y_shift += m_hruler_size.height();
     }
@@ -156,7 +168,7 @@ void  TGridDraw::drawAll(QPainter *painter) {
     }
 
     // рулетка справа
-    if(glb().pGrid->getSplit()) {
+    if(converted) {
         DrawVRulerAdv(x_shift, y_shift_start, keRowNumberOdd, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
@@ -176,8 +188,25 @@ void  TGridDraw::drawAll(QPainter *painter) {
     m_pic_size.setWidth(x_shift+1);
     m_pic_size.setHeight(y_shift+1);
 
-//    qDebug() << "pic" << m_pic_size.width() << m_pic_size.height();
-//    qDebug() << "wgt" << this->width() << this->height();
+    // --> считаем руками размер конвертированной картинки
+    int x_ = m_vruler_size.width();
+    x_ += 1;
+    x_ += glb().pGrid->getColumns()*elem_size.width() + glb().pGrid->getColumns()-1;
+    x_ += 1;
+    x_ += m_vruler_size.width();
+    x_ += 1;
+
+    int y_ = glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2 + glb().pGrid->getRows()/2-1;
+    y_ += 1;
+    y_ += m_hruler_size.height();
+    y_ += 1;
+
+    m_pic_size_converted.setWidth(x_);
+    m_pic_size_converted.setHeight(y_);
+    // <--
+
+    //    qDebug() << "pic" << m_pic_size.width() << m_pic_size.height();
+    //    qDebug() << "wgt" << this->width() << this->height();
 
     // если картинка стала больше видимой области по высоте
     if(m_pic_size.height() > this->height())
@@ -372,7 +401,7 @@ void  TGridDraw::DrawHRulerElement(int ind, int x, int y, QPainter *painter) {
 
 //------------------------------------------------------------------------------
 
-void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
+void  TGridDraw::DrawElements(int x, int y, QPainter *painter, bool converted) {
     int _x = x;
     int _y = y;
 
@@ -384,7 +413,7 @@ void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
     for(int i = 0; i < glb().pGrid->getRows(); i++) {
         for(int j = 0; j < glb().pGrid->getColumns(); j++) {
             if(keGridTypeNormal == glb().tGridData.nGridType) {
-                DrawElement(i, j, _x, _y, painter);
+                DrawElement(i, j, _x, _y, painter, converted);
                 _x += elem_size.width()+1;
             } else if(keGridTypeShift == glb().tGridData.nGridType) {
                 if(isEven(i)) {
@@ -392,14 +421,14 @@ void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
                         // четная строка, четный столбец
                         _x = x + j*elem_size.width() + j;
                         _y = y + i*elem_shift.y() + shift;
-                        DrawElement(i, j, _x, _y, painter);
+                        DrawElement(i, j, _x, _y, painter, converted);
                     }
                 } else {
                     if(isOdd(j)) {
                         // нечетная строка, нечетный столбец
                         _x = x + j*elem_size.width() + j;
                         _y = y + i*elem_shift.y() + shift - 1;
-                        DrawElement(i, j, _x, _y, painter);
+                        DrawElement(i, j, _x, _y, painter, converted);
                     }
                 }
             }
@@ -414,10 +443,10 @@ void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
     }
 }
 
-void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
+void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter, bool converted) {
     QSize  elem_size = getElemSize();
 
-    if(!glb().pGrid->getSplit()) {
+    if(!converted) {
         // если border то ставим цвет, иначе цвет как фон
         if(glb().pGrid->getBorder()) {
             painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
@@ -431,19 +460,19 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
         }
     }
 
-    if((keGridTypeShift == glb().tGridData.nGridType) && glb().pGrid->getSplit()) {
+    if((keGridTypeShift == glb().tGridData.nGridType) && converted) {
         // белая часть
         painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
-        painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
+        painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
         painter->drawRect(x, y, elem_size.width(), elem_size.height()/2);
 
         // цветная часть
         if(glb().pGrid->getElement(i,j).getFill()) {
             painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
-            painter->setPen(QPen(glb().pGrid->getColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
+            painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
         } else {
             painter->setBrush(QBrush(glb().pGrid->getBackColor(i, j), Qt::SolidPattern));
-            painter->setPen(QPen(glb().pGrid->getBackColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
+            painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
         }
 
         painter->drawRect(x, y+elem_size.height()/2, elem_size.width(), elem_size.height()/2);
@@ -463,13 +492,11 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
 
 void  TGridDraw::onChangeGridColor(QColor color) {
     Q_UNUSED(color)
-    //qDebug() << "change grid color";
     update();
 }
 
 void  TGridDraw::onChangeBackColor(QColor color) {
     glb().pGrid->setBackColor(color);
-    //qDebug() << "change back color";
     update();
 }
 

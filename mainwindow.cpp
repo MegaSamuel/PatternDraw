@@ -79,6 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::onOpenHandler);
     connect(ui->actionSave, &QAction::triggered, this, &MainWindow::onSaveHandler);
     connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::onSaveAsHandler);
+    connect(ui->actionConvert, &QAction::triggered, this, &MainWindow::onConvertHandler);
     connect(ui->actionPrint, &QAction::triggered, this, &MainWindow::onPrintHandler);
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::onQuitHandler);
 
@@ -248,6 +249,19 @@ bool  MainWindow::fileSaveToDev(const QString& filename) {
     return result;
 }
 
+bool  MainWindow::fileSaveConvertedToDev(const QString& filename) {
+    bool result;
+    QString  format = filename.right(3).toUpper();
+
+    result = ui->tGridDraw->saveImageConverted(filename, format.toStdString().c_str());
+
+    if(!result) {
+        qDebug() << "Ошибка записи в файл";
+    }
+
+    return result;
+}
+
 bool  MainWindow::fileSave() {
     bool result = false;
 
@@ -278,6 +292,32 @@ bool  MainWindow::fileSaveAs() {
     if(!filename.isEmpty()) {
         m_zPrgFileName = filename;
         result = fileSaveToDev(m_zPrgFileName);
+    } else {
+        qDebug() << "no filename";
+    }
+
+    return result;
+}
+
+bool  MainWindow::fileSaveConverted() {
+    bool result = false;
+
+    // формируем имя файла по умолчанию
+    QString deffilename = QString("/converted%1x%2").arg(m_uRow).arg(m_uColumn);
+
+    // каталог где мы находимся
+    QDir *pDir = new QDir(QDir::currentPath() + deffilename);
+
+    // строка с именем каталога где мы находимся
+    QString dir(pDir->path());
+
+    // формируем путь и имя файла через диалог
+    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)");
+
+    QApplication::processEvents();
+
+    if(!filename.isEmpty()) {
+        result = fileSaveConvertedToDev(filename);
     } else {
         qDebug() << "no filename";
     }
@@ -421,6 +461,11 @@ void  MainWindow::onDlgCreate() {
 
     // заголовок формы
     setPrgTitleText();
+
+    // если сетка со смещением и из прямоугольников, то ее можно конвертировать
+    if((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)) {
+        ui->actionConvert->setEnabled(true);
+    }
 }
 
 void  MainWindow::onOpenHandler() {
@@ -450,6 +495,16 @@ void  MainWindow::onSaveAsHandler() {
     }
 
     fileSaveAs();
+}
+
+void  MainWindow::onConvertHandler() {
+    // нет картинки
+    if(!m_bImageReady) {
+        showInfoMessage("Нет изображения!", "Перед конвертацией создайте новую сетку.");
+        return;
+    }
+
+    fileSaveConverted();
 }
 
 void  MainWindow::onPrintHandler() {
