@@ -9,6 +9,12 @@
 #include "dialog.h"
 #include "griddraw.h"
 #include "global.h"
+#include "gridsave.h"
+
+//------------------------------------------------------------------------------
+
+#define AppVendor   "Cepaleme"
+#define AppName     "PatternDraw"
 
 //------------------------------------------------------------------------------
 
@@ -203,6 +209,9 @@ bool  MainWindow::fileSaveToDev(const QString& filename) {
 
     result = ui->tGridDraw->saveImage(filename, format.toStdString().c_str());
 
+    //TODO пока пишем прямо так
+    fileSaveGrid();
+
     resetStateChanged();
 
     if(!result) {
@@ -286,6 +295,92 @@ bool  MainWindow::fileSaveConverted() {
     }
 
     return result;
+}
+
+//------------------------------------------------------------------------------
+
+bool  MainWindow::fileOpenGridFromDev(const QString& filename) {
+    bool result = false;
+
+    //result = ui->tGridDraw->saveImageConverted(filename, format.toStdString().c_str());
+
+    if(!result) {
+        qDebug() << "Ошибка чтения из файла";
+    }
+
+    return result;
+}
+
+bool  MainWindow::fileOpenGrid() {
+    bool result = false;
+
+    // каталог где мы находимся
+    QDir *pDir = new QDir(QDir::currentPath());
+
+    // строка с именем каталога где мы находимся
+    QString dir(pDir->path());
+
+    // формируем путь и имя файла через диалог
+    QString filename = QFileDialog::getOpenFileName(this, "Открыть файл", dir, "PatterDraw Grid (*.pdg)");
+
+    QApplication::processEvents();
+
+    if(!filename.isEmpty()) {
+        result = fileOpenGridFromDev(filename);
+    } else {
+        qDebug() << "no filename";
+    }
+
+    return result;
+}
+
+inline QDataStream &operator <<(QDataStream &stream, const t_grid_data &grid)
+{
+    stream << grid.id1;
+    stream << grid.id2;
+    stream << grid.item_type;
+    stream << grid.grid_type;
+    stream << grid.row;
+    stream << grid.column;
+    stream << grid.is_filled;
+
+    return stream;
+}
+
+bool  MainWindow::fileSaveGrid() {
+    std::string str;
+    QFile 		fp("d:/out.pdg");
+    QDataStream out(&fp);
+
+    // открываем файл на запись
+    if(!fp.open(QIODevice::WriteOnly))
+    {
+        qDebug() << "cannot create file";
+        return false;
+    }
+
+    t_grid_data filedata;
+
+    filedata.id1 = 'P';
+    filedata.id2 = 'D';
+    filedata.item_type = static_cast<uint8_t>(m_uItemType);
+    filedata.grid_type = static_cast<uint8_t>(m_uGridType);
+
+    filedata.row = static_cast<uint8_t>(m_uRow);
+    filedata.column = static_cast<uint8_t>(m_uColumn);
+
+    filedata.is_filled = m_tBackColor == Qt::white ? false : true;
+
+//    t_color   t_grid_color;
+//    t_color   t_back_color;
+
+    // пишем в файл
+    out.setVersion(QDataStream::Qt_5_12);
+    out << filedata;
+    fp.flush();
+    fp.close();
+
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -430,7 +525,12 @@ void  MainWindow::onDlgCreate() {
 }
 
 void  MainWindow::onOpenHandler() {
+    // есть несохраненные изменения
+    if(!askSaveIfChanged()) {
+        return;
+    }
 
+    fileOpenGrid();
 }
 
 void  MainWindow::onSaveHandler() {
@@ -805,3 +905,25 @@ void MainWindow::on_radioRulerH2_clicked()
     ui->tGridDraw->update();
 }
 // <--
+
+//------------------------------------------------------------------------------
+
+void  MainWindow::readSettings()
+{
+//     QSettings  settings(AppVendor, AppName);
+
+//     cfgSetLastOpenPath(settings.value("last open path", "./").toString());
+//     cfgSetLastSavePath(settings.value("last save path", "./").toString());
+//     cfgSetLastOpenFile(settings.value("last open file", "./").toString());
+}
+
+void  MainWindow::writeSettings()
+{
+//     QSettings  settings(AppVendor, AppName);
+
+//     settings.setValue("last open path", cfgGetLastOpenPath());
+//     settings.setValue("last save path", cfgGetLastSavePath());
+//     settings.setValue("last open file", cfgGetLastOpenFile());
+}
+
+//------------------------------------------------------------------------------
