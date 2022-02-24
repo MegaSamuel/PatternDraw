@@ -598,14 +598,6 @@ void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
 
         //qDebug() << "row" << m_curr_row << "column" << (glb().pGrid->getColumns()-m_curr_column+1);
     }
-
-//    if(event->button() == Qt::LeftButton) {
-//        qDebug() << "move with left; row" << m_curr_row << "column" << m_curr_column;
-//    }
-
-//    if(event->button() == Qt::RightButton) {
-//        qDebug() << "move with left; row" << m_curr_row << "column" << m_curr_column;
-//    }
 }
 
 void  TGridDraw::resizeEvent(QResizeEvent *event)

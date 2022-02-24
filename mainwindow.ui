@@ -124,7 +124,14 @@
          <property name="rightMargin">
           <number>2</number>
          </property>
-         <item row="3" column="1">
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelRow">
+           <property name="text">
+            <string>Количество рядов:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
             <widget class="QPushButton" name="btnColumnM">
@@ -173,35 +180,7 @@
            </item>
           </layout>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="labeItem">
-           <property name="text">
-            <string>Ячейка:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="labelString">
-           <property name="text">
-            <string>Смещение:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="labelRow">
-           <property name="text">
-            <string>Количество рядов:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="labelColumn">
-           <property name="text">
-            <string>Количество петель:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
+         <item row="0" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
             <widget class="QPushButton" name="btnRowM">
@@ -259,44 +238,11 @@
            </item>
           </layout>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBoxGrid">
-           <property name="enabled">
-            <bool>false</bool>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelColumn">
+           <property name="text">
+            <string>Количество петель:</string>
            </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид строки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>Без смещения</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Со смещением</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="comboBoxItem">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид элемента&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>Прямоугольник</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Квадрат</string>
-            </property>
-           </item>
           </widget>
          </item>
         </layout>
@@ -493,16 +439,6 @@
              <widget class="QCheckBox" name="checkBoxGrid">
               <property name="text">
                <string>Сетка основная</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBoxGridRuler">
-              <property name="text">
-               <string>Сетка линеек</string>
               </property>
               <property name="checked">
                <bool>true</bool>

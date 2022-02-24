@@ -45,8 +45,6 @@ private Q_SLOTS:
     void       onRedoHandler();
     void       onInfoHandler();
     void       onManHandler();
-    void       onChangeItem(int  index);
-    void       onChangeGrid(int  index);
 
     void       onUndoFilled(bool);
     void       onRedoFilled(bool);
@@ -60,7 +58,6 @@ private Q_SLOTS:
     void on_btnColumnP_clicked();
 
     void on_checkBoxGrid_stateChanged(int arg1);
-    void on_checkBoxGridRuler_stateChanged(int arg1);
 
     void       onDlgCreate();
 
@@ -89,10 +86,6 @@ private:
     void           setPrgTitleText( const QString&  text = "" );
 
     void           setPrgTitleChanged( bool  changed );
-
-//    void           getGridColor(RGBQUAD  *a_pColor);
-//    void           getItemColor(RGBQUAD  *a_pColor);
-//    void           getBackColor(RGBQUAD  *a_pColor);
 
     void           setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor );
 

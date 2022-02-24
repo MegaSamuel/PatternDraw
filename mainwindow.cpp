@@ -93,12 +93,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // вызов справки о программе
     connect(ui->actionInfo, &QAction::triggered, this, &MainWindow::onInfoHandler);
 
-    // комбобокс с типом элемента
-    connect( ui->comboBoxItem, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeItem );
-
-    // комбобокс с типом строки
-    connect( ui->comboBoxGrid, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeGrid );
-
     // центральный элемент
     setCentralWidget( ui->centralWidget );
 
@@ -126,9 +120,6 @@ void  MainWindow::initGuiElements() {
 
     ui->labelCurrRow->setText("Ряд:");
     ui->labelCurrColumn->setText("Петля:");
-
-    ui->comboBoxItem->setCurrentIndex(static_cast<int>(m_uItemType));
-    ui->comboBoxGrid->setCurrentIndex(static_cast<int>(m_uGridType));
 
     // цвет сетки
     m_tGridColor = Qt::gray;
@@ -159,30 +150,6 @@ void  MainWindow::guiBlock(bool block) {
 }
 
 //------------------------------------------------------------------------------
-
-//void  MainWindow::getGridColor( RGBQUAD  *a_pColor )
-//{
-//    a_pColor->rgbRed = static_cast<BYTE>(m_tGridColor.red());
-//    a_pColor->rgbGreen = static_cast<BYTE>(m_tGridColor.green());
-//    a_pColor->rgbBlue = static_cast<BYTE>(m_tGridColor.blue());
-//    a_pColor->rgbReserved = 0x0;
-//}
-
-//void  MainWindow::getItemColor( RGBQUAD  *a_pColor )
-//{
-//    a_pColor->rgbRed = static_cast<BYTE>(m_tItemColor.red());
-//    a_pColor->rgbGreen = static_cast<BYTE>(m_tItemColor.green());
-//    a_pColor->rgbBlue = static_cast<BYTE>(m_tItemColor.blue());
-//    a_pColor->rgbReserved = 0x0;
-//}
-
-//void  MainWindow::getBackColor( RGBQUAD  *a_pColor )
-//{
-//    a_pColor->rgbRed = static_cast<BYTE>(m_tBackColor.red());
-//    a_pColor->rgbGreen = static_cast<BYTE>(m_tBackColor.green());
-//    a_pColor->rgbBlue = static_cast<BYTE>(m_tBackColor.blue());
-//    a_pColor->rgbReserved = 0x0;
-//}
 
 void  MainWindow::setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor )
 {
@@ -383,7 +350,6 @@ void  MainWindow::onBtnChangeGridColor()
         glb().tGridColor = color;
 
         Q_EMIT(changeGridColor(color));
-        //ui->tGridDraw->update();
     }
 }
 
@@ -424,7 +390,6 @@ void  MainWindow::onBtnChangeBackColor()
         glb().tBackColor = color;
 
         Q_EMIT(changeBackColor(color));
-        //ui->tGridDraw->update();
     }
 }
 
@@ -587,38 +552,6 @@ void  MainWindow::onManHandler()
     pMan->setMinimumHeight(200);
 
     pMan->exec();
-}
-
-void  MainWindow::onChangeItem( int  index )
-{
-#if 0
-    if( 0 == index )
-        m_uItemType = keItemTypeRectan;
-    else if( 1 == index )
-        m_uItemType = keItemTypeSquare;
-
-    glb().m_uItemType = m_uItemType;
-
-    ui->tGridDraw->update();
-#else
-    Q_UNUSED(index)
-#endif
-}
-
-void  MainWindow::onChangeGrid( int  index )
-{
-#if 0
-    if( 0 == index )
-        m_uGridType = keGridTypeNormal;
-    else if( 1 == index )
-        m_uGridType = keGridTypeShift;
-
-    glb().m_uGridType = m_uGridType;
-
-    ui->tGridDraw->update();
-#else
-    Q_UNUSED(index)
-#endif
 }
 
 void  MainWindow::onUndoFilled(bool filled) {
@@ -812,13 +745,6 @@ void MainWindow::on_btnColumnP_clicked()
 void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
 {
     m_pGrid->setBorder(Qt::Unchecked != arg1);
-
-    ui->tGridDraw->update();
-}
-
-void MainWindow::on_checkBoxGridRuler_stateChanged(int arg1)
-{
-    m_pGrid->setRulerBorder(Qt::Unchecked != arg1);
 
     ui->tGridDraw->update();
 }
