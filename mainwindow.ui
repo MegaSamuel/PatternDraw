@@ -117,7 +117,7 @@
         <number>0</number>
        </property>
        <item>
-        <layout class="QGridLayout" name="gridLayoutProp">
+        <layout class="QGridLayout" name="gridLayoutProp" rowstretch="0,0" columnstretch="0,1">
          <property name="leftMargin">
           <number>2</number>
          </property>
@@ -127,12 +127,12 @@
          <item row="0" column="0">
           <widget class="QLabel" name="labelRow">
            <property name="text">
-            <string>Количество рядов:</string>
+            <string>Ряды:</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,0">
            <item>
             <widget class="QPushButton" name="btnColumnM">
              <property name="toolTip">
@@ -181,7 +181,7 @@
           </layout>
          </item>
          <item row="0" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0">
            <item>
             <widget class="QPushButton" name="btnRowM">
              <property name="toolTip">
@@ -241,14 +241,14 @@
          <item row="1" column="0">
           <widget class="QLabel" name="labelColumn">
            <property name="text">
-            <string>Количество петель:</string>
+            <string>Петли:</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
-        <spacer name="verticalSpacer_2">
+        <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -346,7 +346,7 @@
         </layout>
        </item>
        <item>
-        <spacer name="verticalSpacer_3">
+        <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -366,60 +366,6 @@
          <property name="rightMargin">
           <number>2</number>
          </property>
-         <item row="2" column="0">
-          <widget class="QGroupBox" name="groupBoxRulerH">
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="checkBoxRulerH">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Горизонтальная линейка</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioRulerH1">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Снизу</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioRulerH2">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Снизу/сверху</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item row="0" column="0">
           <widget class="QGroupBox" name="groupBoxGrid">
            <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -502,6 +448,60 @@
               </property>
               <property name="text">
                <string>Справа/слева</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QGroupBox" name="groupBoxRulerH">
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="checkBoxRulerH">
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Горизонтальная линейка</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioRulerH1">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Снизу</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioRulerH2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Снизу/сверху</string>
               </property>
              </widget>
             </item>
