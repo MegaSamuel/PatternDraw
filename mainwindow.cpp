@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_zPrgName = "PatternDraw";
 
-    initGuiElements(true);
+    initGuiElements();
 
     // диалог Новыя сетка
     m_ptNewDialog = new TNewDialog(this);
@@ -44,6 +44,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tGridDraw, &TGridDraw::currentPos, this, &MainWindow::onCurrentPos);
     // ловим сигнал об изменении картинки
     connect(ui->tGridDraw, &TGridDraw::changeState, this, &MainWindow::onChangeState);
+    // отправка сигнала об изменении цвета сетки
+    connect(this, &MainWindow::changeGridColor, ui->tGridDraw, &TGridDraw::onChangeGridColor);
+    // отправка сигнала об изменении цвета фона
+    connect(this, &MainWindow::changeBackColor, ui->tGridDraw, &TGridDraw::onChangeBackColor);
 
     // отправляем указатель на таблицу в рисовалку
     assert(nullptr != m_pGrid);
@@ -63,17 +67,19 @@ MainWindow::MainWindow(QWidget *parent) :
     // иконка формы
     setWindowIcon( QIcon( ":/PatternDraw.ico" ) );
 
-    // ловим нажатие кнопки Изменить цвет фона
-    connect( ui->btnBackColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeBackColor ) ;
-
     // ловим нажатие кнопки Изменить цвет сетки
-    connect( ui->btnGridColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeGridColor ) ;
+    connect(ui->btnGridColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeGridColor);
+    // ловим нажатие кнопки Изменить цвет элемента
+    connect(ui->btnItemColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeItemColor);
+    // ловим нажатие кнопки Изменить цвет фона
+    connect(ui->btnBackColor, &QPushButton::clicked, this, &MainWindow::onBtnChangeBackColor);
 
     // меню Файл
     connect(ui->actionNew, &QAction::triggered, this, &MainWindow::onNewHandler);
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::onOpenHandler);
     connect(ui->actionSave, &QAction::triggered, this, &MainWindow::onSaveHandler);
     connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::onSaveAsHandler);
+    connect(ui->actionConvert, &QAction::triggered, this, &MainWindow::onConvertHandler);
     connect(ui->actionPrint, &QAction::triggered, this, &MainWindow::onPrintHandler);
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::onQuitHandler);
 
@@ -87,12 +93,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // вызов справки о программе
     connect(ui->actionInfo, &QAction::triggered, this, &MainWindow::onInfoHandler);
 
-    // комбобокс с типом элемента
-    connect( ui->comboBoxItem, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeItem );
-
-    // комбобокс с типом строки
-    connect( ui->comboBoxGrid, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeGrid );
-
     // центральный элемент
     setCentralWidget( ui->centralWidget );
 
@@ -105,7 +105,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void  MainWindow::initGuiElements(bool first_start) {
+void  MainWindow::initGuiElements() {
     m_uRow = static_cast<unsigned>(glb().tGridData.nRow);
     m_uColumn = static_cast<unsigned>(glb().tGridData.nColumn);
 
@@ -115,28 +115,26 @@ void  MainWindow::initGuiElements(bool first_start) {
     m_uItemType = static_cast<unsigned>(glb().tGridData.nItemType);
     m_uGridType = static_cast<unsigned>(glb().tGridData.nGridType);
 
-    if(!first_start) {
-        ui->checkBoxSplit->setEnabled(((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)));
-    }
-
     ui->spinRow->setValue(static_cast<int>(m_uRow));
     ui->spinColumn->setValue(static_cast<int>(m_uColumn));
 
-    ui->spinCurrRow->setValue(static_cast<int>(m_uCurrRow));
-    ui->spinCurrColumn->setValue(static_cast<int>(m_uCurrColumn));
-
-    ui->comboBoxItem->setCurrentIndex(static_cast<int>(m_uItemType));
-    ui->comboBoxGrid->setCurrentIndex(static_cast<int>(m_uGridType));
-
-    // цвет элемента
-    m_tBackColor = Qt::white;
-    glb().tItemColor = Qt::white;
-    setLabelBackColor(ui->labelBackColor, &m_tBackColor);
+    ui->labelCurrRow->setText("Ряд:");
+    ui->labelCurrColumn->setText("Петля:");
 
     // цвет сетки
     m_tGridColor = Qt::gray;
     glb().tGridColor = Qt::gray;
     setLabelBackColor(ui->labelGridColor, &m_tGridColor);
+
+    // цвет элемента
+    m_tItemColor = Qt::white;
+    glb().tItemColor = Qt::white;
+    setLabelBackColor(ui->labelItemColor, &m_tItemColor);
+
+    // цвет фона
+    m_tBackColor = Qt::white;
+    glb().tBackColor = Qt::white;
+    setLabelBackColor(ui->labelBackColor, &m_tBackColor);
 
     ui->radioRulerH1->setChecked(true);
     ui->radioRulerV1->setChecked(true);
@@ -152,22 +150,6 @@ void  MainWindow::guiBlock(bool block) {
 }
 
 //------------------------------------------------------------------------------
-
-void  MainWindow::getBackColor( RGBQUAD  *a_pColor )
-{
-    a_pColor->rgbRed = static_cast<BYTE>(m_tBackColor.red());
-    a_pColor->rgbGreen = static_cast<BYTE>(m_tBackColor.green());
-    a_pColor->rgbBlue = static_cast<BYTE>(m_tBackColor.blue());
-    a_pColor->rgbReserved = 0x0;
-}
-
-void  MainWindow::getGridColor( RGBQUAD  *a_pColor )
-{
-    a_pColor->rgbRed = static_cast<BYTE>(m_tGridColor.red());
-    a_pColor->rgbGreen = static_cast<BYTE>(m_tGridColor.green());
-    a_pColor->rgbBlue = static_cast<BYTE>(m_tGridColor.blue());
-    a_pColor->rgbReserved = 0x0;
-}
 
 void  MainWindow::setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor )
 {
@@ -230,6 +212,19 @@ bool  MainWindow::fileSaveToDev(const QString& filename) {
     return result;
 }
 
+bool  MainWindow::fileSaveConvertedToDev(const QString& filename) {
+    bool result;
+    QString  format = filename.right(3).toUpper();
+
+    result = ui->tGridDraw->saveImageConverted(filename, format.toStdString().c_str());
+
+    if(!result) {
+        qDebug() << "Ошибка записи в файл";
+    }
+
+    return result;
+}
+
 bool  MainWindow::fileSave() {
     bool result = false;
 
@@ -267,6 +262,32 @@ bool  MainWindow::fileSaveAs() {
     return result;
 }
 
+bool  MainWindow::fileSaveConverted() {
+    bool result = false;
+
+    // формируем имя файла по умолчанию
+    QString deffilename = QString("/converted%1x%2").arg(m_uRow).arg(m_uColumn);
+
+    // каталог где мы находимся
+    QDir *pDir = new QDir(QDir::currentPath() + deffilename);
+
+    // строка с именем каталога где мы находимся
+    QString dir(pDir->path());
+
+    // формируем путь и имя файла через диалог
+    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)");
+
+    QApplication::processEvents();
+
+    if(!filename.isEmpty()) {
+        result = fileSaveConvertedToDev(filename);
+    } else {
+        qDebug() << "no filename";
+    }
+
+    return result;
+}
+
 //------------------------------------------------------------------------------
 
 void  MainWindow::setStateChanged() {
@@ -284,34 +305,31 @@ void  MainWindow::resetStateChanged() {
 }
 
 void  MainWindow::onCurrentPos(int row, int col) {
-    m_uCurrRow = static_cast<unsigned>(row);
-    m_uCurrColumn = static_cast<unsigned>(col);
+    QString txt;
 
-    ui->spinCurrRow->setValue(row);
-    ui->spinCurrColumn->setValue(col);
+    if(row > 0) {
+        txt = "Ряд: " + QString::number(row);
+        m_uCurrRow = static_cast<unsigned>(row);
+    } else {
+        txt = "Ряд:";
+        m_uCurrRow = 0;
+    }
+
+    ui->labelCurrRow->setText(txt);
+
+    if(col > 0) {
+        txt = "Петля: " + QString::number(col);
+        m_uCurrColumn = static_cast<unsigned>(col);
+    } else {
+        txt = "Петля:";
+        m_uCurrColumn = 0;
+    }
+
+    ui->labelCurrColumn->setText(txt);
 }
 
 void  MainWindow::onChangeState() {
     setStateChanged();
-}
-
-void  MainWindow::onBtnChangeBackColor()
-{
-    QColor color;
-
-    //!bug почему-то не работает
-    m_tColorDialog.setCurrentColor( m_tBackColor );
-
-    color = m_tColorDialog.getColor();
-
-    if( color.isValid() )
-    {
-        m_tBackColor = color;
-
-        setLabelBackColor( ui->labelBackColor, &m_tBackColor );
-
-        glb().tItemColor = color;
-    }
 }
 
 void  MainWindow::onBtnChangeGridColor()
@@ -319,19 +337,59 @@ void  MainWindow::onBtnChangeGridColor()
     QColor color;
 
     //!bug почему-то не работает
-    m_tColorDialog.setCurrentColor( m_tGridColor );
+    m_tColorDialog.setCurrentColor(m_tGridColor);
 
     color = m_tColorDialog.getColor();
 
-    if( color.isValid() )
+    if(color.isValid())
     {
         m_tGridColor = color;
 
-        setLabelBackColor( ui->labelGridColor, &m_tGridColor );
+        setLabelBackColor(ui->labelGridColor, &m_tGridColor);
 
         glb().tGridColor = color;
 
-        ui->tGridDraw->update();
+        Q_EMIT(changeGridColor(color));
+    }
+}
+
+void  MainWindow::onBtnChangeItemColor()
+{
+    QColor color;
+
+    //!bug почему-то не работает
+    m_tColorDialog.setCurrentColor(m_tItemColor);
+
+    color = m_tColorDialog.getColor();
+
+    if(color.isValid())
+    {
+        m_tItemColor = color;
+
+        setLabelBackColor(ui->labelItemColor, &m_tItemColor);
+
+        glb().tItemColor = color;
+    }
+}
+
+void  MainWindow::onBtnChangeBackColor()
+{
+    QColor color;
+
+    //!bug почему-то не работает
+    m_tColorDialog.setCurrentColor(m_tBackColor);
+
+    color = m_tColorDialog.getColor();
+
+    if(color.isValid())
+    {
+        m_tBackColor = color;
+
+        setLabelBackColor(ui->labelBackColor, &m_tBackColor);
+
+        glb().tBackColor = color;
+
+        Q_EMIT(changeBackColor(color));
     }
 }
 
@@ -364,6 +422,11 @@ void  MainWindow::onDlgCreate() {
 
     // заголовок формы
     setPrgTitleText();
+
+    // если сетка со смещением и из прямоугольников, то ее можно конвертировать
+    if((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)) {
+        ui->actionConvert->setEnabled(true);
+    }
 }
 
 void  MainWindow::onOpenHandler() {
@@ -393,6 +456,16 @@ void  MainWindow::onSaveAsHandler() {
     }
 
     fileSaveAs();
+}
+
+void  MainWindow::onConvertHandler() {
+    // нет картинки
+    if(!m_bImageReady) {
+        showInfoMessage("Нет изображения!", "Перед конвертацией создайте новую сетку.");
+        return;
+    }
+
+    fileSaveConverted();
 }
 
 void  MainWindow::onPrintHandler() {
@@ -479,38 +552,6 @@ void  MainWindow::onManHandler()
     pMan->setMinimumHeight(200);
 
     pMan->exec();
-}
-
-void  MainWindow::onChangeItem( int  index )
-{
-#if 0
-    if( 0 == index )
-        m_uItemType = keItemTypeRectan;
-    else if( 1 == index )
-        m_uItemType = keItemTypeSquare;
-
-    glb().m_uItemType = m_uItemType;
-
-    ui->tGridDraw->update();
-#else
-    Q_UNUSED(index)
-#endif
-}
-
-void  MainWindow::onChangeGrid( int  index )
-{
-#if 0
-    if( 0 == index )
-        m_uGridType = keGridTypeNormal;
-    else if( 1 == index )
-        m_uGridType = keGridTypeShift;
-
-    glb().m_uGridType = m_uGridType;
-
-    ui->tGridDraw->update();
-#else
-    Q_UNUSED(index)
-#endif
 }
 
 void  MainWindow::onUndoFilled(bool filled) {
@@ -704,20 +745,6 @@ void MainWindow::on_btnColumnP_clicked()
 void MainWindow::on_checkBoxGrid_stateChanged(int arg1)
 {
     m_pGrid->setBorder(Qt::Unchecked != arg1);
-
-    ui->tGridDraw->update();
-}
-
-void MainWindow::on_checkBoxGridRuler_stateChanged(int arg1)
-{
-    m_pGrid->setRulerBorder(Qt::Unchecked != arg1);
-
-    ui->tGridDraw->update();
-}
-
-void MainWindow::on_checkBoxSplit_stateChanged(int arg1)
-{
-    m_pGrid->setSplit(Qt::Unchecked != arg1);
 
     ui->tGridDraw->update();
 }

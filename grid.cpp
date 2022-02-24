@@ -29,7 +29,6 @@ TGrid::TGrid(int row, int column, int row_max, int column_max) {
 
     m_border = true;
     m_ruler_border = true;
-    m_split = false;
 
     m_ruler_v = false;
     m_ruler_h = false;
@@ -148,8 +147,24 @@ QColor  TGrid::getColor(int row, int col) const {
     return elem.getFillColor();
 }
 
-void  TGrid::setSplit(bool split) {
-    m_split = split;
+void  TGrid::setBackColor(QColor color) {
+    for(int i = 0; i < m_row_count; i++) {
+        for(int j = 0; j < m_column_count; j++) {
+            m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setBackFill(true);
+            m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setBackFillColor(color);
+        }
+    }
+}
+
+void  TGrid::setBackColor(int row, int col, QColor color) {
+    TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
+    elem.setBackFill(true);
+    elem.setBackFillColor(color);
+}
+
+QColor  TGrid::getBackColor(int row, int col) const {
+    const TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
+    return elem.getBackFillColor();
 }
 
 void  TGrid::setRulerBorder(bool border) {
@@ -158,10 +173,6 @@ void  TGrid::setRulerBorder(bool border) {
 
 bool TGrid::getRulerBorder() const {
     return m_ruler_border;
-}
-
-bool TGrid::getSplit() const {
-    return m_split;
 }
 
 void  TGrid::setRulerV(bool ruler) {

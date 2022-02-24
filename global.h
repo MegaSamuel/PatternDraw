@@ -35,8 +35,8 @@ inline static constexpr int MIN_COLUMN_COUNT = 1;
 inline static constexpr int MAX_ROW_COUNT = 128;
 inline static constexpr int MAX_COLUMN_COUNT = 128;
 
-inline static constexpr int SHORT_SIDE = 20;
-inline static constexpr int LONG_SIDE = 30;
+inline static constexpr int SHORT_SIDE = 16;
+inline static constexpr int LONG_SIDE = 32;
 
 //------------------------------------------------------------------------------
 
@@ -62,6 +62,7 @@ public:
 
     QColor      tItemColor;
     QColor      tGridColor;
+    QColor      tBackColor;
 
     TGrid      *pGrid;
 };

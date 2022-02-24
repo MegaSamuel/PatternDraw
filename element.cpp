@@ -14,6 +14,9 @@ TElement::TElement(std::pair<int, int> id) {
 
     m_fill = false;
     m_fill_color = Qt::white;
+
+    m_back_fill = false;
+    m_back_fill_color = Qt::white;
 }
 
 //------------------------------------------------------------------------------
@@ -25,6 +28,8 @@ void TElement::setId(std::pair<int, int> id) {
 std::pair<int, int> TElement::getId() const {
     return m_id;
 }
+
+//------------------------------------------------------------------------------
 
 void TElement::setText(const std::string& txt) {
     m_text = txt;
@@ -42,6 +47,8 @@ QColor TElement::getTextColor() const {
     return m_text_color;
 }
 
+//------------------------------------------------------------------------------
+
 void TElement::setFill(bool fill) {
     m_fill = fill;
 }
@@ -56,6 +63,24 @@ bool TElement::getFill() const {
 
 QColor TElement::getFillColor() const {
     return m_fill_color;
+}
+
+//------------------------------------------------------------------------------
+
+void TElement::setBackFill(bool fill) {
+    m_back_fill = fill;
+}
+
+void TElement::setBackFillColor(const QColor& color) {
+    m_back_fill_color = color;
+}
+
+bool TElement::getBackFill() const {
+    return m_back_fill;
+}
+
+QColor TElement::getBackFillColor() const {
+    return m_back_fill_color;
 }
 
 //------------------------------------------------------------------------------

@@ -28,6 +28,12 @@ public:
     bool          getFill() const;
     QColor        getFillColor() const;
 
+    void          setBackFill(bool fill = true);
+    void          setBackFillColor(const QColor& color = Qt::white);
+
+    bool          getBackFill() const;
+    QColor        getBackFillColor() const;
+
 private:
     std::pair<int, int>  m_id;
 
@@ -36,6 +42,9 @@ private:
 
     bool          m_fill;
     QColor        m_fill_color;
+
+    bool          m_back_fill;
+    QColor        m_back_fill_color;
 };
 
 //------------------------------------------------------------------------------

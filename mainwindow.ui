@@ -117,15 +117,22 @@
         <number>0</number>
        </property>
        <item>
-        <layout class="QGridLayout" name="gridLayoutProp">
+        <layout class="QGridLayout" name="gridLayoutProp" rowstretch="0,0" columnstretch="0,1">
          <property name="leftMargin">
           <number>2</number>
          </property>
          <property name="rightMargin">
           <number>2</number>
          </property>
-         <item row="3" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelRow">
+           <property name="text">
+            <string>Ряды:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,0">
            <item>
             <widget class="QPushButton" name="btnColumnM">
              <property name="toolTip">
@@ -173,36 +180,8 @@
            </item>
           </layout>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="labeItem">
-           <property name="text">
-            <string>Ячейка:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="labelString">
-           <property name="text">
-            <string>Смещение:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="labelRow">
-           <property name="text">
-            <string>Количество рядов:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="labelColumn">
-           <property name="text">
-            <string>Количество петель:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0">
            <item>
             <widget class="QPushButton" name="btnRowM">
              <property name="toolTip">
@@ -259,50 +238,17 @@
            </item>
           </layout>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBoxGrid">
-           <property name="enabled">
-            <bool>false</bool>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelColumn">
+           <property name="text">
+            <string>Петли:</string>
            </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид строки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>Без смещения</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Со смещением</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="comboBoxItem">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вид элемента&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>Прямоугольник</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Квадрат</string>
-            </property>
-           </item>
           </widget>
          </item>
         </layout>
        </item>
        <item>
-        <spacer name="verticalSpacer_2">
+        <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -322,6 +268,33 @@
          <property name="rightMargin">
           <number>2</number>
          </property>
+         <item row="0" column="1">
+          <widget class="QLabel" name="labelGridColor">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Цвет сетки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelItem">
+           <property name="text">
+            <string>Цвет ячейки:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="btnItemColor">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Установка цвета ячейки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Изменить</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="labelGrid">
            <property name="text">
@@ -329,10 +302,10 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="labelGridColor">
+         <item row="1" column="1">
+          <widget class="QLabel" name="labelItemColor">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Цвет сетки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Цвет ячейки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string/>
@@ -349,28 +322,22 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="labelBack">
            <property name="text">
-            <string>Цвет ячейки:</string>
+            <string>Цвет фона</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="2" column="1">
           <widget class="QLabel" name="labelBackColor">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Цвет ячейки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
+         <item row="2" column="2">
           <widget class="QPushButton" name="btnBackColor">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Установка цвета ячейки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
            <property name="text">
             <string>Изменить</string>
            </property>
@@ -379,7 +346,7 @@
         </layout>
        </item>
        <item>
-        <spacer name="verticalSpacer_3">
+        <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -399,60 +366,6 @@
          <property name="rightMargin">
           <number>2</number>
          </property>
-         <item row="2" column="0">
-          <widget class="QGroupBox" name="groupBoxRulerH">
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="checkBoxRulerH">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Горизонтальная линейка</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioRulerH1">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Снизу</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioRulerH2">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Снизу/сверху</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item row="0" column="0">
           <widget class="QGroupBox" name="groupBoxGrid">
            <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -475,26 +388,6 @@
               </property>
               <property name="checked">
                <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBoxGridRuler">
-              <property name="text">
-               <string>Сетка линеек</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBoxSplit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Разделить</string>
               </property>
              </widget>
             </item>
@@ -561,6 +454,60 @@
            </layout>
           </widget>
          </item>
+         <item row="2" column="0">
+          <widget class="QGroupBox" name="groupBoxRulerH">
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="checkBoxRulerH">
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Горизонтальная линейка</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioRulerH1">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Снизу</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioRulerH2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Снизу/сверху</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
@@ -619,52 +566,52 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QSpinBox" name="spinCurrRow">
+        <widget class="QLabel" name="labelCurrRow">
          <property name="enabled">
           <bool>false</bool>
          </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
-           <width>80</width>
+           <width>70</width>
            <height>0</height>
           </size>
          </property>
-         <property name="buttonSymbols">
-          <enum>QAbstractSpinBox::NoButtons</enum>
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
          </property>
-         <property name="prefix">
-          <string>Ряд: </string>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>128</number>
+         <property name="text">
+          <string>TextLabel</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="spinCurrColumn">
+        <widget class="QLabel" name="labelCurrColumn">
          <property name="enabled">
           <bool>false</bool>
          </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
-           <width>80</width>
+           <width>70</width>
            <height>0</height>
           </size>
          </property>
-         <property name="buttonSymbols">
-          <enum>QAbstractSpinBox::NoButtons</enum>
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
          </property>
-         <property name="prefix">
-          <string>Петля: </string>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>128</number>
+         <property name="text">
+          <string>TextLabel</string>
          </property>
         </widget>
        </item>
@@ -710,6 +657,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
+    <addaction name="actionConvert"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
     <addaction name="separator"/>
@@ -816,6 +764,17 @@
    </property>
    <property name="shortcut">
     <string>Alt+F4</string>
+   </property>
+  </action>
+  <action name="actionConvert">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Конвертировать</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>

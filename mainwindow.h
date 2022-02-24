@@ -24,23 +24,27 @@ public:
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
     ~MainWindow();
 
+Q_SIGNALS:
+    void       changeGridColor(QColor);
+    void       changeBackColor(QColor);
+
 private Q_SLOTS:
     void       onCurrentPos(int, int);
     void       onChangeState();
-    void       onBtnChangeBackColor();
     void       onBtnChangeGridColor();
+    void       onBtnChangeItemColor();
+    void       onBtnChangeBackColor();
     void       onNewHandler();
     void       onOpenHandler();
     void       onSaveHandler();
     void       onSaveAsHandler();
+    void       onConvertHandler();
     void       onPrintHandler();
     void       onQuitHandler();
     void       onUndoHandler();
     void       onRedoHandler();
     void       onInfoHandler();
     void       onManHandler();
-    void       onChangeItem(int  index);
-    void       onChangeGrid(int  index);
 
     void       onUndoFilled(bool);
     void       onRedoFilled(bool);
@@ -54,8 +58,6 @@ private Q_SLOTS:
     void on_btnColumnP_clicked();
 
     void on_checkBoxGrid_stateChanged(int arg1);
-    void on_checkBoxGridRuler_stateChanged(int arg1);
-    void on_checkBoxSplit_stateChanged(int arg1);
 
     void       onDlgCreate();
 
@@ -71,7 +73,7 @@ private Q_SLOTS:
 private:
     Ui::MainWindow *ui;
 
-    void           initGuiElements(bool first_start = false);
+    void           initGuiElements();
 
     bool           askSaveIfChanged();
 
@@ -85,15 +87,14 @@ private:
 
     void           setPrgTitleChanged( bool  changed );
 
-    void           getBackColor( RGBQUAD  *a_pColor );
-    void           getGridColor( RGBQUAD  *a_pColor );
-
     void           setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor );
 
     bool           fileSave();
     bool           fileSaveAs();
+    bool           fileSaveConverted();
 
     bool           fileSaveToDev(const QString& filename);
+    bool           fileSaveConvertedToDev(const QString& filename);
 
     TNewDialog    *m_ptNewDialog;
 
@@ -112,8 +113,9 @@ private:
 
     void           guiBlock(bool block);
 
-    QColor         m_tBackColor;
     QColor         m_tGridColor;
+    QColor         m_tItemColor;
+    QColor         m_tBackColor;
 
     QColorDialog   m_tColorDialog;
 

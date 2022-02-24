@@ -20,6 +20,11 @@ TGridDraw::TGridDraw(QWidget *parent) : QWidget(parent) {
     m_vruler_size.setHeight(SHORT_SIDE);
     m_vruler_size.setWidth(SHORT_SIDE);
 
+    m_need_to_emit = true;
+
+    m_left_top_point = {0,0};
+    m_right_bottom_point = {0,0};
+
     // включаем событие mouse move без нажатия кнопок
     this->setMouseTracking(true);
 }
@@ -58,49 +63,75 @@ bool  TGridDraw::saveImage(const QString &fileName, const char *format) {
     return m_image.save(fileName, format);
 }
 
+bool  TGridDraw::saveImageConverted(const QString &fileName, const char *format) {
+    drawPicture(true);
+    return m_image_converted.save(fileName, format);
+}
+
 QImage*  TGridDraw::getImage() {
     drawPicture();
     return &m_image;
 }
 
-void  TGridDraw::drawPicture() {
-    assert(0 != m_pic_size.width());
-    assert(0 != m_pic_size.height());
-
+void  TGridDraw::drawPicture(bool converted) {
     // m_pic_size заполнится при рисовании на виджете
-    QImage image(m_pic_size, QImage::Format_ARGB32);
+    QSize pic_size = m_pic_size;
+
+    if(converted) pic_size = m_pic_size_converted;
+
+    QImage image(pic_size, QImage::Format_ARGB32);
     image.fill(Qt::white);
 
     QPainter painter(&image); // Создаём объект отрисовщика
 
     // рисуем в qimage
-    drawAll(&painter);
+    drawAll(&painter, converted);
 
-    m_image = image;
+    if(converted) {
+        m_image_converted = image;
+//        qDebug() << "1" << m_image_converted.width() << m_image_converted.height();
+    } else {
+        m_image = image;
+//        qDebug() << "2" << m_image.width() << m_image.height();
+    }
 }
 
-void  TGridDraw::drawAll(QPainter *painter) {
+void  TGridDraw::drawAll(QPainter *painter, bool converted) {
     int x_shift = 0;
     int y_shift = 0;
 
     int y_shift_start = 0;
+
+    // ставим шрифт
+    QFont myFont("MS Shell Dlg 2", 7);
+    painter->setFont(myFont);
 
     updateRulerSize();
 
     QSize  elem_size = getElemSize();
 
     // рулетка слева
-    if(glb().pGrid->getRulerV() && (keRulerTypeRightLeft == glb().pGrid->getRulerVtype())) {
+    if(converted) {
         int y = y_shift;
-        if(isOdd(glb().pGrid->getRows())) y -= elem_size.height()/2;
-        DrawVRuler(x_shift, y, keRowNumberEven, painter);
+        DrawVRulerAdv(x_shift, y, keRowNumberEven, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
         x_shift += 1; //add one
+    } else {
+        if(glb().pGrid->getRulerV() && (keRulerTypeRightLeft == glb().pGrid->getRulerVtype())) {
+            int y = y_shift;
+            if(keGridTypeShift == glb().tGridData.nGridType) {
+                if(isOdd(glb().pGrid->getRows())) y -= elem_size.height()/2;
+            }
+            DrawVRuler(x_shift, y, keRowNumberEven, painter);
+            // сдвигаемся на ширину вертикальной рулетки
+            x_shift += m_vruler_size.width();
+            x_shift += 1; //add one
+        }
     }
 
     // собственно табличка ячеек
-    DrawElements(x_shift, y_shift, painter);
+    DrawElements(x_shift, y_shift, painter, converted);
 
     // запоминаем левый верхний угол таблицы
     m_left_top_point.setX(x_shift);
@@ -108,9 +139,9 @@ void  TGridDraw::drawAll(QPainter *painter) {
 
     // сдвигаемся на высоту таблицы
     if(keGridTypeNormal == glb().tGridData.nGridType) {
-        y_shift += glb().pGrid->getRows()*elem_size.height();
+        y_shift += glb().pGrid->getRows()*elem_size.height() + glb().pGrid->getRows()-1;
     } else {
-        y_shift += glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2;
+        y_shift += glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2 + glb().pGrid->getRows()/2-1;
     }
 
     // запоминаем правый нижний угол таблицы
@@ -119,13 +150,13 @@ void  TGridDraw::drawAll(QPainter *painter) {
     y_shift += 1; //add one
 
     // рулетка снизу
-    if(glb().pGrid->getRulerH()) {
+    if(glb().pGrid->getRulerH() || converted) {
         DrawHRuler(x_shift, y_shift, keRowNumberAll, painter);
         y_shift += m_hruler_size.height();
     }
 
     // сдвигаемся на ширину таблицы
-    x_shift += glb().pGrid->getColumns()*elem_size.width();
+    x_shift += glb().pGrid->getColumns()*elem_size.width() + glb().pGrid->getColumns()-1;
 
     // запоминаем правый нижний угол таблицы
     m_right_bottom_point.setX(x_shift);
@@ -137,22 +168,45 @@ void  TGridDraw::drawAll(QPainter *painter) {
     }
 
     // рулетка справа
-    if(glb().pGrid->getRulerV()) {
-        if(keRulerTypeRightLeft == glb().pGrid->getRulerVtype())
-            DrawVRuler(x_shift, y_shift_start, keRowNumberOdd, painter);
-        else
-            DrawVRuler(x_shift, y_shift_start, keRowNumberAll, painter);
+    if(converted) {
+        DrawVRulerAdv(x_shift, y_shift_start, keRowNumberOdd, painter);
         // сдвигаемся на ширину вертикальной рулетки
         x_shift += m_vruler_size.width();
-        //x_shift += 1; //add one
+    } else {
+        if(glb().pGrid->getRulerV()) {
+            if(keRulerTypeRightLeft == glb().pGrid->getRulerVtype())
+                DrawVRuler(x_shift, y_shift_start, keRowNumberOdd, painter);
+            else
+                DrawVRuler(x_shift, y_shift_start, keRowNumberAll, painter);
+            // сдвигаемся на ширину вертикальной рулетки
+            x_shift += m_vruler_size.width();
+            //x_shift += 1; //add one
+        }
     }
 
     // плюс 1 т.к. координаты идут с нуля
     m_pic_size.setWidth(x_shift+1);
     m_pic_size.setHeight(y_shift+1);
 
-//    qDebug() << "pic" << m_pic_size.width() << m_pic_size.height();
-//    qDebug() << "wgt" << this->width() << this->height();
+    // --> считаем руками размер конвертированной картинки
+    int x_ = m_vruler_size.width();
+    x_ += 1;
+    x_ += glb().pGrid->getColumns()*elem_size.width() + glb().pGrid->getColumns()-1;
+    x_ += 1;
+    x_ += m_vruler_size.width();
+    x_ += 1;
+
+    int y_ = glb().pGrid->getRows()*elem_size.height()/2 + elem_size.height()/2 + glb().pGrid->getRows()/2-1;
+    y_ += 1;
+    y_ += m_hruler_size.height();
+    y_ += 1;
+
+    m_pic_size_converted.setWidth(x_);
+    m_pic_size_converted.setHeight(y_);
+    // <--
+
+    //    qDebug() << "pic" << m_pic_size.width() << m_pic_size.height();
+    //    qDebug() << "wgt" << this->width() << this->height();
 
     // если картинка стала больше видимой области по высоте
     if(m_pic_size.height() > this->height())
@@ -163,20 +217,18 @@ void  TGridDraw::drawAll(QPainter *painter) {
         this->setMinimumWidth(m_pic_size.width());
 }
 
-void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) {
-    int _x = 0;
-    int _y = 0;
+//------------------------------------------------------------------------------
 
-    _x += x;
+void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) {
+    int _x = x;
+    int _y = y;
 
     QSize  elem_size = getElemSize();
-    QPoint elem_shift = getElemShift();
 
     int num_for_draw = -1;
 
     for(int i = 0; i < glb().pGrid->getRows(); i++) {
         if(keGridTypeNormal == glb().tGridData.nGridType) {
-            _y = y + elem_shift.y() + i*elem_size.height();
             if(keRowNumberAll == number)
                 num_for_draw = glb().pGrid->getRows()-i;
             else if(keRowNumberOdd == number) {
@@ -191,11 +243,15 @@ void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) 
                     num_for_draw = -1;
             }
             DrawVRulerElement(num_for_draw, _x, _y, painter);
+            _y += elem_size.height()+1;
         } else if(keGridTypeShift == glb().tGridData.nGridType) {
             if(isEven(i)) {
-                _y = y + i*elem_shift.y();
                 if(keRowNumberAll == number) {
-                    num_for_draw = glb().pGrid->getRows()-i-1;
+                    if(isEven(glb().pGrid->getRows())) {
+                        num_for_draw = glb().pGrid->getRows()-i-1;
+                    } else {
+                        num_for_draw = glb().pGrid->getRows()-i;
+                    }
                 } else if(keRowNumberOdd == number) {
                     if(isEven(glb().pGrid->getRows())) {
                         num_for_draw = glb().pGrid->getRows()-i-1;
@@ -214,6 +270,7 @@ void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) 
                 if((0 <= _x) && (0 <= _y)) {
                     DrawVRulerElement(num_for_draw, _x, _y, painter);
                 }
+                _y += elem_size.height()+1;
             }
         }
     }
@@ -236,41 +293,88 @@ void  TGridDraw::DrawVRulerElement(int ind, int x, int y, QPainter *painter) {
     QString str;
     if(ind > 0) str = QString::number(ind);
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-    painter->drawText(x+(m_vruler_size.width()-5*str.length())/2, y+(3*elem_size.height())/4, str);
+    QFontMetrics fm(painter->font());
+    int shift_x = 0;
+    int shift_y = 0;
+    if(keItemTypeSquare == glb().tGridData.nItemType) {
+        shift_x = (m_vruler_size.width()-fm.horizontalAdvance(str))/2;
+        shift_y = (3*elem_size.height())/4;
+    } else {
+        shift_x = (m_vruler_size.width()-fm.horizontalAdvance(str))/2;
+        shift_y = (5*elem_size.height())/8;
+    }
+    painter->drawText(x+shift_x, y+shift_y, str);
 }
 
-void  TGridDraw::DrawHRuler(int x, int y, ERowNumber number, QPainter *painter) {
-    int _x = 0;
-    int _y = 0;
+//------------------------------------------------------------------------------
 
-    _y += y;
+void  TGridDraw::DrawVRulerAdv(int x, int y, ERowNumber number, QPainter *painter) {
+    int _x = x;
+    int _y = y;
 
     QSize  elem_size = getElemSize();
-//    QPoint elem_shift = getElemShift();
 
     int num_for_draw = -1;
 
-    for(int i = 0; i < glb().pGrid->getColumns(); i++) {
-        if(keGridTypeNormal == glb().tGridData.nGridType) {
-            _x = x + i*elem_size.width();
-            if(keRowNumberAll == number)
-                num_for_draw = glb().pGrid->getColumns()-i;
-            else if(keRowNumberOdd == number) {
-                if((glb().pGrid->getColumns()-i)%2)
-                    num_for_draw = glb().pGrid->getColumns()-i;
-                else
-                    num_for_draw = -1;
+    for(int i = 0; i < glb().pGrid->getRows(); i++) {
+        if(isEven(i)) {
+            if(keRowNumberOdd == number) {
+                if(isEven(glb().pGrid->getRows())) {
+                    num_for_draw = glb().pGrid->getRows()-i-1;
+                } else {
+                    num_for_draw = glb().pGrid->getRows()-i;
+                }
             } else if(keRowNumberEven == number) {
-                if(!((glb().pGrid->getColumns()-i)%2))
-                    num_for_draw = glb().pGrid->getColumns()-i;
-                else
-                    num_for_draw = -1;
+                if(isEven(glb().pGrid->getRows())) {
+                    num_for_draw = glb().pGrid->getRows()-i;
+                } else {
+                    num_for_draw = glb().pGrid->getRows()-i+1;
+                }
             }
-            DrawHRulerElement(num_for_draw, _x, _y, painter);
-        } else if(keGridTypeShift == glb().tGridData.nGridType) {
-            _x = x + i*elem_size.width();
-            DrawHRulerElement(glb().pGrid->getColumns()-i, _x, _y, painter);
+
+            // рисуем только если влезаем в widget
+            if((0 <= _x) && (0 <= _y)) {
+                DrawVRulerAdvElement(num_for_draw, _x, _y, painter);
+            }
+            _y += elem_size.height()+1;
         }
+    }
+}
+
+void  TGridDraw::DrawVRulerAdvElement(int ind, int x, int y, QPainter *painter) {
+    QSize  elem_size = getElemSize();
+
+    painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+    painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
+
+    // пустой квадрат
+    painter->drawRect(x, y, m_vruler_size.width(), elem_size.height()/2);
+
+    // квадрат с номером
+    painter->drawRect(x, y+elem_size.height()/2, m_vruler_size.width(), elem_size.height()/2);
+
+    QString str;
+    if(ind > 0) str = QString::number(ind);
+    painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
+    QFontMetrics fm(painter->font());
+    int shift_x = (m_vruler_size.width()-fm.horizontalAdvance(str))/2;
+    int shift_y = elem_size.height()/2+(3*elem_size.height()/2)/4;
+    painter->drawText(x+shift_x, y+shift_y, str);
+}
+
+//------------------------------------------------------------------------------
+
+void  TGridDraw::DrawHRuler(int x, int y, ERowNumber number, QPainter *painter) {
+    int _x = x;
+    int _y = y;
+
+    Q_UNUSED(number)
+
+    QSize  elem_size = getElemSize();
+
+    for(int i = 0; i < glb().pGrid->getColumns(); i++) {
+        DrawHRulerElement(i+1, _x, _y, painter);
+        _x += elem_size.width()+1;
     }
 }
 
@@ -291,71 +395,92 @@ void  TGridDraw::DrawHRulerElement(int ind, int x, int y, QPainter *painter) {
     QString str;
     if(ind > 0) str = QString::number(ind);
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-    painter->drawText(x+(m_hruler_size.width()-5*str.length())/2, y+(3*m_hruler_size.height())/4, str);
+    QFontMetrics fm(painter->font());
+    painter->drawText(x+(m_hruler_size.width()-fm.horizontalAdvance(str))/2, y+(3*m_hruler_size.height())/4, str);
 }
 
-void  TGridDraw::DrawElements(int x, int y, QPainter *painter) {
-    int _x = 0;
-    int _y = 0;
+//------------------------------------------------------------------------------
+
+void  TGridDraw::DrawElements(int x, int y, QPainter *painter, bool converted) {
+    int _x = x;
+    int _y = y;
 
     QSize  elem_size = getElemSize();
     QPoint elem_shift = getElemShift();
 
+    int shift = 0;
+
     for(int i = 0; i < glb().pGrid->getRows(); i++) {
         for(int j = 0; j < glb().pGrid->getColumns(); j++) {
             if(keGridTypeNormal == glb().tGridData.nGridType) {
-                _x = x + elem_shift.x() + j*elem_size.width();
-                _y = y + elem_shift.y() + i*elem_size.height();
-                DrawElement(i, j, _x, _y, painter);
+                DrawElement(i, j, _x, _y, painter, converted);
+                _x += elem_size.width()+1;
             } else if(keGridTypeShift == glb().tGridData.nGridType) {
-                if(i%2) {
-                    if(j%2) {
+                if(isEven(i)) {
+                    if(isEven(j)) {
                         // четная строка, четный столбец
-                        _x = x + j*elem_size.width();
-                        _y = y + i*elem_shift.y();
-                        DrawElement(i, j, _x, _y, painter);
+                        _x = x + j*elem_size.width() + j;
+                        _y = y + i*elem_shift.y() + shift;
+                        DrawElement(i, j, _x, _y, painter, converted);
                     }
                 } else {
-                    if(!(j%2)) {
+                    if(isOdd(j)) {
                         // нечетная строка, нечетный столбец
-                        _x = x + j*elem_size.width();
-                        _y = y + i*elem_shift.y();
-                        DrawElement(i, j, _x, _y, painter);
+                        _x = x + j*elem_size.width() + j;
+                        _y = y + i*elem_shift.y() + shift - 1;
+                        DrawElement(i, j, _x, _y, painter, converted);
                     }
                 }
             }
         }
+
+        if(keGridTypeNormal == glb().tGridData.nGridType) {
+            _x = x;
+            _y += elem_size.height()+1;
+        } else if(keGridTypeShift == glb().tGridData.nGridType) {
+            if(isEven(i)) shift += 1;
+        }
     }
 }
 
-void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
+void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter, bool converted) {
     QSize  elem_size = getElemSize();
 
-    // если border то ставим цвет, иначе цвет как фон
-    if(glb().pGrid->getBorder()) {
-        painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
-    } else {
-        if(glb().pGrid->getElement(i,j).getFill())
-            painter->setPen(QPen(glb().pGrid->getColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
-        else
-            painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
+    if(!converted) {
+        // если border то ставим цвет, иначе цвет как фон
+        if(glb().pGrid->getBorder()) {
+            painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+        } else {
+            if(glb().pGrid->getElement(i,j).getFill())
+                painter->setPen(QPen(glb().pGrid->getColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
+            else if(glb().pGrid->getElement(i,j).getBackFill())
+                painter->setPen(QPen(glb().pGrid->getBackColor(i, j), 1, Qt::SolidLine, Qt::FlatCap));
+            else
+                painter->setPen(QPen(Qt::white, 1, Qt::SolidLine, Qt::FlatCap));
+        }
     }
 
-    if((keGridTypeShift == glb().tGridData.nGridType) && glb().pGrid->getSplit()) {
+    if((keGridTypeShift == glb().tGridData.nGridType) && converted) {
         // белая часть
         painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
+        painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
         painter->drawRect(x, y, elem_size.width(), elem_size.height()/2);
 
         // цветная часть
-        if(glb().pGrid->getElement(i,j).getFill())
+        if(glb().pGrid->getElement(i,j).getFill()) {
             painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
-        else
-            painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+            painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+        } else {
+            painter->setBrush(QBrush(glb().pGrid->getBackColor(i, j), Qt::SolidPattern));
+            painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+        }
 
         painter->drawRect(x, y+elem_size.height()/2, elem_size.width(), elem_size.height()/2);
     } else {
         if(glb().pGrid->getElement(i,j).getFill())
             painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
+        else if(glb().pGrid->getElement(i,j).getBackFill())
+            painter->setBrush(QBrush(glb().pGrid->getBackColor(i, j), Qt::SolidPattern));
         else
             painter->setBrush(QBrush(Qt::white, Qt::SolidPattern));
 
@@ -363,8 +488,26 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter) {
     }
 }
 
+//------------------------------------------------------------------------------
+
+void  TGridDraw::onChangeGridColor(QColor color) {
+    Q_UNUSED(color)
+    update();
+}
+
+void  TGridDraw::onChangeBackColor(QColor color) {
+    glb().pGrid->setBackColor(color);
+    update();
+}
+
+//------------------------------------------------------------------------------
+
 void  TGridDraw::mousePressEvent(QMouseEvent *event) {
     if(event->button() == Qt::LeftButton) {
+        // только если курсор на таблице
+        if((0 == m_curr_row) || (0 == m_curr_column))
+            return;
+
         // по левой кнопке красим ячейку
         int row = glb().pGrid->getRows() - m_curr_row;
         int col = glb().pGrid->getColumns() - m_curr_column;
@@ -379,6 +522,10 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
 
         repaint();
     } else if(event->button() == Qt::RightButton) {
+        // только если курсор на таблице
+        if((0 == m_curr_row) || (0 == m_curr_column))
+            return;
+
         // по правой кнопке ничего не делаем
     }
 }
@@ -386,14 +533,51 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
 void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
     Q_UNUSED(event)
 
-    // если курсор вне картинки
-    if((event->pos().x()+1 > m_pic_size.width()) || (event->pos().y()+1 > m_pic_size.height())) {
+    int column = calcColumnNum(event->pos().x());
+    int y_shift_top = 0;
+    int y_shift_bottom = 0;
+    QPoint elem_shift = getElemShift();
+
+    // если четный столбец (отсчет слева)
+    if(isEven(glb().pGrid->getColumns()-column+1)) {
+        if(isEven(glb().pGrid->getRows())) {
+            // четное количество рядов
+            y_shift_top = elem_shift.y();
+        } else {
+            // нечетное количество рядов
+            y_shift_top = elem_shift.y();
+            y_shift_bottom = elem_shift.y();
+        }
+    } else {
+        if(isEven(glb().pGrid->getRows())) {
+            // четное количество рядов
+            y_shift_bottom = elem_shift.y();
+        }
+    }
+
+    // если курсор вне таблицы
+    if((event->pos().x() < m_left_top_point.x()) || (event->pos().y() < (m_left_top_point.y()+y_shift_top)) ||
+       (event->pos().x() > m_right_bottom_point.x()) || (event->pos().y() > (m_right_bottom_point.y()-y_shift_bottom))) {
+        if(m_need_to_emit) {
+            m_need_to_emit = false;
+
+            m_curr_row = 0;
+            m_curr_column = 0;
+
+            m_prev_row = 0;
+            m_prev_column = 0;
+
+            Q_EMIT(currentPos(-1, -1));
+        }
         return;
     }
 
+    m_need_to_emit = true;
+
     // расчет положения
     // сначала считаем петли - они не зависят от смещения рядов
-    m_curr_column = calcColumnNum(event->pos().x());
+    //m_curr_column = calcColumnNum(event->pos().x());
+    m_curr_column = column;
     m_curr_row = calcRowNum(event->pos().y());
 
     bool need_to_emit = false;
@@ -410,18 +594,10 @@ void  TGridDraw::mouseMoveEvent(QMouseEvent *event) {
 
     // если положение изменилось - отправляем сигнал
     if(need_to_emit) {
-        Q_EMIT(currentPos(m_curr_row, m_curr_column));
+        Q_EMIT(currentPos(m_curr_row, (glb().pGrid->getColumns()-m_curr_column+1)));
 
-//        qDebug() << "row" << m_curr_row << "column" << m_curr_column;
+        //qDebug() << "row" << m_curr_row << "column" << (glb().pGrid->getColumns()-m_curr_column+1);
     }
-
-//    if(event->button() == Qt::LeftButton) {
-//        qDebug() << "move with left; row" << m_curr_row << "column" << m_curr_column;
-//    }
-
-//    if(event->button() == Qt::RightButton) {
-//        qDebug() << "move with left; row" << m_curr_row << "column" << m_curr_column;
-//    }
 }
 
 void  TGridDraw::resizeEvent(QResizeEvent *event)
@@ -458,7 +634,7 @@ int  TGridDraw::calcRowNum(int y) {
             // нечетное кол-во петель
             if(isOdd(getCurrColumn())) {
                 // находимся на нечетной петле
-                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/(elem_size.height()+1);
 
                 if(isEven(glb().pGrid->getRows())) {
                     if(isOdd(ind)) ind += 1;
@@ -468,7 +644,7 @@ int  TGridDraw::calcRowNum(int y) {
             } else {
                 // находимся на четной петле
                 shift = elem_size.height()/2;
-                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/(elem_size.height()+1);
 
                 if(isEven(glb().pGrid->getRows())) {
                     if(isEven(ind)) ind -= 1;
@@ -481,7 +657,7 @@ int  TGridDraw::calcRowNum(int y) {
             if(isOdd(getCurrColumn())) {
                 // находимся на нечетной петле
                 shift = elem_size.height()/2;
-                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/(elem_size.height()+1);
 
                 if(isEven(glb().pGrid->getRows())) {
                     if(isEven(ind)) ind -= 1;
@@ -490,7 +666,7 @@ int  TGridDraw::calcRowNum(int y) {
                 }
             } else {
                 // находимся на четной петле
-                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/elem_size.height();
+                ind = glb().pGrid->getRows() - 2*(y - m_left_top_point.y() - shift)/(elem_size.height()+1);
 
                 if(isEven(glb().pGrid->getRows())) {
                     if(isOdd(ind)) ind += 1;
@@ -500,7 +676,7 @@ int  TGridDraw::calcRowNum(int y) {
             }
         }
     } else {
-        ind = glb().pGrid->getRows() - (y - m_left_top_point.y())/elem_size.height();
+        ind = glb().pGrid->getRows() - (y - m_left_top_point.y())/(elem_size.height()+1);
     }
 
     if(ind < 1) ind = 1;
@@ -514,7 +690,10 @@ int  TGridDraw::calcColumnNum(int x) {
 
     QSize  elem_size = getElemSize();
 
-    int ind = glb().pGrid->getColumns() - (x - m_left_top_point.x())/elem_size.width();
+    int ind = glb().pGrid->getColumns() - (x - m_left_top_point.x())/(elem_size.width()+1);
+
+//    qDebug() << "col 1" << glb().pGrid->getColumns() << ind;
+//    qDebug() << "col 2" << x << m_left_top_point.x();
 
     if(ind < 1) ind = 1;
     if(ind > glb().pGrid->getColumns()) ind = glb().pGrid->getColumns();
