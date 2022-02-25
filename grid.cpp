@@ -56,6 +56,9 @@ void  TGrid::initCells() {
     // инициализация ячеек
     for(int i = 0; i < m_row_count; i++) {
         for(int j = 0; j < m_column_count; j++) {
+            m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setBackFill(false);
+            m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setBackFillColor(Qt::white);
+
             m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setFill(false);
             m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setFillColor(Qt::white);
         }
@@ -65,6 +68,30 @@ void  TGrid::initCells() {
     m_stUndoRedo.stInit();
 
     reportUndoRedoState();
+}
+
+void  TGrid::initCells(const t_grid_data& grid) {
+    // очищаем все ячейки
+    initCells();
+
+    // заполняем нужные
+    for(int i = 0; i < grid.row; i++) {
+        for(int j = 0; j < grid.column; j++) {
+            if(grid.is_filled) {
+                m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setBackFill(true);
+                m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setBackFillColor(convFromColor(grid.t_back_color));
+            }
+            QColor col_white = QColor(Qt::white);
+            QColor col_fill = convFromColor(*(grid.grid+i*grid.column+j));
+            if(col_white == col_fill) {
+                m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setFill(false);
+                m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setFillColor(Qt::white);
+            } else {
+                m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setFill(true);
+                m_grid[static_cast<unsigned>(i)][static_cast<unsigned>(j)].setFillColor(col_fill);
+            }
+        }
+    }
 }
 
 //------------------------------------------------------------------------------

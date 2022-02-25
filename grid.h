@@ -7,6 +7,7 @@
 
 #include "element.h"
 #include "undostack.h"
+#include "gridsave.h"
 
 //------------------------------------------------------------------------------
 
@@ -72,6 +73,7 @@ public:
     const TElement& getElement(int row, int column) const;
 
     void          initCells();
+    void          initCells(const t_grid_data& grid);
 
     bool          doUndo();
     bool          doRedo();

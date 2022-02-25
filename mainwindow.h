@@ -9,6 +9,7 @@
 
 #include "global.h"
 #include "newdialog.h"
+#include "gridsave.h"
 
 //------------------------------------------------------------------------------
 
@@ -74,6 +75,9 @@ private:
     Ui::MainWindow *ui;
 
     void           initGuiElements();
+
+    void           initOpenGuiElements(const t_grid_data& grid);
+    void           onOpenCreate(const t_grid_data& grid);
 
     bool           askSaveIfChanged();
 

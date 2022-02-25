@@ -146,6 +146,47 @@ void  MainWindow::initGuiElements() {
     ui->radioRulerV1->setChecked(true);
 }
 
+void  MainWindow::initOpenGuiElements(const t_grid_data& grid) {
+    glb().tGridData.nRow = grid.row;
+    glb().tGridData.nColumn = grid.column;
+
+    glb().tGridData.nItemType = grid.item_type;
+    glb().tGridData.nGridType = grid.grid_type;
+
+    m_uRow = static_cast<unsigned>(glb().tGridData.nRow);
+    m_uColumn = static_cast<unsigned>(glb().tGridData.nColumn);
+
+    m_uCurrRow = 1;
+    m_uCurrColumn = 1;
+
+    m_uItemType = static_cast<unsigned>(glb().tGridData.nItemType);
+    m_uGridType = static_cast<unsigned>(glb().tGridData.nGridType);
+
+    ui->spinRow->setValue(static_cast<int>(m_uRow));
+    ui->spinColumn->setValue(static_cast<int>(m_uColumn));
+
+    ui->labelCurrRow->setText("Ряд:");
+    ui->labelCurrColumn->setText("Петля:");
+
+    // цвет сетки
+    convFromColor(grid.t_grid_color, m_tGridColor);
+    convFromColor(grid.t_grid_color, glb().tGridColor);
+    setLabelBackColor(ui->labelGridColor, &m_tGridColor);
+
+    // цвет элемента
+    m_tItemColor = Qt::white;
+    glb().tItemColor = Qt::white;
+    setLabelBackColor(ui->labelItemColor, &m_tItemColor);
+
+    // цвет фона
+    convFromColor(grid.t_back_color, m_tBackColor);
+    convFromColor(grid.t_back_color, glb().tBackColor);
+    setLabelBackColor(ui->labelBackColor, &m_tBackColor);
+
+    ui->radioRulerH1->setChecked(true);
+    ui->radioRulerV1->setChecked(true);
+}
+
 // изначально часть gui заблокировано
 // снимаем блокировку после создания новой таблички (Ctrl+N)s
 void  MainWindow::guiBlock(bool block) {
@@ -299,13 +340,118 @@ bool  MainWindow::fileSaveConverted() {
 
 //------------------------------------------------------------------------------
 
+// перегрузка для t_color
+inline QDataStream &operator <<(QDataStream &stream, const t_color &color) {
+    stream << color.red;
+    stream << color.green;
+    stream << color.blue;
+
+    return stream;
+}
+
+inline QDataStream &operator >>(QDataStream &stream, t_color &color) {
+    stream >> color.red;
+    stream >> color.green;
+    stream >> color.blue;
+
+    return stream;
+}
+
+// перегрузка для t_data_grid
+inline QDataStream &operator <<(QDataStream &stream, const t_grid_data &grid) {
+    stream << grid.id[0];
+    stream << grid.id[1];
+    stream << grid.id[2];
+    stream << grid.item_type;
+    stream << grid.grid_type;
+    stream << grid.row;
+    stream << grid.column;
+    stream << grid.is_filled;
+    stream << grid.t_grid_color;
+    stream << grid.t_back_color;
+
+    for(int i = 0; i < grid.row; i++) {
+        for(int j = 0; j < grid.column; j++) {
+            stream << *(grid.grid+i*grid.column+j);
+        }
+    }
+
+    return stream;
+}
+
+inline QDataStream &operator >>(QDataStream &stream, t_grid_data &grid) {
+    stream >> grid.id[0];
+    stream >> grid.id[1];
+    stream >> grid.id[2];
+    stream >> grid.item_type;
+    stream >> grid.grid_type;
+    stream >> grid.row;
+    stream >> grid.column;
+    stream >> grid.is_filled;
+    stream >> grid.t_grid_color;
+    stream >> grid.t_back_color;
+
+    // берем память под таблицу
+    grid.grid = new t_color[grid.row*grid.column]();
+
+    for(int i = 0; i < grid.row; i++) {
+        for(int j = 0; j < grid.column; j++) {
+            stream >> *(grid.grid+i*grid.column+j);
+        }
+    }
+
+    return stream;
+}
+
+void  MainWindow::onOpenCreate(const t_grid_data& grid) {
+    m_zPrgTitle.clear();
+
+    m_bPrgTitleChanged = false;
+
+    m_zPrgFileName.clear();
+
+    initOpenGuiElements(grid);
+
+    glb().pGrid->initCells(grid);
+
+    ui->tGridDraw->setVisible(true);
+
+    // сформировано ли изображение
+    m_bImageReady = true;
+
+    guiBlock(false);
+
+    // заголовок формы
+    setPrgTitleText();
+
+    // если сетка со смещением и из прямоугольников, то ее можно конвертировать
+    if((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)) {
+        ui->actionConvert->setEnabled(true);
+    }
+}
+
 bool  MainWindow::fileOpenGridFromDev(const QString& filename) {
     bool result = false;
 
-    //result = ui->tGridDraw->saveImageConverted(filename, format.toStdString().c_str());
+    QFile 		fp(filename);
+
+    result = fp.open(QFile::ReadOnly);
+
+    QDataStream out(&fp);
+
+    out.setVersion(QDataStream::Qt_5_12);
+
+    t_grid_data filedata;
+
+    out >> filedata;
+
+    fp.close();
 
     if(!result) {
         qDebug() << "Ошибка чтения из файла";
+    } else {
+        onOpenCreate(filedata);
+        delete [] filedata.grid;
     }
 
     return result;
@@ -334,19 +480,6 @@ bool  MainWindow::fileOpenGrid() {
     return result;
 }
 
-inline QDataStream &operator <<(QDataStream &stream, const t_grid_data &grid)
-{
-    stream << grid.id1;
-    stream << grid.id2;
-    stream << grid.item_type;
-    stream << grid.grid_type;
-    stream << grid.row;
-    stream << grid.column;
-    stream << grid.is_filled;
-
-    return stream;
-}
-
 bool  MainWindow::fileSaveGrid() {
     std::string str;
     QFile 		fp("d:/out.pdg");
@@ -361,24 +494,37 @@ bool  MainWindow::fileSaveGrid() {
 
     t_grid_data filedata;
 
-    filedata.id1 = 'P';
-    filedata.id2 = 'D';
+    filedata.id[0] = static_cast<uint8_t>('P');
+    filedata.id[1] = static_cast<uint8_t>('D');
+    filedata.id[2] = static_cast<uint8_t>('G');
     filedata.item_type = static_cast<uint8_t>(m_uItemType);
     filedata.grid_type = static_cast<uint8_t>(m_uGridType);
 
     filedata.row = static_cast<uint8_t>(m_uRow);
     filedata.column = static_cast<uint8_t>(m_uColumn);
 
-    filedata.is_filled = m_tBackColor == Qt::white ? false : true;
+    filedata.is_filled = static_cast<uint8_t>(m_tBackColor == Qt::white ? false : true);
 
-//    t_color   t_grid_color;
-//    t_color   t_back_color;
+    convToColor(&filedata.t_grid_color, m_tGridColor);
+    convToColor(&filedata.t_back_color, m_tBackColor);
+
+    // берем память под таблицу
+    filedata.grid = new t_color[filedata.row*filedata.column]();
+
+    for(int i = 0; i < filedata.row; i++) {
+        for(int j = 0; j < filedata.column; j++) {
+            convToColor(filedata.grid+i*filedata.column+j, m_pGrid->getElement(i, j).getFillColor());
+        }
+    }
 
     // пишем в файл
     out.setVersion(QDataStream::Qt_5_12);
     out << filedata;
     fp.flush();
     fp.close();
+
+    // возвращаем память
+    delete [] filedata.grid;
 
     return true;
 }

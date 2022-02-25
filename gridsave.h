@@ -2,8 +2,17 @@
 #define TGRIDSAVE_H
 
 #include <QObject>
+#include <QColor>
 
 //------------------------------------------------------------------------------
+
+class TGridSave : QObject
+{
+    Q_OBJECT
+
+public:
+    TGridSave();
+};
 
 #pragma pack(push, 1)
 
@@ -13,9 +22,13 @@ struct t_color {
     uint8_t blue;
 };
 
+struct t_cell {
+    uint8_t count;
+    t_color color;
+};
+
 struct t_grid_data {
-    char      id1;
-    char      id2;
+    uint8_t   id[3];
 
     uint8_t   item_type;
     uint8_t   grid_type;
@@ -23,7 +36,7 @@ struct t_grid_data {
     uint8_t   row;
     uint8_t   column;
 
-    bool      is_filled;
+    uint8_t   is_filled;
 
     t_color   t_grid_color;
     t_color   t_back_color;
@@ -33,13 +46,10 @@ struct t_grid_data {
 
 #pragma pack(pop)
 
-class TGridSave : QObject
-{
-    Q_OBJECT
+void convToColor(t_color *color, const QColor& qcolor);
 
-public:
-    TGridSave();
-};
+void convFromColor(const t_color& color, QColor& qcolor);
+QColor convFromColor(const t_color& color);
 
 #endif // TGRIDSAVE_H
 
