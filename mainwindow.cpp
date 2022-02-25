@@ -244,14 +244,11 @@ void  MainWindow::setPrgTitleChanged( bool  changed )
 
 //------------------------------------------------------------------------------
 
-bool  MainWindow::fileSaveToDev(const QString& filename) {
+bool  MainWindow::fileSavePictToDev(const QString& filename) {
     bool result;
     QString  format = filename.right(3).toUpper();
 
     result = ui->tGridDraw->saveImage(filename, format.toStdString().c_str());
-
-    //TODO пока пишем прямо так
-    fileSaveGrid();
 
     resetStateChanged();
 
@@ -279,7 +276,10 @@ bool  MainWindow::fileSave() {
     bool result = false;
 
     if(!m_zPrgFileName.isEmpty()) {
-        result = fileSaveToDev(m_zPrgFileName);
+        if("pdg" == m_zPrgFileName.right(3))
+            result = fileSaveGridToDev(m_zPrgFileName); // сохраняем во внутреннем формате
+        else
+            result = fileSavePictToDev(m_zPrgFileName); // сохраняем изображение
     }
 
     return result;
@@ -298,13 +298,17 @@ bool  MainWindow::fileSaveAs() {
     QString dir(pDir->path());
 
     // формируем путь и имя файла через диалог
-    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)");
+    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "PatterDraw Grid (*.pdg);;PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)");
 
     QApplication::processEvents();
 
     if(!filename.isEmpty()) {
         m_zPrgFileName = filename;
-        result = fileSaveToDev(m_zPrgFileName);
+
+        if("pdg" == filename.right(3))
+            result = fileSaveGridToDev(m_zPrgFileName); // сохраняем во внутреннем формате
+        else
+            result = fileSavePictToDev(m_zPrgFileName); // сохраняем изображение
     } else {
         qDebug() << "no filename";
     }
@@ -482,9 +486,9 @@ bool  MainWindow::fileOpenGrid() {
     return result;
 }
 
-bool  MainWindow::fileSaveGrid() {
+bool  MainWindow::fileSaveGridToDev(const QString& filename) {
     std::string str;
-    QFile 		fp("d:/out.pdg");
+    QFile 		fp(filename);
     QDataStream out(&fp);
 
     // открываем файл на запись
@@ -527,6 +531,8 @@ bool  MainWindow::fileSaveGrid() {
 
     // возвращаем память
     delete [] filedata.grid;
+
+    resetStateChanged();
 
     return true;
 }

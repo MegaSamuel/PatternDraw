@@ -94,14 +94,14 @@ private:
     void           setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor );
 
     bool           fileOpenGrid();
-    bool           fileSaveGrid();
+    bool           fileSaveGridToDev(const QString& filename);
     bool           fileOpenGridFromDev(const QString& filename);
 
     bool           fileSave();
     bool           fileSaveAs();
     bool           fileSaveConverted();
 
-    bool           fileSaveToDev(const QString& filename);
+    bool           fileSavePictToDev(const QString& filename);
     bool           fileSaveConvertedToDev(const QString& filename);
 
     void           writeSettings();
