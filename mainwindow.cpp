@@ -447,6 +447,8 @@ bool  MainWindow::fileOpenGridFromDev(const QString& filename) {
 
     fp.close();
 
+    //TODO необходимо проверить формат файла (первые три байта должны быть "PDG")
+
     if(!result) {
         qDebug() << "Ошибка чтения из файла";
     } else {

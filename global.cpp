@@ -20,6 +20,7 @@ TGlobal::TGlobal()
 {
     tItemColor = Qt::white;
     tGridColor = Qt::gray;
+    tBackColor = Qt::white;
 
     pGrid = nullptr;
 }
