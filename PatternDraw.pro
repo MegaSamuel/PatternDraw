@@ -32,6 +32,7 @@ SOURCES += \
         global.cpp \
         grid.cpp \
         griddraw.cpp \
+        gridsave.cpp \
         main.cpp \
         mainwindow.cpp \
         newdialog.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
         global.h \
         grid.h \
         griddraw.h \
+        gridsave.h \
         mainwindow.h \
         newdialog.h \
         undostack.h \

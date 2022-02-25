@@ -9,6 +9,7 @@
 
 #include "global.h"
 #include "newdialog.h"
+#include "gridsave.h"
 
 //------------------------------------------------------------------------------
 
@@ -75,6 +76,9 @@ private:
 
     void           initGuiElements();
 
+    void           initOpenGuiElements(const t_grid_data& grid);
+    void           onOpenCreate(const t_grid_data& grid);
+
     bool           askSaveIfChanged();
 
     QString        m_zPrgName;
@@ -89,12 +93,19 @@ private:
 
     void           setLabelBackColor( QLabel  *a_pLabel, QColor  *a_pColor );
 
+    bool           fileOpenGrid();
+    bool           fileSaveGridToDev(const QString& filename);
+    bool           fileOpenGridFromDev(const QString& filename);
+
     bool           fileSave();
     bool           fileSaveAs();
     bool           fileSaveConverted();
 
-    bool           fileSaveToDev(const QString& filename);
+    bool           fileSavePictToDev(const QString& filename);
     bool           fileSaveConvertedToDev(const QString& filename);
+
+    void           writeSettings();
+    void           readSettings();
 
     TNewDialog    *m_ptNewDialog;
 
