@@ -636,8 +636,6 @@ int TGridDraw::getCurrColumn() const {
 }
 
 int  TGridDraw::calcRowNum(int y) {
-    assert(0 != m_right_bottom_point.y());
-
     QSize  elem_size = getElemSize();
 
     int ind = 0;
@@ -700,8 +698,6 @@ int  TGridDraw::calcRowNum(int y) {
 }
 
 int  TGridDraw::calcColumnNum(int x) {
-    assert(0 != m_right_bottom_point.x());
-
     QSize  elem_size = getElemSize();
 
     int ind = glb().pGrid->getColumns() - (x - m_left_top_point.x())/(elem_size.width()+1);

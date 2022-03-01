@@ -319,6 +319,9 @@ bool  MainWindow::fileSaveAs() {
 
         // обновляем конфиг
         m_ptConfig->writeSettings();
+
+        // заголовок формы
+        setPrgTitleText(filename);
     } else {
         qDebug() << "no filename";
     }
@@ -425,7 +428,7 @@ inline QDataStream &operator >>(QDataStream &stream, t_grid_data &grid) {
     return stream;
 }
 
-void  MainWindow::onOpenCreate(const t_grid_data& grid) {
+void  MainWindow::onOpenCreate(const t_grid_data& grid, const QString& filename) {
     m_zPrgTitle.clear();
 
     m_bPrgTitleChanged = false;
@@ -444,7 +447,7 @@ void  MainWindow::onOpenCreate(const t_grid_data& grid) {
     guiBlock(false);
 
     // заголовок формы
-    setPrgTitleText();
+    setPrgTitleText(filename);
 
     // если сетка со смещением и из прямоугольников, то ее можно конвертировать
     if((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)) {
@@ -474,7 +477,7 @@ bool  MainWindow::fileOpenGridFromDev(const QString& filename) {
     if(!result) {
         qDebug() << "Ошибка чтения из файла";
     } else {
-        onOpenCreate(filedata);
+        onOpenCreate(filedata, filename);
         delete [] filedata.grid;
     }
 

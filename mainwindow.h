@@ -78,7 +78,7 @@ private:
     void           initGuiElements();
 
     void           initOpenGuiElements(const t_grid_data& grid);
-    void           onOpenCreate(const t_grid_data& grid);
+    void           onOpenCreate(const t_grid_data& grid, const QString& filename);
 
     bool           askSaveIfChanged();
 
