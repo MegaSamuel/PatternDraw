@@ -468,10 +468,16 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter, bool
 
         // цветная часть
         if(glb().pGrid->getElement(i,j).getFill()) {
+            // ячейка закрашена
             painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
             painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
-        } else {
+        } else if(glb().pGrid->getElement(i,j).getBackFill()) {
+            // ячейка не закрашена, но есть фон
             painter->setBrush(QBrush(glb().pGrid->getBackColor(i, j), Qt::SolidPattern));
+            painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+        } else{
+            // ячейка не закрашена, фон не установлен
+            painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
             painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
         }
 
