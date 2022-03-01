@@ -153,6 +153,7 @@ void  TGridDraw::drawAll(QPainter *painter, bool converted) {
     if(glb().pGrid->getRulerH() || converted) {
         DrawHRuler(x_shift, y_shift, keRowNumberAll, painter);
         y_shift += m_hruler_size.height();
+        y_shift += 1;
     }
 
     // сдвигаемся на ширину таблицы
@@ -180,13 +181,12 @@ void  TGridDraw::drawAll(QPainter *painter, bool converted) {
                 DrawVRuler(x_shift, y_shift_start, keRowNumberAll, painter);
             // сдвигаемся на ширину вертикальной рулетки
             x_shift += m_vruler_size.width();
-            //x_shift += 1; //add one
+            x_shift += 1;
         }
     }
 
-    // плюс 1 т.к. координаты идут с нуля
-    m_pic_size.setWidth(x_shift+1);
-    m_pic_size.setHeight(y_shift+1);
+    m_pic_size.setWidth(x_shift);
+    m_pic_size.setHeight(y_shift);
 
     // --> считаем руками размер конвертированной картинки
     int x_ = m_vruler_size.width();
@@ -469,11 +469,19 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter, bool
         // цветная часть
         if(glb().pGrid->getElement(i,j).getFill()) {
             // ячейка закрашена
-            painter->setBrush(QBrush(glb().pGrid->getColor(i, j), Qt::SolidPattern));
+            QColor color = glb().pGrid->getColor(i, j);
+            if(QColor(Qt::white) == color)
+                painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+            else
+                painter->setBrush(QBrush(color, Qt::SolidPattern));
             painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
         } else if(glb().pGrid->getElement(i,j).getBackFill()) {
             // ячейка не закрашена, но есть фон
-            painter->setBrush(QBrush(glb().pGrid->getBackColor(i, j), Qt::SolidPattern));
+            QColor color = glb().pGrid->getBackColor(i, j);
+            if(QColor(Qt::white) == color)
+                painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+            else
+                painter->setBrush(QBrush(color, Qt::SolidPattern));
             painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
         } else{
             // ячейка не закрашена, фон не установлен
