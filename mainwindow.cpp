@@ -104,6 +104,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // центруем лайбл с превью
     //ui->lblPicture->setAlignment( Qt::AlignCenter );
+
+    // включаем фильтр для фрейма с таблицей
+    ui->framePreviewGrid->installEventFilter(this);
 }
 
 MainWindow::~MainWindow()
@@ -905,6 +908,22 @@ void  MainWindow::resizeEvent(QResizeEvent *event)
 //        // ставим отмасштабированную картинку в лэйбл
 //        ui->lblPicture->setPixmap((*m_pPixmap).scaled(w, h, Qt::KeepAspectRatio));
 //    }
+}
+
+bool  MainWindow::eventFilter(QObject *object, QEvent *event) {
+    if(object == ui->framePreviewGrid){
+//        if(event->type() == QEvent::Enter) {
+//            qDebug() << "enter";
+//            return true;
+//        }
+        if(event->type() == QEvent::Leave) {
+            // если покидаем область, то сбрасываем показания ряд/петля
+            onCurrentPos(-1, -1);
+            return true;
+        }
+    }
+
+    return QMainWindow::eventFilter(object, event);
 }
 
 //------------------------------------------------------------------------------

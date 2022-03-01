@@ -130,15 +130,17 @@ private:
 
     QColorDialog   m_tColorDialog;
 
-    void           closeEvent( QCloseEvent *event );
-    void           resizeEvent( QResizeEvent *event );
-
     void           setStateChanged();
     void           resetStateChanged();
 
     void           showInfoMessage(const QString&, const QString&);
 
     TGrid         *m_pGrid;
+
+protected:
+    void           closeEvent(QCloseEvent *event) override;
+    void           resizeEvent(QResizeEvent *event) override;
+    bool           eventFilter(QObject *object, QEvent *event) override;
 };
 
 //------------------------------------------------------------------------------
