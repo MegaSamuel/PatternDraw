@@ -19,6 +19,16 @@ enum EActionType
     keActionTypeColor    = 1,
 };
 
+struct TElemData {
+    bool    elem_fill;
+    QColor  elem_color;
+
+    bool    back_fill;
+    QColor  back_color;
+
+    explicit TElemData();
+};
+
 struct TCmdData {
      // тип события
     int     action;
@@ -28,8 +38,8 @@ struct TCmdData {
     int     col;
 
     // предыдущие и новые данные
-    QColor  tPrevColor;
-    QColor  tCurrColor;
+    TElemData  tPrevData;
+    TElemData  tCurrData;
 
     explicit TCmdData();
     explicit TCmdData(int, int);

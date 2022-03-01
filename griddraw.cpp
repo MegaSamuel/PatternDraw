@@ -512,7 +512,7 @@ void  TGridDraw::mousePressEvent(QMouseEvent *event) {
         int row = glb().pGrid->getRows() - m_curr_row;
         int col = glb().pGrid->getColumns() - m_curr_column;
 
-        glb().pGrid->setColor(row, col, glb().tItemColor);
+        glb().pGrid->setColor(row, col, true, glb().tItemColor);
 
 //        qDebug() << "rows" << glb().pGrid->getRows() << "colomns" << glb().pGrid->getColumns();
 //        qDebug() << "c_row" << m_curr_row << "c_colomn" << m_curr_column;

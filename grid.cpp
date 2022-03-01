@@ -156,15 +156,24 @@ bool TGrid::getBorder() const {
     return m_border;
 }
 
-void  TGrid::setColor(int row, int col, QColor color, bool undo) {
+void  TGrid::setColor(int row, int col, bool fill, QColor color, bool undo) {
     TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
 
     if(undo) {
         TCmdData  cmd(row, col);
         // запоминаем, что было и что станет
         cmd.action = keActionTypeColor;
-        cmd.tCurrColor = color;
-        cmd.tPrevColor = elem.getFillColor();
+
+        cmd.tPrevData.elem_fill = elem.getFill();
+        cmd.tPrevData.elem_color = elem.getFillColor();
+        cmd.tPrevData.back_fill = elem.getBackFill();
+        cmd.tPrevData.back_color = elem.getBackFillColor();
+
+        cmd.tCurrData.elem_fill = fill;
+        cmd.tCurrData.elem_color = color;
+        cmd.tCurrData.back_fill = elem.getBackFill();
+        cmd.tCurrData.back_color = elem.getBackFillColor();
+
         // добавляем в undo
         m_stUndoRedo.stUndoPush(cmd);
 
@@ -175,8 +184,13 @@ void  TGrid::setColor(int row, int col, QColor color, bool undo) {
     }
 
     // применяем действие к ячейке
-    elem.setFill(true);
+    elem.setFill(fill);
     elem.setFillColor(color);
+}
+
+void  TGrid::setFill(int row, int col, bool fill) {
+    TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
+    elem.setFill(fill);
 }
 
 QColor  TGrid::getColor(int row, int col) const {
@@ -198,6 +212,11 @@ void  TGrid::setBackColor(int row, int col, QColor color) {
     TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
     elem.setBackFill(true);
     elem.setBackFillColor(color);
+}
+
+bool  TGrid::getBackFill(int row, int col) const {
+    const TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
+    return elem.getBackFill();
 }
 
 QColor  TGrid::getBackColor(int row, int col) const {
@@ -253,7 +272,7 @@ bool  TGrid::doUndo() {
     if(m_stUndoRedo.isUndoEmpty())
         return result;
 
-    qDebug() << "undo";
+//    qDebug() << "undo";
 
     // забираем cmd из undo
     TCmdData cmd = m_stUndoRedo.stUndoTop();
@@ -265,8 +284,16 @@ bool  TGrid::doUndo() {
     reportUndoRedoState();
 
     if(keActionTypeColor == cmd.action) {
-        // меняем цвет, это изменение в undo не записываем (4-й агрумент false)
-        setColor(cmd.row, cmd.col, cmd.tPrevColor, false);
+        if(getBackFill(cmd.row, cmd.col)) {
+            // ячейка имеет залитый фон
+
+            // меняем цвет, это изменение в undo не записываем (4-й агрумент false)
+            setColor(cmd.row, cmd.col, cmd.tPrevData.elem_fill, cmd.tPrevData.back_color, false);
+        } else {
+            // меняем цвет, это изменение в undo не записываем (4-й агрумент false)
+            setColor(cmd.row, cmd.col, cmd.tPrevData.elem_fill, cmd.tPrevData.elem_color, false);
+        }
+
         result = true;
     }
 
@@ -279,7 +306,7 @@ bool  TGrid::doRedo() {
     if(m_stUndoRedo.isRedoEmpty())
         return result;
 
-    qDebug() << "redo";
+//    qDebug() << "redo";
 
     // забираем cmd из undo
     TCmdData cmd = m_stUndoRedo.stRedoTop();
@@ -292,7 +319,7 @@ bool  TGrid::doRedo() {
 
     if(keActionTypeColor == cmd.action) {
         // меняем цвет, это изменение в undo уже записано (4-й агрумент false)
-        setColor(cmd.row, cmd.col, cmd.tCurrColor, false);
+        setColor(cmd.row, cmd.col, cmd.tCurrData.elem_fill, cmd.tCurrData.elem_color, false);
         result = true;
     }
 
