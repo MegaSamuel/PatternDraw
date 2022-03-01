@@ -10,6 +10,7 @@
 #include "global.h"
 #include "newdialog.h"
 #include "gridsave.h"
+#include "config.h"
 
 //------------------------------------------------------------------------------
 
@@ -23,7 +24,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
-    ~MainWindow();
+    ~MainWindow() override;
 
 Q_SIGNALS:
     void       changeGridColor(QColor);
@@ -87,6 +88,9 @@ private:
 
     QString        m_zPrgFileName;
 
+    TConfig       *m_ptConfig;
+    void           actionAfterStart();
+
     void           setPrgTitleText( const QString&  text = "" );
 
     void           setPrgTitleChanged( bool  changed );
@@ -103,9 +107,6 @@ private:
 
     bool           fileSavePictToDev(const QString& filename);
     bool           fileSaveConvertedToDev(const QString& filename);
-
-    void           writeSettings();
-    void           readSettings();
 
     TNewDialog    *m_ptNewDialog;
 
