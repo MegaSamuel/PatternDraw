@@ -317,8 +317,6 @@ bool  MainWindow::fileSaveAs() {
         // запоминаем каталог
         m_ptConfig->cfgSetSavePath(m_zPrgFileName.section(QDir::separator(), 0, -2));
 
-        qDebug() << "save path" << m_ptConfig->cfgGetSavePath();
-
         // обновляем конфиг
         m_ptConfig->writeSettings();
     } else {
@@ -501,10 +499,11 @@ bool  MainWindow::fileOpenGrid() {
     if(!filename.isEmpty()) {
         result = fileOpenGridFromDev(filename);
 
+        // ставим имя, чтобы работала кнопка Сохранить
+        m_zPrgFileName = filename;
+
         // запоминаем каталог
         m_ptConfig->cfgSetOpenPath(filename.section(QDir::separator(), 0, -2));
-
-        qDebug() << "open path" << m_ptConfig->cfgGetOpenPath();
 
         // обновляем конфиг
         m_ptConfig->writeSettings();
@@ -704,6 +703,14 @@ void  MainWindow::onDlgCreate() {
     // если сетка со смещением и из прямоугольников, то ее можно конвертировать
     if((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)) {
         ui->actionConvert->setEnabled(true);
+    }
+
+    // если область была большой - уменьшаем ее
+    //TODO криво, нужно переделать
+    if((ui->tGridDraw->size().height()+2 > ui->framePreviewGrid->size().height()) ||
+       (ui->tGridDraw->size().width()+2 > ui->framePreviewGrid->size().width())) {
+        ui->tGridDraw->setMinimumWidth(ui->framePreviewGrid->size().width()-2);
+        ui->tGridDraw->setMinimumHeight(ui->framePreviewGrid->size().height()-2);
     }
 }
 
@@ -1119,8 +1126,6 @@ void  MainWindow::actionAfterStart() {
 
     // читаем конфиг
     m_ptConfig->readSettings();
-
-    qDebug() << m_ptConfig->cfgGetOpenPath() << m_ptConfig->cfgGetSavePath();
 
     delete pDir;
 }
