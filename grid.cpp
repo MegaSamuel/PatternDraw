@@ -193,6 +193,11 @@ void  TGrid::setFill(int row, int col, bool fill) {
     elem.setFill(fill);
 }
 
+bool  TGrid::getFill(int row, int col) const {
+    const TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
+    return elem.getFill();
+}
+
 QColor  TGrid::getColor(int row, int col) const {
     const TElement& elem = m_grid.at(static_cast<unsigned>(row)).at(static_cast<unsigned>(col));
     return elem.getFillColor();

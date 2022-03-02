@@ -52,6 +52,7 @@ public:
 
     void          setColor(int row, int col, bool fill, QColor color, bool undo = true);
     void          setFill(int row, int col, bool fill);
+    bool          getFill(int row, int col) const;
     QColor        getColor(int row, int col) const;
 
     void          setBackColor(QColor color);

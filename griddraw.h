@@ -106,6 +106,8 @@ private:
     //! необходимость отправить сигнал с признаком отсутствия номера текучей ячейки (курсор вне таблицы)
     bool           m_need_to_emit;
 
+    void DrawGrid(int x, int y, QPainter *painter);
+
     //! x, y - начальные координаты; number - нумерация; painter - указатель на отрисовщик
     void DrawVRuler(int x, int y, ERowNumber number, QPainter *painter);
 

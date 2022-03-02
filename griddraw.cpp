@@ -205,6 +205,11 @@ void  TGridDraw::drawAll(QPainter *painter, bool converted) {
     m_pic_size_converted.setHeight(y_);
     // <--
 
+    // рисуем сетку (чтобы убрать непрорисовку по углам)
+    if(converted) {
+        DrawGrid(0, 0, painter);
+    }
+
     //    qDebug() << "pic" << m_pic_size.width() << m_pic_size.height();
     //    qDebug() << "wgt" << this->width() << this->height();
 
@@ -218,6 +223,44 @@ void  TGridDraw::drawAll(QPainter *painter, bool converted) {
 }
 
 //------------------------------------------------------------------------------
+
+void  TGridDraw::DrawGrid(int x, int y, QPainter *painter) {
+    painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
+
+    int x1 = x;
+    int x2 = x;
+    int y1 = y;
+    int y2 = m_pic_size_converted.height();
+    int shift = SHORT_SIDE;
+
+    // вертикальные линии
+    for(int col = 0; col < glb().pGrid->getColumns()+2; col++) {
+        painter->drawLine(x1, y1, x2, y2);
+        painter->drawLine(x1+shift, y1, x2+shift, y2);
+        x1 += shift;
+        x2 += shift;
+        x1 += 1;
+        x2 += 1;
+    }
+
+    x1 = x;
+    x2 = m_pic_size_converted.width();
+    y1 = y;
+    y2 = y;
+    shift = LONG_SIDE;
+
+    // горизонтальные линии
+    for(int row = 0; row <= (glb().pGrid->getRows()+1)/2; row++) {
+        painter->drawLine(x1, y1, x2, y2);
+        painter->drawLine(x1, y1+shift/2-1, x2, y2+shift/2-1);
+        painter->drawLine(x1, y1+shift/2, x2, y2+shift/2);
+        painter->drawLine(x1, y1+shift, x2, y2+shift);
+        y1 += shift;
+        y2 += shift;
+        y1 += 1;
+        y2 += 1;
+    }
+}
 
 void  TGridDraw::DrawVRuler(int x, int y, ERowNumber number, QPainter *painter) {
     int _x = x;
@@ -315,6 +358,12 @@ void  TGridDraw::DrawVRulerAdv(int x, int y, ERowNumber number, QPainter *painte
     QSize  elem_size = getElemSize();
 
     int num_for_draw = -1;
+
+    if(keRowNumberEven == number) {
+        if(isOdd(glb().pGrid->getRows())) {
+            _y -= elem_size.height()/2;
+        }
+    }
 
     for(int i = 0; i < glb().pGrid->getRows(); i++) {
         if(isEven(i)) {
@@ -471,7 +520,7 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter, bool
             // ячейка закрашена
             QColor color = glb().pGrid->getColor(i, j);
             if(QColor(Qt::white) == color)
-                painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+                painter->setBrush(QBrush(Qt::lightGray, Qt::SolidPattern));
             else
                 painter->setBrush(QBrush(color, Qt::SolidPattern));
             painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
@@ -479,13 +528,13 @@ void  TGridDraw::DrawElement(int i, int j, int x, int y, QPainter *painter, bool
             // ячейка не закрашена, но есть фон
             QColor color = glb().pGrid->getBackColor(i, j);
             if(QColor(Qt::white) == color)
-                painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+                painter->setBrush(QBrush(Qt::lightGray, Qt::SolidPattern));
             else
                 painter->setBrush(QBrush(color, Qt::SolidPattern));
             painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
         } else{
             // ячейка не закрашена, фон не установлен
-            painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+            painter->setBrush(QBrush(Qt::lightGray, Qt::SolidPattern));
             painter->setPen(QPen(glb().tGridColor, 1, Qt::SolidLine, Qt::FlatCap));
         }
 
@@ -517,30 +566,27 @@ void  TGridDraw::onChangeBackColor(QColor color) {
 //------------------------------------------------------------------------------
 
 void  TGridDraw::mousePressEvent(QMouseEvent *event) {
+    // только если курсор на таблице
+    if((0 == m_curr_row) || (0 == m_curr_column))
+        return;
+
+    // номер ячейки по которой кликнули
+    int row = glb().pGrid->getRows() - m_curr_row;
+    int col = glb().pGrid->getColumns() - m_curr_column;
+
     if(event->button() == Qt::LeftButton) {
-        // только если курсор на таблице
-        if((0 == m_curr_row) || (0 == m_curr_column))
-            return;
-
         // по левой кнопке красим ячейку
-        int row = glb().pGrid->getRows() - m_curr_row;
-        int col = glb().pGrid->getColumns() - m_curr_column;
-
         glb().pGrid->setColor(row, col, true, glb().tItemColor);
-
-//        qDebug() << "rows" << glb().pGrid->getRows() << "colomns" << glb().pGrid->getColumns();
-//        qDebug() << "c_row" << m_curr_row << "c_colomn" << m_curr_column;
-//        qDebug() << "ind_row" << row << "int_colomn" << col;
-
         Q_EMIT(changeState());
-
         repaint();
     } else if(event->button() == Qt::RightButton) {
-        // только если курсор на таблице
-        if((0 == m_curr_row) || (0 == m_curr_column))
-            return;
-
-        // по правой кнопке ничего не делаем
+        // по правой кнопке красим ячейку в цвет фона
+        // если ячейка закрашена
+        if(glb().pGrid->getFill(row, col)) {
+            glb().pGrid->setColor(row, col, true, glb().tBackColor);
+            Q_EMIT(changeState());
+            repaint();
+        }
     }
 }
 
