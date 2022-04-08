@@ -27,6 +27,7 @@ CONFIG += c++17
 QMAKE_CXXFLAGS += -pedantic -Wshadow -Wuninitialized
 
 SOURCES += \
+        config.cpp \
         dialog.cpp \
         element.cpp \
         global.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
 
 HEADERS += \
         bitmap.h \
+        config.h \
         dialog.h \
         element.h \
         global.h \

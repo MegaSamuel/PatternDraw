@@ -50,11 +50,14 @@ public:
     void          setBorder(bool border);
     bool          getBorder() const;
 
-    void          setColor(int row, int col, QColor color, bool undo = true);
+    void          setColor(int row, int col, bool fill, QColor color, bool undo = true);
+    void          setFill(int row, int col, bool fill);
+    bool          getFill(int row, int col) const;
     QColor        getColor(int row, int col) const;
 
     void          setBackColor(QColor color);
     void          setBackColor(int row, int col, QColor color);
+    bool          getBackFill(int row, int col) const;
     QColor        getBackColor(int row, int col) const;
 
     void          setRulerBorder(bool border);

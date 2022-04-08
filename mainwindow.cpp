@@ -13,16 +13,13 @@
 
 //------------------------------------------------------------------------------
 
-#define AppVendor   "Cepaleme"
-#define AppName     "PatternDraw"
-
-//------------------------------------------------------------------------------
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    m_ptConfig = new TConfig();
 
     m_bPrgTitleChanged = false;
 
@@ -104,6 +101,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // центруем лайбл с превью
     //ui->lblPicture->setAlignment( Qt::AlignCenter );
+
+    // включаем фильтр для фрейма с таблицей
+    ui->framePreviewGrid->installEventFilter(this);
+
+    // читаем конфиг
+    actionAfterStart();
 }
 
 MainWindow::~MainWindow()
@@ -292,13 +295,14 @@ bool  MainWindow::fileSaveAs() {
     QString deffilename = QString("/pattern%1x%2").arg(m_uRow).arg(m_uColumn);
 
     // каталог где мы находимся
-    QDir *pDir = new QDir(QDir::currentPath() + deffilename);
+    QDir *pDir = new QDir(m_ptConfig->cfgGetSavePath() + deffilename);
 
     // строка с именем каталога где мы находимся
     QString dir(pDir->path());
 
     // формируем путь и имя файла через диалог
-    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "PatterDraw Grid (*.pdg);;PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)");
+    QString filename = QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, "Сохранить файл",
+                       QDir::toNativeSeparators(dir), "PatterDraw Grid (*.pdg);;PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)"));
 
     QApplication::processEvents();
 
@@ -309,6 +313,15 @@ bool  MainWindow::fileSaveAs() {
             result = fileSaveGridToDev(m_zPrgFileName); // сохраняем во внутреннем формате
         else
             result = fileSavePictToDev(m_zPrgFileName); // сохраняем изображение
+
+        // запоминаем каталог
+        m_ptConfig->cfgSetSavePath(m_zPrgFileName.section(QDir::separator(), 0, -2));
+
+        // обновляем конфиг
+        m_ptConfig->writeSettings();
+
+        // заголовок формы
+        setPrgTitleText(filename);
     } else {
         qDebug() << "no filename";
     }
@@ -323,18 +336,26 @@ bool  MainWindow::fileSaveConverted() {
     QString deffilename = QString("/converted%1x%2").arg(m_uRow).arg(m_uColumn);
 
     // каталог где мы находимся
-    QDir *pDir = new QDir(QDir::currentPath() + deffilename);
+    QDir *pDir = new QDir(m_ptConfig->cfgGetConvPath() + deffilename);
 
     // строка с именем каталога где мы находимся
     QString dir(pDir->path());
 
     // формируем путь и имя файла через диалог
-    QString filename = QFileDialog::getSaveFileName(this, "Сохранить файл", dir, "PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)");
+    QString filename = QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, "Сохранить файл",
+                       QDir::toNativeSeparators(dir), "PNG (*.png);;JPEG (*.jpg);;Bitmap picture (*.bmp)"));
 
     QApplication::processEvents();
 
     if(!filename.isEmpty()) {
         result = fileSaveConvertedToDev(filename);
+
+        // запоминаем каталог
+        m_ptConfig->cfgSetConvPath(filename.section(QDir::separator(), 0, -2));
+
+        // обновляем конфиг
+        m_ptConfig->writeSettings();
+
     } else {
         qDebug() << "no filename";
     }
@@ -407,7 +428,7 @@ inline QDataStream &operator >>(QDataStream &stream, t_grid_data &grid) {
     return stream;
 }
 
-void  MainWindow::onOpenCreate(const t_grid_data& grid) {
+void  MainWindow::onOpenCreate(const t_grid_data& grid, const QString& filename) {
     m_zPrgTitle.clear();
 
     m_bPrgTitleChanged = false;
@@ -426,7 +447,7 @@ void  MainWindow::onOpenCreate(const t_grid_data& grid) {
     guiBlock(false);
 
     // заголовок формы
-    setPrgTitleText();
+    setPrgTitleText(filename);
 
     // если сетка со смещением и из прямоугольников, то ее можно конвертировать
     if((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)) {
@@ -456,7 +477,7 @@ bool  MainWindow::fileOpenGridFromDev(const QString& filename) {
     if(!result) {
         qDebug() << "Ошибка чтения из файла";
     } else {
-        onOpenCreate(filedata);
+        onOpenCreate(filedata, filename);
         delete [] filedata.grid;
     }
 
@@ -467,18 +488,28 @@ bool  MainWindow::fileOpenGrid() {
     bool result = false;
 
     // каталог где мы находимся
-    QDir *pDir = new QDir(QDir::currentPath());
+    QDir *pDir = new QDir(m_ptConfig->cfgGetOpenPath());
 
     // строка с именем каталога где мы находимся
     QString dir(pDir->path());
 
     // формируем путь и имя файла через диалог
-    QString filename = QFileDialog::getOpenFileName(this, "Открыть файл", dir, "PatterDraw Grid (*.pdg)");
+    QString filename = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, "Открыть файл",
+                       QDir::toNativeSeparators(dir), "PatterDraw Grid (*.pdg)"));
 
     QApplication::processEvents();
 
     if(!filename.isEmpty()) {
         result = fileOpenGridFromDev(filename);
+
+        // ставим имя, чтобы работала кнопка Сохранить
+        m_zPrgFileName = filename;
+
+        // запоминаем каталог
+        m_ptConfig->cfgSetOpenPath(filename.section(QDir::separator(), 0, -2));
+
+        // обновляем конфиг
+        m_ptConfig->writeSettings();
     } else {
         qDebug() << "no filename";
     }
@@ -675,6 +706,14 @@ void  MainWindow::onDlgCreate() {
     // если сетка со смещением и из прямоугольников, то ее можно конвертировать
     if((keGridTypeShift == m_uGridType) && (keItemTypeRectan == m_uItemType)) {
         ui->actionConvert->setEnabled(true);
+    }
+
+    // если область была большой - уменьшаем ее
+    //TODO криво, нужно переделать
+    if((ui->tGridDraw->size().height()+2 > ui->framePreviewGrid->size().height()) ||
+       (ui->tGridDraw->size().width()+2 > ui->framePreviewGrid->size().width())) {
+        ui->tGridDraw->setMinimumWidth(ui->framePreviewGrid->size().width()-2);
+        ui->tGridDraw->setMinimumHeight(ui->framePreviewGrid->size().height()-2);
     }
 }
 
@@ -907,6 +946,22 @@ void  MainWindow::resizeEvent(QResizeEvent *event)
 //    }
 }
 
+bool  MainWindow::eventFilter(QObject *object, QEvent *event) {
+    if(object == ui->framePreviewGrid){
+//        if(event->type() == QEvent::Enter) {
+//            qDebug() << "enter";
+//            return true;
+//        }
+        if(event->type() == QEvent::Leave) {
+            // если покидаем область, то сбрасываем показания ряд/петля
+            onCurrentPos(-1, -1);
+            return true;
+        }
+    }
+
+    return QMainWindow::eventFilter(object, event);
+}
+
 //------------------------------------------------------------------------------
 
 // количество рядов/колонок от спинбоксов
@@ -1062,22 +1117,20 @@ void MainWindow::on_radioRulerH2_clicked()
 
 //------------------------------------------------------------------------------
 
-void  MainWindow::readSettings()
-{
-//     QSettings  settings(AppVendor, AppName);
+void  MainWindow::actionAfterStart() {
+    // каталог где мы находимся
+    QDir *pDir = new QDir(QDir::currentPath());
 
-//     cfgSetLastOpenPath(settings.value("last open path", "./").toString());
-//     cfgSetLastSavePath(settings.value("last save path", "./").toString());
-//     cfgSetLastOpenFile(settings.value("last open file", "./").toString());
-}
+    // строка с именем каталога где мы находимся
+    QString dir(pDir->path());
 
-void  MainWindow::writeSettings()
-{
-//     QSettings  settings(AppVendor, AppName);
+    // установка дефолтного пути
+    m_ptConfig->cfgSetCurrentPath(QDir::toNativeSeparators(dir));
 
-//     settings.setValue("last open path", cfgGetLastOpenPath());
-//     settings.setValue("last save path", cfgGetLastSavePath());
-//     settings.setValue("last open file", cfgGetLastOpenFile());
+    // читаем конфиг
+    m_ptConfig->readSettings();
+
+    delete pDir;
 }
 
 //------------------------------------------------------------------------------

@@ -2,6 +2,14 @@
 
 //------------------------------------------------------------------------------
 
+TElemData::TElemData() {
+    elem_fill = false;
+    elem_color = Qt::white;
+
+    back_fill = false;
+    back_color = Qt::white;
+}
+
 TCmdData::TCmdData() : TCmdData(0, 0) {
 
 }
@@ -11,9 +19,6 @@ TCmdData::TCmdData(int a_row, int a_col) {
 
     row = a_row;
     col = a_col;
-
-    tPrevColor = Qt::white;
-    tCurrColor = Qt::white;
 }
 
 //------------------------------------------------------------------------------

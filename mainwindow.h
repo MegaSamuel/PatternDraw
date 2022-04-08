@@ -10,6 +10,7 @@
 #include "global.h"
 #include "newdialog.h"
 #include "gridsave.h"
+#include "config.h"
 
 //------------------------------------------------------------------------------
 
@@ -23,7 +24,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow( QWidget *parent = Q_NULLPTR );
-    ~MainWindow();
+    ~MainWindow() override;
 
 Q_SIGNALS:
     void       changeGridColor(QColor);
@@ -77,7 +78,7 @@ private:
     void           initGuiElements();
 
     void           initOpenGuiElements(const t_grid_data& grid);
-    void           onOpenCreate(const t_grid_data& grid);
+    void           onOpenCreate(const t_grid_data& grid, const QString& filename);
 
     bool           askSaveIfChanged();
 
@@ -86,6 +87,9 @@ private:
     bool           m_bPrgTitleChanged;
 
     QString        m_zPrgFileName;
+
+    TConfig       *m_ptConfig;
+    void           actionAfterStart();
 
     void           setPrgTitleText( const QString&  text = "" );
 
@@ -103,9 +107,6 @@ private:
 
     bool           fileSavePictToDev(const QString& filename);
     bool           fileSaveConvertedToDev(const QString& filename);
-
-    void           writeSettings();
-    void           readSettings();
 
     TNewDialog    *m_ptNewDialog;
 
@@ -130,15 +131,17 @@ private:
 
     QColorDialog   m_tColorDialog;
 
-    void           closeEvent( QCloseEvent *event );
-    void           resizeEvent( QResizeEvent *event );
-
     void           setStateChanged();
     void           resetStateChanged();
 
     void           showInfoMessage(const QString&, const QString&);
 
     TGrid         *m_pGrid;
+
+protected:
+    void           closeEvent(QCloseEvent *event) override;
+    void           resizeEvent(QResizeEvent *event) override;
+    bool           eventFilter(QObject *object, QEvent *event) override;
 };
 
 //------------------------------------------------------------------------------
